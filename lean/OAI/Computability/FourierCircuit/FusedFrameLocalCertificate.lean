@@ -110,6 +110,22 @@ theorem valid (d : Data (ι := ι) (h := h) (K := K)) :
         SideRowGeneralArbitrary.L5 d.pre d.framed.frame.target := by
   exact ⟨fusedForward_scalar_update d.framed, lifted_readout_legal d⟩
 
+/- The frame label is preserved by the fused scalar map.  Keeping this as a
+   separate conjunct makes the local certificate usable by a later schedule
+   proof without implying that such a schedule already exists. -/
+theorem valid_with_frame (d : Data (ι := ι) (h := h) (K := K)) :
+    (fusedForward d.framed).scalar =
+        {d.framed.scalar with y := d.framed.scalar.y + d.framed.scalar.x} ∧
+      (fusedForward d.framed).frame = d.framed.frame ∧
+      d.source_row +
+          CenterBoundaryTensorLift.lift
+            (unitCoordinateEquiv d.framed.frame.target d.witness
+              d.framed.frame.target_unit d.witness_zero)
+            (CenterRowGeneral.insert d.pre d.framed.frame.target) ∈
+        SideRowGeneralArbitrary.L5 d.pre d.framed.frame.target := by
+  exact ⟨fusedForward_scalar_update d.framed,
+    fusedForward_frame d.framed, lifted_readout_legal d⟩
+
 /-! The concrete first-prefix object is useful to callers: an arbitrary scalar
 state can be paired with the audited h=24 frame, while the prefix/readout data
 remain explicit hypotheses rather than hidden global circuit claims. -/
