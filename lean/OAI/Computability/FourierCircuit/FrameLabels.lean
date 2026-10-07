@@ -32,7 +32,7 @@ def dotForm {h : ℕ} :
     (by intro v₁ v₂ w; simp [dotProduct, Finset.sum_add_distrib, add_mul])
     (by intro a v w; simp [dotProduct, Finset.mul_sum, mul_assoc])
     (by intro v w₁ w₂; simp [dotProduct, Finset.sum_add_distrib, mul_add])
-    (by intro a v w; simp [dotProduct, Finset.mul_sum, mul_assoc, mul_left_comm, mul_comm])
+    (by intro a v w; simp [dotProduct, Finset.mul_sum, mul_left_comm])
 
 theorem indicator_dot {h : ℕ} (S T : Finset (Fin h)) :
     dotForm (indicator S) (indicator T) = ((S ∩ T).card : ZMod 2) := by
