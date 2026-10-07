@@ -33,13 +33,22 @@ The exact h=24 arithmetic is reproducible with
 This apparent scalar reduction is incompatible with the published frame labels.
 Every residual coordinate has a diagonal matrix coefficient (J_{T,T}=1).  A
 published side role is indexed by a **distinct** ordered pair ((S,T)) with
-even (|S\cap T|); in particular it has (J_{S,S}=0).  Therefore every
-frame-compatible side map has zero diagonal.  Over the complex scalar field,
-an idempotent matrix has `trace = rank`.  A side map with zero diagonal has
-trace zero, so it cannot be the rank-((v-h)=2000) projection required here.
-For the explicit coordinate candidate, all 2,000 residual channels are
-therefore frame-illegal.  This is an algebraic obstruction, independent of
-which 24 triples are selected.
+even (|S\cap T|), and the current source update is
+((Vx)_{S,T}=x_T).  Consequently the composed residual (JV) has zero
+diagonal: there is no role with target and source both equal to (T).  Over
+the complex scalar field, an idempotent matrix has `trace = rank`; hence this
+source-indexed side realization cannot equal the rank-((v-h)=2000)
+projection (I-RG).  For the explicit coordinate candidate, all 2,000
+residual channels are therefore frame-illegal.  This is independent of which
+24 triples are selected.
+
+Allowing (V) to mix arbitrary source coordinates could create a diagonal
+coefficient through an off-diagonal role, so the trace argument is conditional
+on the published source-indexed update.  However, an (x_T -> y_T) term would
+then touch the same physical triple indicator at row 2 and row 0/5; the
+nesting proof requires orthogonal source/target indicators.  Making that term
+legal requires enlarging the row-2 label or changing the stage boundary, which
+is a new frame schedule.
 
 For scale, if one hypothetically added a legal frame for each diagonal channel,
 the current row-2/row-5 boundary would charge two absolute residual units per
