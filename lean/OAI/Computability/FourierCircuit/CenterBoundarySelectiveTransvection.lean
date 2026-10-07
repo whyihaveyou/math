@@ -24,6 +24,7 @@ namespace ExactFourier
 namespace CenterBoundarySelectiveTransvection
 
 open CenterRowGeneral
+open CenterBoundaryObstruction
 open SideRowGeneralArbitrary
 open BinaryTransvection
 
@@ -165,6 +166,28 @@ theorem e_mem_L5 (p : ι → F) (t : Active h) (w : Fin h)
   rw [Submodule.orthogonalBilin_span_singleton]
   change dotProduct t (coordinate w) = 0
   rw [dot_coordinate, hw]
+
+theorem d_not_mem_L5 (p : ι → F) (t : Active h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F)) :
+    d p t ∉ L5 p t := by
+  intro hd
+  rw [Submodule.mem_comap, project_insertP p hp] at hd
+  exact target_line_not_targetPerp t ht hd
+
+theorem W_does_not_preserve_L5 (p : ι → F) (t : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F)) (hw : t w = 0) :
+    ¬ ∀ z ∈ L5 p t, W p t w z ∈ L5 p t := by
+  intro hpres
+  have he : e p w ∈ L5 p t := e_mem_L5 p t w hp hw
+  have hback : W p t w (e p w) = d p t := by
+    have hinv := W_involutive p t w hp ht hw (d p t)
+    rw [W_map_d_to_e p t w hp ht hw] at hinv
+    exact hinv
+  apply d_not_mem_L5 p t hp ht
+  rw [← hback]
+  exact hpres (e p w) he
 
 theorem W_map_source_plus_d_mem_L5 (p : ι → F) (x t : Active h) (w : Fin h)
     (hp : dotProduct p p = (1 : F))
