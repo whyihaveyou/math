@@ -31,6 +31,32 @@ theorem momentPenalty_eq : momentPenalty = 8494659993600 := by
     CenterCompression.H24.v,
     Nat.choose]
 
+
+def varyingFramePenalty : ℕ := 2 * I0 * (h + 1) * h
+
+theorem varyingFramePenalty_eq : varyingFramePenalty = 14747673600 := by
+  norm_num [varyingFramePenalty, I0, h,
+    SideMomentArithmetic.H24.I0,
+    SideMomentArithmetic.H24.h,
+    CenterCompression.H24.I0,
+    CenterCompression.H24.h,
+    CenterCompression.H24.v,
+    Nat.choose]
+
+theorem varyingFramePenalty_exceeds_saving :
+    SideMomentArithmetic.H24.deltaMoment ≤ varyingFramePenalty := by
+  norm_num [varyingFramePenalty, SideMomentArithmetic.H24.deltaMoment,
+    I0, h, N0,
+    SideMomentArithmetic.H24.I0,
+    SideMomentArithmetic.H24.h,
+    SideMomentArithmetic.H24.N0,
+    SideMomentArithmetic.H24.v,
+    CenterCompression.H24.I0,
+    CenterCompression.H24.h,
+    CenterCompression.H24.N0,
+    CenterCompression.H24.v,
+    Nat.choose]
+
 theorem momentPenalty_exceeds_saving :
     SideMomentArithmetic.H24.deltaMoment ≤ momentPenalty := by
   norm_num [momentPenalty, SideMomentArithmetic.H24.deltaMoment,
