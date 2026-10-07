@@ -131,3 +131,65 @@ theorem h18_common_frame_not_one_line (ell : ℤ) :
 end H18TerminalRouteRequirement
 end ExactFourier
 end OAI
+
+namespace OAI
+namespace ExactFourier
+namespace H18TerminalRouteRequirement
+
+open H18TerminalInterface
+
+/-! ### Conditional insertion into the h = 18 fused-centre ledger
+
+The h = 18 fused-centre arithmetic certificate has margin `187771392` before
+any separately charged terminal bank.  The following definitions do not assert
+that a terminal bank has a particular number `q` of roles; they state exactly
+how a common-frame charge would alter that already conditional margin if its
+baseline ledger had charged one line per role.
+-/
+
+/-- Margin after replacing a one-line terminal charge by the common-frame
+cost, for an abstract number `q` of terminal roles. -/
+def fusedMarginAfterTerminal (q ell : ℤ) : ℤ :=
+  187771392 - (terminalCost 18 ell - 1) * q
+
+/-- At either endpoint common frame the h = 18 fused-centre margin loses one
+unit for each terminal role. -/
+theorem h18_fused_endpoint_margin
+    (q ell : ℤ) (hell : ell = 18 ∨ ell = 17) :
+    fusedMarginAfterTerminal q ell = 187771392 - q := by
+  have hcost : terminalCost 18 ell = 2 :=
+    (terminal_cost_eq_two_iff 18 ell).2 (by omega)
+  unfold fusedMarginAfterTerminal
+  rw [hcost]
+  ring
+
+/-- If the terminal common frame is forced away from both endpoint dimensions,
+its integral cost loses at least five units per terminal role relative to the
+one-line baseline. -/
+theorem h18_fused_nonendpoint_margin_le
+    (q ell : ℤ) (hq : 0 ≤ q) (h₁ : ell ≠ 18) (h₂ : ell ≠ 17) :
+    fusedMarginAfterTerminal q ell ≤ 187771392 - 5 * q := by
+  have hcost := terminal_cost_ge_six_of_nonendpoint 18 ell h₁ h₂
+  unfold fusedMarginAfterTerminal
+  nlinarith
+
+/-- Under the endpoint common-frame route, the conditional h = 18 margin is
+positive exactly while the number of terminal roles stays below the margin. -/
+theorem h18_fused_endpoint_positive_iff
+    (q ell : ℤ) (hell : ell = 18 ∨ ell = 17) (hq : 0 ≤ q) :
+    0 < fusedMarginAfterTerminal q ell ↔ q ≤ 187771391 := by
+  rw [h18_fused_endpoint_margin q ell hell]
+  omega
+
+/-- Under a nonendpoint integral common frame, positivity requires the much
+stronger abstract route bound `q ≤ 37554278`. -/
+theorem h18_fused_nonendpoint_positive_requires
+    (q ell : ℤ) (hq : 0 ≤ q) (h₁ : ell ≠ 18) (h₂ : ell ≠ 17)
+    (hpos : 0 < fusedMarginAfterTerminal q ell) :
+    q ≤ 37554278 := by
+  have hbound := h18_fused_nonendpoint_margin_le q ell hq h₁ h₂
+  omega
+
+end H18TerminalRouteRequirement
+end ExactFourier
+end OAI
