@@ -1,6 +1,7 @@
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
@@ -41,6 +42,24 @@ theorem compressed_entry
     ((S.sum (fun i => g i - q / (3 : K))) / 2) =
       (S.sum g - q) / 2 := by
   exact three_point_shift S hS g q
+
+theorem incidence_sum
+    {α K : Type*} [Field K] [CharZero K] [DecidableEq α]
+    (S T : Finset α) :
+    S.sum (fun i => if i ∈ T then (1 : K) else 0) =
+      (S ∩ T).card := by
+  rw [← Finset.filter_mem_eq_inter]
+  rw [← Finset.sum_filter]
+  simp
+
+theorem compressed_triple_entry
+    {α K : Type*} [Field K] [CharZero K] [DecidableEq α]
+    (S T : Finset α) (hS : S.card = 3) :
+    (S.sum (fun i =>
+      (if i ∈ T then (1 : K) else 0) - (1 : K) / 3)) / 2 =
+        ((S ∩ T).card - 1 : K) / 2 := by
+  rw [three_point_shift S hS (fun i => if i ∈ T then (1 : K) else 0) 1]
+  rw [incidence_sum]
 
 namespace H24
 
