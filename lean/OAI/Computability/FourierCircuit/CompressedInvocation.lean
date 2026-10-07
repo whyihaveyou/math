@@ -148,6 +148,18 @@ theorem identity (x : Triple h → K) :
   rw [JV_eq_sideAction]
   exact compressed_plus_side S x
 
+theorem compressed_restore
+    (s : State (Triple h → K) (SideBank h K) (Fin h → K)) :
+    eightRows RHom compressedG JHom V s = { s with y := s.y + s.x } := by
+  exact @eightRows_restore (Triple h → K) (SideBank h K) (Fin h → K) _ _ _
+    RHom compressedG JHom V identity s
+
+theorem compressed_exchange
+    (s : State (Triple h → K) (SideBank h K) (Fin h → K)) :
+    threeInvocations RHom compressedG JHom V s = { s with x := -s.y, y := s.x } := by
+  exact @threeInvocations_exchange (Triple h → K) (SideBank h K) (Fin h → K) _ _ _
+    RHom compressedG JHom V identity s
+
 end OrderedPairs
 end CompressedInvocation
 end ExactFourier
