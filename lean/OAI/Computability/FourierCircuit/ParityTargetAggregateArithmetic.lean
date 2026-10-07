@@ -23,11 +23,12 @@ open CenterCompression
 def h : ℕ := CenterCompression.H24.h
 def v : ℕ := CenterCompression.H24.v
 def I0 : ℕ := CenterCompression.H24.I0
+def m : ℕ := CenterCompression.H24.m
 def delta : ℕ := CenterCompression.H24.deltaCompressed
 def parityPenalty : ℕ := 2 * I0 * v
 def effectiveDelta : ℤ := (delta : ℤ) - (parityPenalty : ℤ)
 
-theorem parityPenalty_eq : parityPenalty = 16582939648 := by
+theorem parityPenalty_eq : parityPenalty = 49748818944 := by
   norm_num [parityPenalty, I0, v,
     CenterCompression.H24.I0, CenterCompression.H24.v,
     CenterCompression.H24.h, Nat.choose]
@@ -35,7 +36,7 @@ theorem parityPenalty_eq : parityPenalty = 16582939648 := by
 theorem delta_eq : delta = 2425172992 := by
   exact CenterCompression.H24.deltaCompressed_eq
 
-theorem effectiveDelta_eq : effectiveDelta = -14157766656 := by
+theorem effectiveDelta_eq : effectiveDelta = -47323645952 := by
   rw [effectiveDelta, delta_eq, parityPenalty_eq]
   norm_num
 
