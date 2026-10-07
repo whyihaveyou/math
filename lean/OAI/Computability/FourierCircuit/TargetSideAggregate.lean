@@ -33,14 +33,20 @@ theorem targetAggregateOutput_eq
       compressedR S c + compressedR S (compressedG (K := K) x) := by
     unfold compressedR
     rw [Finset.sum_add_distrib]
-    congr 1
-    apply Finset.sum_congr rfl
-    intro i hi
     ring
-  rw [hR]
   have hmain := compressed_plus_side (S := S) (x := x)
-  rw [hmain]
-  ring
+  calc
+    ((y S - a S - compressedR S c) +
+        compressedR S (fun i => c i + compressedG (K := K) x i)) +
+        (a S + sideAction S x) =
+      y S - a S - compressedR S c +
+        (compressedR S c +
+          (compressedR S (compressedG (K := K) x) + sideAction S x)) + a S := by
+            rw [hR]
+            ring
+    _ = y S + x S := by
+      rw [hmain]
+      ring
 
 namespace H24
 
