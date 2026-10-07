@@ -161,6 +161,46 @@ theorem e_not_mem_L2
   have hval := congrFun heq w
   simp [coordinate, hxw] at hval
 
+/- The target endpoint is not contained in the source endpoint either.  This
+   rules out both orientations of a direct nested-label edge. -/
+theorem selectiveTarget_not_le_selectiveSource
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (p : ι → F) (x t : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (hxw : x w = 0) (hw : t w = 0) :
+    ¬ selectiveTarget p x t w ≤ selectiveSource p x t := by
+  intro hnest
+  have heT : e p w ∈ selectiveTarget p x t w := by
+    exact Submodule.mem_sup_right
+      (Submodule.mem_span_singleton_self (e p w))
+  have heS : e p w ∈ selectiveSource p x t := hnest heT
+  change e p w ∈ L2 p x ⊔ (F ∙ d p t) at heS
+  rcases Submodule.mem_sup.mp heS with ⟨z₀, hz₀, z₁, hz₁, hsum⟩
+  rcases Submodule.mem_span_singleton.mp hz₁ with ⟨a, ha⟩
+  have hzline : projectP p z₀ ∈ line x := hz₀
+  rcases Submodule.mem_span_singleton.mp hzline with ⟨b, hb⟩
+  have hproj := congrArg (projectP p) hsum
+  rw [map_add, ← ha, map_smul, project_insertP p hp, project_insertP p hp] at hproj
+  rw [← hb] at hproj
+  have hval := congrFun hproj w
+  simp [e, coordinate, d, hxw, hw] at hval
+
+/- The paper's directional-kernel lemma applies only to nested endpoint
+labels.  The two local endpoint spaces fail both possible orientations, so a
+direct edge cannot be assigned a residual dimension at all. -/
+theorem selective_endpoints_not_nested
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (p : ι → F) (x t : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F))
+    (hxt : dotProduct x t = 0) (hxw : x w = 0) (hw : t w = 0) :
+    ¬ (selectiveSource p x t ≤ selectiveTarget p x t w ∨
+      selectiveTarget p x t w ≤ selectiveSource p x t) := by
+  intro h
+  rcases h with h | h
+  · exact selectiveSource_not_le_selectiveTarget p x t w hp ht hxt hw h
+  · exact selectiveTarget_not_le_selectiveSource p x t w hp hxw hw h
+
 /- The transvection maps the selected source subspace into the selected legal
 target subspace. -/
 theorem W_maps_selectiveSource
