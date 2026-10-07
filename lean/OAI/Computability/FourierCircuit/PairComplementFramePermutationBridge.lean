@@ -100,6 +100,22 @@ theorem lifted_bank_map_eq (e : Fin h ≃ Fin h)
     rw [hz_eq, liftedReindex_symm, lift_insert]
     exact ⟨⟨(activeReindex e).symm x, hxpre⟩, rfl⟩
 
+/-- The inserted B-bank has exactly the active-bank rank when the prefix
+insertion is unit.  This is the rank fact used by the frame-cost ledger. -/
+theorem inserted_bank_finrank
+    (p : ι → F) (hp : dotProduct p p = (1 : F))
+    (Fset : Finset (Fin h)) (hF : Fset.card = 2) (hh : 6 ≤ h) :
+    Module.finrank F (insertedDisjointBank p Fset) = h - 2 := by
+  rw [insertedDisjointBank]
+  have hcomp : Function.Injective
+      ((CenterRowGeneral.insert p).comp (disjointTripleSpan Fset).subtype) := by
+    intro x y hxy
+    apply Subtype.ext
+    apply CenterRowGeneral.insert_injective p hp
+    exact hxy
+  rw [LinearMap.finrank_range_of_inj hcomp]
+  simpa using (PairComplementDisjointSpan.disjointTripleSpan_finrank Fset hF hh)
+
 namespace H24
 
 /- The h=24 specialization is the side-wire interface used by the pair /
@@ -112,6 +128,12 @@ theorem lifted_b_bank_map_eq
         (insertedDisjointBank p Fset) =
       insertedDisjointBank p (Fset.image e) := by
   exact lifted_bank_map_eq e p Fset hF (by norm_num)
+
+theorem inserted_b_bank_rank
+    (p : ι → F) (hp : dotProduct p p = (1 : F))
+    (Fset : Finset (Fin 24)) (hF : Fset.card = 2) :
+    Module.finrank F (insertedDisjointBank p Fset) = 22 := by
+  simpa using inserted_bank_finrank p hp Fset hF (by norm_num)
 
 theorem b_bank_rank_transport
     (e : Fin 24 ≃ Fin 24) (Fset : Finset (Fin 24)) (hF : Fset.card = 2) :
