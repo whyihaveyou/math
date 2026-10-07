@@ -63,3 +63,21 @@ Reproduce the Lean check with:
 cd lean
 lake env lean OAI/Computability/FourierCircuit/PairComplementFrameCompatibleCandidate.lean
 ```
+
+## Active-label permutation transport
+
+`PairComplementFramePermutation.lean` adds the missing label-space transport
+lemma for the B-bank.  For an equivalence `e : Fin h ≃ Fin h`, the linear
+reindexing `x ↦ x ∘ e.symm` maps `awaySubmodule F` exactly onto
+`awaySubmodule (F.image e)`.  Since the disjoint-triple span equals the away
+submodule for a pair and `h ≥ 6`, it follows that
+
+```text
+map (activeReindex e) (disjointTripleSpan F)
+  = disjointTripleSpan (F.image e).
+```
+
+At `h = 24` the transported span still has rank 22.  This is a concrete
+premise for reusing a B-bank after an active-label permutation; it does not
+claim that the permutation is a legal complex gate or supply the missing
+physical all-prefix schedule.
