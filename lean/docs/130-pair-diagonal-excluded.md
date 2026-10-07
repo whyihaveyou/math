@@ -59,6 +59,20 @@ integer values, positivity, and the normalized bound
 `1e-9 < 320045/927712935936`; it deliberately does not prove the logarithmic
 recurrence or the one-transition frame premise.
 
+The same scalar stress test was also instantiated at `h=34` in
+[`PairDiagonalExcludedH34.lean`](../OAI/Computability/FourierCircuit/PairDiagonalExcludedH34.lean).
+The exact values are
+
+    v = 5984, pair_count = 561, W_pair = 492,470,944,768,
+    W_pair_star = 2^39, Delta_eff = 140,010,280,960,
+    Delta_eff / (h^3 W_pair_star) = 13915/2147483648.
+
+The last fraction is approximately `6.4796768e-6`, and the same numerical
+recurrence expression gives about `6.1250098e-7`.  The script accepts
+`--h 34` and reproduces the rank facts and these integers.  This is a stronger
+conditional arithmetic target, not evidence that the required one-transition
+frame schedule or aggregate reuse exists.
+
 The ordinary current pair hierarchy charges four residual units per aggregate
 (two directions and codimension two), giving a negative effective saving. The
 one-transition number is therefore a concrete design target: it must be
