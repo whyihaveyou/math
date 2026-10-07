@@ -21,6 +21,14 @@ namespace BinaryTransvection
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
+def bilinearDot :
+    (ι → ZMod 2) →ₗ[ZMod 2] (ι → ZMod 2) →ₗ[ZMod 2] ZMod 2 :=
+  LinearMap.mk₂ (ZMod 2) (fun v w => dotProduct v w)
+    (by intro v₁ v₂ w; simp [dotProduct, Finset.sum_add_distrib, add_mul])
+    (by intro a v w; simp [dotProduct, Finset.mul_sum, mul_assoc])
+    (by intro v w₁ w₂; simp [dotProduct, Finset.sum_add_distrib, mul_add])
+    (by intro a v w; simp [dotProduct, Finset.mul_sum, mul_left_comm])
+
 def transvection (u : ι → ZMod 2) :
     (ι → ZMod 2) →ₗ[ZMod 2] (ι → ZMod 2) where
   toFun x := x + dotProduct u x • u
@@ -101,6 +109,38 @@ theorem unitCoordinateEquiv_coordinate (t : ι → ZMod 2) (w : ι)
     (ht : dotProduct t t = 1) (hw : t w = 0) :
     unitCoordinateEquiv t w ht hw (coordinate w) = t :=
   unit_shift_maps_coordinate t w hw
+
+def coordinateEval (w : ι) :
+    (ι → ZMod 2) →ₗ[ZMod 2] ZMod 2 where
+  toFun x := x w
+  map_add' x y := by simp
+  map_smul' a x := by simp
+
+def coordinateHyperplane (w : ι) : Submodule (ZMod 2) (ι → ZMod 2) :=
+  (coordinateEval w).ker
+
+theorem unitCoordinateEquiv_dot_coordinate (t : ι → ZMod 2) (w : ι)
+    (ht : dotProduct t t = 1) (hw : t w = 0) (x : ι → ZMod 2) :
+    dotProduct t (unitCoordinateEquiv t w ht hw x) = x w := by
+  calc
+    dotProduct t (unitCoordinateEquiv t w ht hw x) =
+        dotProduct (unitCoordinateEquiv t w ht hw (coordinate w))
+          (unitCoordinateEquiv t w ht hw x) := by
+            rw [unitCoordinateEquiv_coordinate]
+    _ = dotProduct (coordinate w) x :=
+      unitCoordinateEquiv_dot t w ht hw (coordinate w) x
+    _ = x w := coordinate_dot w x
+
+theorem unitCoordinateEquiv_comap_orthogonal (t : ι → ZMod 2) (w : ι)
+    (ht : dotProduct t t = 1) (hw : t w = 0) :
+    (((ZMod 2) ∙ t).orthogonalBilin (bilinearDot : _)).comap
+        (unitCoordinateEquiv t w ht hw).toLinearMap = coordinateHyperplane w := by
+  ext x
+  rw [Submodule.mem_comap]
+  rw [Submodule.orthogonalBilin_span_singleton]
+  change bilinearDot t (unitCoordinateEquiv t w ht hw x) = 0 ↔ _
+  change dotProduct t (unitCoordinateEquiv t w ht hw x) = 0 ↔ x w = 0
+  rw [unitCoordinateEquiv_dot_coordinate t w ht hw x]
 
 end BinaryTransvection
 end ExactFourier
