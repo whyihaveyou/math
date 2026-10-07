@@ -59,6 +59,10 @@ def frame_join_audit(h=24):
     all_rank = support_rank(h, lambda T: True)
     incidence_ranks = [support_rank(h, lambda T, i=i: i in T)
                        for i in range(h)]
+    fixed_target = (0, 1, 2)
+    incidence_target_join = rank_gf2(
+        [indicator(T) for T in triples
+         if any(i in T for i in fixed_target)])
     # A global q wire is used by every target.  Its source labels already
     # span D, so the common row-5 frame is full before incidence wires join.
     q_row5_join = rank_gf2(
@@ -72,6 +76,7 @@ def frame_join_audit(h=24):
         "q_source_span_rank": all_rank,
         "incidence_source_span_rank_min": min(incidence_ranks),
         "incidence_source_span_rank_max": max(incidence_ranks),
+        "three_incidence_target_join_rank": incidence_target_join,
         "row5_target_complement_join_rank": q_row5_join,
         "centered_wire_source_span_rank": centered_wire_rank,
     }

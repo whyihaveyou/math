@@ -26,11 +26,12 @@ At (h=24), the source labels of the global moment (q) are all
 \(\binom{24}{3}=2024\) triple indicators and have GF(2) span rank 24. The
 source labels in one incidence moment (a_i) have rank 23. A centered wire
 (c_i=a_i-q/3) has a nonzero coefficient on every source triple, so its
-label support is again the full rank-24 span. The global wire (q) is read by
-all targets, and the row-5 target complements (t_S^\perp) over all 2024
-triple targets have join rank 24. Thus a common row-5 gate for the moment
-bank is forced to the full active factor (D) before the three incidence
-wires are even joined.
+label support is again the full rank-24 span. Even if the explicit (q) wire
+is omitted, the three incidence supports used by one fixed target already
+join to rank 24. The global wire (q) is read by all targets, and the row-5
+target complements (t_S^\perp) over all 2024 triple targets have join rank
+24. Thus a common row-5 gate for the moment bank is forced to the full active
+factor (D) before any target-specific regrouping.
 
 Under the current eight-row boundary ledger, this is the same conditional
 full-frame rise-and-return charge as the source-indexed bank:
