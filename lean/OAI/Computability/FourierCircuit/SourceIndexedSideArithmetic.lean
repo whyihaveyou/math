@@ -65,7 +65,9 @@ theorem centreSaving_eq : centreSaving = 2425172992 := by
     CenterCompression.H24.v, CenterCompression.H24.h, Nat.choose]
 
 theorem effectiveSaving_eq : effectiveSaving = 2425172992 := by
-  rw [effectiveSaving, centreSaving_eq]
+  change (centreSaving : ℤ) = 2425172992
+  rw [centreSaving_eq]
+  norm_num
 
 theorem normalizedSaving_eq :
     normalizedSaving = 2368333 / 927712935936 := by
