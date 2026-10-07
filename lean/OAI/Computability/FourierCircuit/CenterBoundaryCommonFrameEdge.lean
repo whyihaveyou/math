@@ -234,6 +234,111 @@ theorem selective_join_roundtrip_cost_ge_two
     (selectiveSource_not_le_selectiveTarget p x t w hp ht hxt hw)
   omega
 
+/- The distinguished target line is genuinely new even after adjoining the
+   source row.  This is the point needed to turn the generic lower bound into
+   an exact one-dimensional join increment. -/
+theorem e_not_mem_selectiveSource
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (p : ι → F) (x t : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F))
+    (hxt : dotProduct x t = 0) (hxw : x w = 0) (hw : t w = 0) :
+    e p w ∉ selectiveSource p x t := by
+  intro he
+  apply selectiveTarget_not_le_selectiveSource p x t w hp hxw hw
+  apply sup_le
+  · exact le_sup_left
+  · intro z hz
+    rcases Submodule.mem_span_singleton.mp hz with ⟨a, rfl⟩
+    exact Submodule.smul_mem _ _ he
+
+/- The distinguished source line is genuinely new after adjoining the target
+   row.  It is the reverse-direction companion of `e_not_mem_selectiveSource`.
+ -/
+theorem d_not_mem_selectiveTarget
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (p : ι → F) (x t : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F))
+    (hxt : dotProduct x t = 0) (hxw : x w = 0) (hw : t w = 0) :
+    d p t ∉ selectiveTarget p x t w := by
+  intro hd
+  apply selectiveSource_not_le_selectiveTarget p x t w hp ht hxt hw
+  apply sup_le
+  · exact le_sup_left
+  · intro z hz
+    rcases Submodule.mem_span_singleton.mp hz with ⟨a, rfl⟩
+    exact Submodule.smul_mem _ _ hd
+
+/- Since each endpoint differs from the common L2 row by one new line, the
+   join cost in either direction is exactly one. -/
+theorem selective_join_cost_source_target_eq_one
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (p : ι → F) (x t : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F))
+    (hxt : dotProduct x t = 0) (hxw : x w = 0) (hw : t w = 0) :
+    joinResidualCost (selectiveSource p x t)
+      (selectiveTarget p x t w) = 1 := by
+  have hsup : selectiveSource p x t ⊔ selectiveTarget p x t w =
+      selectiveSource p x t ⊔ (F ∙ e p w) := by
+    simp only [selectiveTarget]
+    change selectiveSource p x t ⊔ (L2 p x ⊔ (F ∙ e p w)) =
+      selectiveSource p x t ⊔ (F ∙ e p w)
+    calc
+      _ = (selectiveSource p x t ⊔ L2 p x) ⊔ (F ∙ e p w) :=
+        (sup_assoc _ _ _).symm
+      _ = selectiveSource p x t ⊔ (F ∙ e p w) := by
+        have hSL : selectiveSource p x t ⊔ L2 p x = selectiveSource p x t :=
+          sup_eq_left.mpr (show L2 p x ≤ selectiveSource p x t from le_sup_left)
+        exact congrArg (fun U : Submodule F (Address ι h) => U ⊔ (F ∙ e p w)) hSL
+  have he : e p w ∉ selectiveSource p x t :=
+    e_not_mem_selectiveSource p x t w hp ht hxt hxw hw
+  unfold joinResidualCost
+  rw [hsup, Submodule.finrank_sup_span_singleton he]
+  simp
+
+theorem selective_join_cost_target_source_eq_one
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (p : ι → F) (x t : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F))
+    (hxt : dotProduct x t = 0) (hxw : x w = 0) (hw : t w = 0) :
+    joinResidualCost (selectiveTarget p x t w)
+      (selectiveSource p x t) = 1 := by
+  have hsup : selectiveTarget p x t w ⊔ selectiveSource p x t =
+      selectiveTarget p x t w ⊔ (F ∙ d p t) := by
+    simp only [selectiveSource]
+    change selectiveTarget p x t w ⊔ (L2 p x ⊔ (F ∙ d p t)) =
+      selectiveTarget p x t w ⊔ (F ∙ d p t)
+    calc
+      _ = (selectiveTarget p x t w ⊔ L2 p x) ⊔ (F ∙ d p t) :=
+        (sup_assoc _ _ _).symm
+      _ = selectiveTarget p x t w ⊔ (F ∙ d p t) := by
+        have hTL : selectiveTarget p x t w ⊔ L2 p x =
+            selectiveTarget p x t w :=
+          sup_eq_left.mpr (show L2 p x ≤ selectiveTarget p x t w from le_sup_left)
+        exact congrArg (fun U : Submodule F (Address ι h) => U ⊔ (F ∙ d p t)) hTL
+  have hd : d p t ∉ selectiveTarget p x t w :=
+    d_not_mem_selectiveTarget p x t w hp ht hxt hxw hw
+  unfold joinResidualCost
+  rw [hsup, Submodule.finrank_sup_span_singleton hd]
+  simp
+
+theorem selective_join_roundtrip_cost_eq_two
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (p : ι → F) (x t : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F))
+    (hxt : dotProduct x t = 0) (hxw : x w = 0) (hw : t w = 0) :
+    joinResidualCost (selectiveSource p x t)
+          (selectiveTarget p x t w) +
+        joinResidualCost (selectiveTarget p x t w)
+          (selectiveSource p x t) = 2 := by
+  rw [selective_join_cost_source_target_eq_one p x t w hp ht hxt hxw hw,
+    selective_join_cost_target_source_eq_one p x t w hp ht hxt hxw hw]
+
+
 /- The transvection maps the selected source subspace into the selected legal
 target subspace. -/
 theorem W_maps_selectiveSource
