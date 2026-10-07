@@ -185,6 +185,139 @@ theorem h24_tower_interface (k : ℕ) :
       h24TowerPrefix h24TowerActive h24TowerPrefix_unit
       h24TowerActive_unit h24TowerActive_orthogonal k⟩
 
+/-! ## Reindexing the tower into the concrete `Fin (h^k)` addresses -/
+
+noncomputable def reindexedPrefix {h : ℕ} (p0 : PrefixLabel h 0)
+    (a : ℕ → Active h) (k : ℕ) : Fin (h ^ k) → F :=
+  prefixReindex (towerPrefixProductFinEquiv h k)
+    (towerPrefix h p0 a k)
+
+theorem reindexedPrefix_unit {h : ℕ} (p0 : PrefixLabel h 0)
+    (a : ℕ → Active h)
+    (hp0 : dotProduct p0 p0 = (1 : F))
+    (ha : ∀ k, dotProduct (a k) (a k) = (1 : F)) (k : ℕ) :
+    dotProduct (reindexedPrefix p0 a k) (reindexedPrefix p0 a k) = (1 : F) := by
+  rw [reindexedPrefix, prefixReindex_dot]
+  exact towerPrefix_unit h p0 a hp0 ha k
+
+noncomputable def reindexedStage {h : ℕ} (hh : 2 ≤ h)
+    (p0 : PrefixLabel h 0) (a : ℕ → Active h)
+    (hp0 : dotProduct p0 p0 = (1 : F))
+    (ha : ∀ k, dotProduct (a k) (a k) = (1 : F))
+    (haa : ∀ k, dotProduct (a k) (a (k + 1)) = (0 : F))
+    (k : ℕ) : GeneralStageFrame (Fin (h ^ k)) h :=
+  GeneralStageFrame.mkCertified
+    (reindexedPrefix p0 a k)
+    (a k) (a (k + 1))
+    (reindexedPrefix_unit p0 a hp0 ha k)
+    (ha k) (ha (k + 1)) (haa k) hh
+
+theorem reindexedStage_counts {h : ℕ} (hh : 2 ≤ h)
+    (p0 : PrefixLabel h 0) (a : ℕ → Active h)
+    (hp0 : dotProduct p0 p0 = (1 : F))
+    (ha : ∀ k, dotProduct (a k) (a k) = (1 : F))
+    (haa : ∀ k, dotProduct (a k) (a (k + 1)) = (0 : F))
+    (k : ℕ) :
+    centreCount (reindexedStage hh p0 a hp0 ha haa k) = h ∧
+      sideCount (reindexedStage hh p0 a hp0 ha haa k) = h - 2 := by
+  constructor
+  · simpa [centreCount] using
+      (reindexedStage hh p0 a hp0 ha haa k).centre_directions
+  · simpa [sideCount] using
+      (reindexedStage hh p0 a hp0 ha haa k).side_directions
+
+theorem addressReindex_left_inverse {α β : Type*} {h : ℕ}
+    (e : α ≃ β) (v : α × Fin h → F) :
+    addressReindex e.symm (addressReindex e v) = v := by
+  funext z
+  rcases z with ⟨x, j⟩
+  simp [addressReindex]
+
+theorem addressReindex_right_inverse {α β : Type*} {h : ℕ}
+    (e : α ≃ β) (v : β × Fin h → F) :
+    addressReindex e (addressReindex e.symm v) = v := by
+  funext z
+  rcases z with ⟨x, j⟩
+  simp [addressReindex]
+
+theorem addressReindex_dot {α β : Type*} {h : ℕ}
+    [Fintype α] [Fintype β]
+    (e : α ≃ β) (v v' : α × Fin h → F) :
+    dotProduct (addressReindex e v) (addressReindex e v') =
+      dotProduct v v' := by
+  change dotProduct
+      (prefixReindex (e.prodCongr (Equiv.refl (Fin h))) v)
+      (prefixReindex (e.prodCongr (Equiv.refl (Fin h))) v') = _
+  exact prefixReindex_dot (e.prodCongr (Equiv.refl (Fin h))) v v'
+
+theorem reindexedLabel_transport {h : ℕ} (p0 : PrefixLabel h 0)
+    (a : ℕ → Active h) (k : ℕ) :
+    addressReindex (towerPrefixProductFinEquiv h k)
+        (towerLabel h p0 a k) =
+      embeddedLabel (reindexedPrefix p0 a k) (a k) := by
+  exact addressReindex_insert (towerPrefixProductFinEquiv h k)
+    (towerPrefix h p0 a k) (a k)
+
+theorem reindexedEmbedded_transport {h : ℕ} (p0 : PrefixLabel h 0)
+    (a : ℕ → Active h) (k : ℕ) (b : Active h) :
+    addressReindex (towerPrefixProductFinEquiv h k)
+        (embeddedLabel (towerPrefix h p0 a k) b) =
+      embeddedLabel (reindexedPrefix p0 a k) b := by
+  exact addressReindex_insert (towerPrefixProductFinEquiv h k)
+    (towerPrefix h p0 a k) b
+
+noncomputable def finTowerLift {h k : ℕ} (q : Active h)
+    (v : Fin (h ^ k) × Fin h → F) :
+    Fin (h ^ (k + 1)) × Fin h → F :=
+  addressReindex (towerPrefixProductFinEquiv h (k + 1))
+    (tensorLift q
+      (addressReindex (towerPrefixProductFinEquiv h k).symm v))
+
+theorem finTowerLift_source {h : ℕ} (p0 : PrefixLabel h 0)
+    (a : ℕ → Active h) (k : ℕ) :
+    finTowerLift (a (k + 1))
+        (embeddedLabel (reindexedPrefix p0 a k) (a k)) =
+      embeddedLabel (reindexedPrefix p0 a (k + 1)) (a (k + 1)) := by
+  rw [← reindexedLabel_transport p0 a k,
+    ← reindexedLabel_transport p0 a (k + 1)]
+  unfold finTowerLift
+  rw [addressReindex_left_inverse]
+  rw [towerTransition]
+
+theorem finTowerLift_dot_of_unit {h k : ℕ} (q : Active h)
+    (hq : dotProduct q q = (1 : F))
+    (v v' : Fin (h ^ k) × Fin h → F) :
+    dotProduct (finTowerLift q v) (finTowerLift q v') =
+      dotProduct v v' := by
+  unfold finTowerLift
+  rw [addressReindex_dot]
+  rw [tensorLift_dot_of_unit q hq]
+  rw [addressReindex_dot]
+
+theorem reindexed_stage_interface {h : ℕ} (hh : 2 ≤ h)
+    (p0 : PrefixLabel h 0) (a : ℕ → Active h)
+    (hp0 : dotProduct p0 p0 = (1 : F))
+    (ha : ∀ k, dotProduct (a k) (a k) = (1 : F))
+    (haa : ∀ k, dotProduct (a k) (a (k + 1)) = (0 : F))
+    (k : ℕ) :
+    centreCount (reindexedStage hh p0 a hp0 ha haa k) = h ∧
+      sideCount (reindexedStage hh p0 a hp0 ha haa k) = h - 2 ∧
+      dotProduct
+          (embeddedLabel (reindexedPrefix p0 a k) (a k))
+          (embeddedLabel (reindexedPrefix p0 a k) (a (k + 1))) = (0 : F) ∧
+      finTowerLift (a (k + 1))
+          (embeddedLabel (reindexedPrefix p0 a k) (a k)) =
+        embeddedLabel (reindexedPrefix p0 a (k + 1)) (a (k + 1)) := by
+  have hc := reindexedStage_counts hh p0 a hp0 ha haa k
+  have ho : dotProduct
+      (embeddedLabel (reindexedPrefix p0 a k) (a k))
+      (embeddedLabel (reindexedPrefix p0 a k) (a (k + 1))) = (0 : F) := by
+    rw [← reindexedEmbedded_transport p0 a k (a k)]
+    rw [← reindexedEmbedded_transport p0 a k (a (k + 1))]
+    rw [addressReindex_dot]
+    exact (towerBackedStage hh p0 a hp0 ha haa k).embedded_labels_orthogonal
+  exact ⟨hc.1, hc.2, ho, finTowerLift_source p0 a k⟩
+
 end GlobalFrameTowerBridge
 end ExactFourier
 end OAI
