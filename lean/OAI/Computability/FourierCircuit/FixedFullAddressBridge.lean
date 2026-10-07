@@ -213,6 +213,29 @@ def FixedStage.ofTriple {h : ℕ} {Q : Type*} [Fintype Q]
     exact fullTripleLabel_orthogonal_of_first A B C A' B' C' heven q q'
   exact ⟨source, target, hsource, htarget, horth⟩
 
+def FixedStage.reindex {h : ℕ} {Q R : Type*}
+    [Fintype Q] [Fintype R]
+    (e : FullAddress h Q ≃ FullAddress h R)
+    (s : FixedStage h Q) : FixedStage h R :=
+  { source := fullReindex e s.source
+    target := fullReindex e s.target
+    source_unit := fullReindex_unit e s.source s.source_unit
+    target_unit := fullReindex_unit e s.target s.target_unit
+    source_target_orthogonal := fullReindex_orthogonal e s.source s.target
+      s.source_target_orthogonal }
+
+theorem FixedStage.reindex_source {h : ℕ} {Q R : Type*}
+    [Fintype Q] [Fintype R]
+    (e : FullAddress h Q ≃ FullAddress h R)
+    (s : FixedStage h Q) :
+    (s.reindex e).source = fullReindex e s.source := rfl
+
+theorem FixedStage.reindex_target {h : ℕ} {Q R : Type*}
+    [Fintype Q] [Fintype R]
+    (e : FullAddress h Q ≃ FullAddress h R)
+    (s : FixedStage h Q) :
+    (s.reindex e).target = fullReindex e s.target := rfl
+
 end FixedFullAddressBridge
 end ExactFourier
 end OAI
