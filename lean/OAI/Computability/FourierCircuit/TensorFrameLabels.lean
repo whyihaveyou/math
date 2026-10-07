@@ -1,4 +1,6 @@
 import OAI.Computability.FourierCircuit.FrameLabels
+import OAI.Computability.FourierCircuit.BinaryTransvection
+import H24lean.BinaryTransvection
 import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!
@@ -134,6 +136,26 @@ theorem pure3_line_nested_of_first_orth
     rw [dotProduct_comm]
     exact ha
   exact pure3_orthogonal_of_first a' b' c' a b c ha'
+
+theorem pure3_pair_complement_decomp {h : ℕ}
+    (a b c a' b' c' : Fin h → ZMod 2)
+    (ha : dotProduct a a = 1) (hb : dotProduct b b = 1)
+    (hc : dotProduct c c = 1)
+    (hxy : dotProduct a a' = 0) :
+    ((ZMod 2) ∙ pure3 a' b' c').orthogonalBilin
+        (BinaryTransvection.bilinearDot (ι := Fin h × (Fin h × Fin h)) : _) =
+      (ZMod 2) ∙ pure3 a b c ⊔
+        (Submodule.span (ZMod 2)
+          ({pure3 a b c, pure3 a' b' c'} :
+            Set (Fin h × (Fin h × Fin h) → ZMod 2))).orthogonalBilin
+          (BinaryTransvection.bilinearDot (ι := Fin h × (Fin h × Fin h)) : _) := by
+  have hunit : dotProduct (pure3 a b c) (pure3 a b c) = 1 :=
+    pure3_norm_of_unit a b c ha hb hc
+  have hpair : dotProduct (pure3 a b c) (pure3 a' b' c') = 0 := by
+    exact pure3_orthogonal_of_first a b c a' b' c' hxy
+  simpa [BinaryTransvection.bilinearDot, tensorDotForm] using
+    (BinaryTransvection.orthogonal_pair_decomp (ι := Fin h × (Fin h × Fin h))
+      (pure3 a b c) (pure3 a' b' c') hunit hpair)
 
 theorem tensor3_dot
     {h : ℕ} (A B C A' B' C' : Finset (Fin h)) :
