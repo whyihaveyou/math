@@ -144,6 +144,24 @@ theorem selectiveSource_not_le_selectiveTarget
   have hdl5 : d p t ∈ L5 p t := selectiveTarget_le_L5 p x t w hp hxt hw hdtgt
   exact d_not_mem_L5 p t hp ht hdl5
 
+/- Under the usual unit source-label hypothesis, the selected target line is
+not already in the old source row (the coordinate has a one at `w`, while
+`x` has a zero there). -/
+theorem e_not_mem_L2
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (p : ι → F) (x : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (hx : dotProduct x x = (1 : F)) (hxw : x w = 0) :
+    e p w ∉ L2 p x := by
+  intro he
+  rw [Submodule.mem_comap] at he
+  rcases Submodule.mem_span_singleton.mp he with ⟨a, ha⟩
+  have heq : coordinate w = a • x := by
+    rw [project_insertP p hp] at ha
+    simpa only using ha.symm
+  have hval := congrFun heq w
+  simp [coordinate, hxw] at hval
+
 /- The transvection maps the selected source subspace into the selected legal
 target subspace. -/
 theorem W_maps_selectiveSource
