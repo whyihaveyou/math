@@ -37,7 +37,7 @@ the candidate side correction is
 \[
  \frac1{2(h-6)}
  \left(\sum_{F\subset S} A_F-\sum_{F\cap S=\varnothing}B_F\right)
- +\frac{h-4}{4}\,q,
+ +\frac{h-5}{4}\,q,
  \qquad q=\sum_Tx_T .
 \]
 
@@ -56,6 +56,12 @@ The script checks the ranks over \(\mathbf F_2\) at \(h=7,8,24\).  The
 row-5 target complements \(t_S^\perp\) in either target family generate the
 full \(D\), as required if the aggregate is returned to the stage output
 frame.
+
+For row 0, the target lines add no extra dimension: if \(F\subset S\), then
+\(t_S\) is in the span of the \(A_F\) labels; if \(F\cap S=\varnothing\),
+then \(t_S\) is in the span of the \(B_F\) labels.  The remaining conditional
+step is the shared row-2/row-5 gate and the restoration schedule, not a scalar
+rank mismatch at row 0.
 
 A conditional residual accounting explains why this candidate avoids the
 earlier all-target pair-span charge.  In stage \(j\), let
@@ -118,7 +124,7 @@ uses \(2\binom{24}{2}=552\), a factor \(528901/361\approx1464.8\) reduction.
 Reproduce all scalar, rank, and arithmetic checks with:
 
 \`\`\`bash
-python3 work/pair_complement_side_audit.py
+python3 scripts/pair_complement_side_audit.py
 \`\`\`
 
 The next formalization step is to instantiate the scalar map over the existing
@@ -126,4 +132,3 @@ The next formalization step is to instantiate the scalar map over the existing
 row-0/row-5 target partitions have the stated support spans.  Until that is
 done, report the \(5.1057\times10^{-6}\) value as a research candidate, not
 as a proved Fourier circuit.
-
