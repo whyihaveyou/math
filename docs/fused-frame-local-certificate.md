@@ -16,6 +16,9 @@ The theorem `valid` proves the two local facts together:
 2. the source-row contribution plus the fibrewise lifted transvection of the
    inserted target line belongs to the old `L5` boundary.
 
+The companion theorem `valid_with_frame` adds the exact equality that the
+fused map leaves the frame labels unchanged.
+
 The result is intentionally not a physical-circuit theorem.  It does not
 claim that the binary transvection is one legal complex gate, that the gate
 commutes with the scalar six-row map, or that local certificates for every
@@ -28,4 +31,3 @@ Compile with:
 cd lean
 lake env lean OAI/Computability/FourierCircuit/FusedFrameLocalCertificate.lean
 ```
-
