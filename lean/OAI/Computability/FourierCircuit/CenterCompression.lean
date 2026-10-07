@@ -74,6 +74,7 @@ def m : ℕ := h ^ 3
 def Wcompressed : ℕ := 2 * N0 + I0 * (v * dNbr + h)
 def Wstar : ℕ := 2 ^ 45
 def deltaCompressed : ℕ := 2 * N0 - 2 * I0 * h ^ 2
+def sCompressed : ℕ := Wcompressed * m - deltaCompressed
 def epsilonCompressed : ℚ :=
   (deltaCompressed : ℚ) / ((m : ℚ) * (Wstar : ℚ))
 
@@ -100,6 +101,19 @@ theorem Wstar_eq : Wstar = 35184372088832 := by
 
 theorem deltaCompressed_eq : deltaCompressed = 2425172992 := by
   norm_num [deltaCompressed, N0, I0, v, h, Nat.choose]
+
+theorem sCompressed_eq : sCompressed = 479235641870830592 := by
+  norm_num [sCompressed, Wcompressed, deltaCompressed, m, N0, I0, v, dNbr, h,
+    Nat.choose]
+
+theorem Wstar_bounds : 2 ^ 44 < Wcompressed ∧ Wcompressed ≤ Wstar := by
+  norm_num [Wcompressed, Wstar, N0, I0, v, dNbr, h, Nat.choose]
+
+theorem deltaCompressed_pos : 0 < deltaCompressed := by
+  norm_num [deltaCompressed, N0, I0, v, h, Nat.choose]
+
+theorem saving_identity : Wcompressed * m - sCompressed = deltaCompressed := by
+  rfl
 
 theorem epsilonCompressed_eq :
     epsilonCompressed = 2368333 / 474989023199232 := by
