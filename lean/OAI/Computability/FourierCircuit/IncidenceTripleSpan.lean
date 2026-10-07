@@ -11,9 +11,9 @@ indicator vectors of three-element sets containing `i`.  This module records
 the local frame facts used by the side-moment design: every such generator lies
 in the hyperplane orthogonal to the complement label (zero at `i`, one
 elsewhere), that hyperplane has dimension `h - 1`, and explicit incidence
-combinations recover a coordinate vector and pair differences.  Equality of
-the incidence span with the hyperplane, and any resulting circuit schedule,
-are intentionally left open.
+combinations recover a coordinate vector and pair differences.  For `h ≥ 4`,
+the final theorem in the file proves equality with that hyperplane.  This is
+still only a local label certificate; it does not provide a circuit schedule.
 
 This is only a local label certificate.  It does not assert a complete framed
 circuit or a complexity bound.
@@ -195,13 +195,15 @@ end OAI
 
 namespace OAI.ExactFourier.IncidenceTripleSpan
 
+open FrameLabels
+
 /-- For `h ≥ 4`, the incidence triples through `i` span the complement-label
 orthogonal hyperplane.  The proof is by recovering `e_i`, every pair difference
 `e_x + e_b` away from `i`, and decomposing an arbitrary even-parity vector. -/
 theorem incidenceSpan_eq_orthogonal {h : ℕ} (hh : 4 ≤ h) (i : Fin h) :
     IncidenceSpan h i =
       ((K ∙ complementLabel i).orthogonalBilin
-        (dotForm (h := h) : (V h) →ₗ[K] (V h) →ₗ[K] K)) := by
+        (FrameLabels.dotForm (h := h))) := by
   apply le_antisymm (incidenceSpan_le_orthogonal (h := h) (i := i))
   rw [Submodule.orthogonalBilin_span_singleton]
   intro x hx
@@ -225,7 +227,7 @@ theorem incidenceSpan_eq_orthogonal {h : ℕ} (hh : 4 ≤ h) (i : Fin h) :
       omega
     obtain ⟨c', hcuniv, hcforbidden⟩ :=
       Finset.exists_mem_notMem_of_card_lt_card hlt
-    apply pair_difference_mem hxi hbi'
+    apply pair_difference_mem (c := c') hxi hbi'
     · intro hcb
       apply hcforbidden
       simp [forbidden, hcb]
@@ -239,8 +241,7 @@ theorem incidenceSpan_eq_orthogonal {h : ℕ} (hh : 4 ≤ h) (i : Fin h) :
   let S : Finset (Fin h) := (Finset.univ.erase i).erase r
   have hS_mem : ∀ j ∈ S, j ≠ i ∧ j ≠ r := by
     intro j hj
-    simp only [S, Finset.mem_erase, Finset.mem_univ, true_and] at hj
-    exact ⟨hj.2, hj.1⟩
+    simpa [S, and_comm] using hj
   have hsum_mem :
       (x i) • TripleSpan.basisVec i +
         ∑ j ∈ S, (x j) •
@@ -251,7 +252,7 @@ theorem incidenceSpan_eq_orthogonal {h : ℕ} (hh : 4 ≤ h) (i : Fin h) :
       intro j hj
       have hj' := hS_mem j hj
       exact (IncidenceSpan h i).smul_mem (x j)
-        (hpair j r hj'.1 (by exact hri.symm) (by exact hj'.2))
+        (hpair j r hj'.1 (by exact hri) (by exact hj'.2))
   have hsum_eq :
       x i • TripleSpan.basisVec i +
         ∑ j ∈ S, (x j) •
