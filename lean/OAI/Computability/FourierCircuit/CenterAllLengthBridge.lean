@@ -185,7 +185,7 @@ theorem FrameTowerSchedule.total_direction_steps {h : ℕ}
         FrameTowerSchedule.totalCentreSteps,
         FrameTowerSchedule.totalSideSteps,
         FrameLabelledInvocation.directionSteps,
-        Finset.sum_add_distrib]
+        Finset.sum_add_distrib, Nat.mul_add]
     _ = n * h + n * (h - 2) := by
       rw [S.total_centre_steps hh n, S.total_side_steps hh n]
     _ = n * (2 * h - 2) := by
