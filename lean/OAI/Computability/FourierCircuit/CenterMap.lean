@@ -1,6 +1,8 @@
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Powerset
-import H24lean.CenterCompression
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import OAI.Computability.FourierCircuit.CenterCompression
 
 open scoped BigOperators
 
