@@ -53,12 +53,60 @@ theorem eightRows_restore (R : C →+ X) (G : X → C) (J : A →+ X) (V : X →
         _ = y + x := by rw [hidentity]
     simp only [hy, add_sub_cancel_right]
 
-/- A three-shear bank exchange; every shear restores the auxiliary banks. -/
+/-- The inverse invocation executes rows 7 through 0 with every update sign
+reversed. In particular, its readouts use the auxiliary banks at that point in
+the reversed schedule. -/
+def inverseEightRows (R : C →+ X) (G : X → C) (J : A →+ X) (V : X → A)
+    (s : State X A C) : State X A C :=
+  let s0 := { s with side := s.side + V s.x }
+  let s1 := { s0 with center := s0.center + G s0.x }
+  let s2 := { s1 with y := s1.y - J s1.side }
+  let s3 := { s2 with y := s2.y - R s2.center }
+  let s4 := { s3 with center := s3.center - G s3.x }
+  let s5 := { s4 with side := s4.side - V s4.x }
+  let s6 := { s5 with y := s5.y + R s5.center }
+  { s6 with y := s6.y + J s6.side }
+
+/-- The reversed invocation subtracts the source and restores arbitrary
+auxiliary values; it is not implemented as a direct bank subtraction. -/
+theorem inverseEightRows_restore
+    (R : C →+ X) (G : X → C) (J : A →+ X) (V : X → A)
+    (hidentity : ∀ x, R (G x) + J (V x) = x) (s : State X A C) :
+    inverseEightRows R G J V s = { s with y := s.y - s.x } := by
+  cases s with
+  | mk x y a c =>
+    simp only [inverseEightRows, map_add, add_sub_cancel_right]
+    have hy : y - (J a + J (V x)) - (R c + R (G x)) + R c + J a = y - x := by
+      calc
+        _ = y - (R (G x) + J (V x)) := by abel
+        _ = y - x := by rw [hidentity]
+    rw [hy]
+
+/-- The explicitly reversed rows undo the forward rows. -/
+theorem inverseEightRows_eightRows
+    (R : C →+ X) (G : X → C) (J : A →+ X) (V : X → A)
+    (hidentity : ∀ x, R (G x) + J (V x) = x) (s : State X A C) :
+    inverseEightRows R G J V (eightRows R G J V s) = s := by
+  rw [eightRows_restore R G J V hidentity, inverseEightRows_restore R G J V hidentity]
+  cases s
+  simp
+
+/-- The forward rows also undo the explicitly reversed rows. -/
+theorem eightRows_inverseEightRows
+    (R : C →+ X) (G : X → C) (J : A →+ X) (V : X → A)
+    (hidentity : ∀ x, R (G x) + J (V x) = x) (s : State X A C) :
+    eightRows R G J V (inverseEightRows R G J V s) = s := by
+  rw [inverseEightRows_restore R G J V hidentity, eightRows_restore R G J V hidentity]
+  cases s
+  simp
+
+/- All three shears execute eight scalar rows. The middle invocation reverses
+   the row order and signs, with the logical source and target banks swapped. -/
 def threeInvocations (R : C →+ X) (G : X → C) (J : A →+ X) (V : X → A)
     (s : State X A C) : State X A C :=
   let s1 := eightRows R G J V s
   let s2 := { s1 with x := s1.y, y := s1.x }
-  let s3 := { s2 with y := s2.y - s2.x }
+  let s3 := inverseEightRows R G J V s2
   let s4 := { s3 with x := s3.y, y := s3.x }
   eightRows R G J V s4
 
@@ -69,7 +117,8 @@ theorem threeInvocations_exchange
   -- Unfolding the bank exchanges and applying the scalar shear law three times.
   cases s with
   | mk x y a c =>
-    simp only [threeInvocations, eightRows_restore R G J V hidentity]
+    simp only [threeInvocations, eightRows_restore R G J V hidentity,
+      inverseEightRows_restore R G J V hidentity]
     abel
 
 end Generic
@@ -152,6 +201,12 @@ theorem compressed_restore
     (s : State (Triple h → K) (SideBank h K) (Fin h → K)) :
     eightRows RHom compressedG JHom V s = { s with y := s.y + s.x } := by
   exact @eightRows_restore (Triple h → K) (SideBank h K) (Fin h → K) _ _ _
+    RHom compressedG JHom V identity s
+
+theorem compressed_inverse_restore
+    (s : State (Triple h → K) (SideBank h K) (Fin h → K)) :
+    inverseEightRows RHom compressedG JHom V s = { s with y := s.y - s.x } := by
+  exact @inverseEightRows_restore (Triple h → K) (SideBank h K) (Fin h → K) _ _ _
     RHom compressedG JHom V identity s
 
 theorem compressed_exchange
