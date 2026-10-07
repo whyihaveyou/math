@@ -507,6 +507,42 @@ noncomputable def WSelectiveEdge
     (WSelectiveEdge p x t w hp ht hxt hw hxw c).directionalCost = c := by
   rfl
 
+/- A concrete conditional schedule certificate for the same local
+   transvection in both directions.  The hypothesis `1 ≤ c` is exactly the
+   missing frame-cost premise: the algebraic map supplies the restricted
+   transport, while the caller supplies an implementation whose declared cost
+   pays the one-dimensional join increment in each direction. -/
+noncomputable def WFrameCostedRoundtrip
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (p : ι → F) (x t : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F))
+    (hxt : dotProduct x t = 0) (hw : t w = 0) (hxw : x w = 0)
+    (c : ℕ) (hc : 1 ≤ c) :
+    FrameCostedRoundtrip (selectiveSource p x t) (selectiveTarget p x t w) where
+  forward :=
+    { edge := WSelectiveEdge p x t w hp ht hxt hw hxw c
+      frameCost_lower := by
+        rw [selective_join_cost_source_target_eq_one p x t w hp ht hxt hxw hw]
+        simpa only [WSelectiveEdge_cost] using hc }
+  backward :=
+    { edge := (WSelectiveEdge p x t w hp ht hxt hw hxw c).reverse
+      frameCost_lower := by
+        rw [SelectiveEdge.reverse_cost, WSelectiveEdge_cost,
+          selective_join_cost_target_source_eq_one p x t w hp ht hxt hxw hw]
+        exact hc }
+
+theorem WFrameCostedRoundtrip_totalCost
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (p : ι → F) (x t : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F))
+    (hxt : dotProduct x t = 0) (hw : t w = 0) (hxw : x w = 0)
+    (c : ℕ) (hc : 1 ≤ c) :
+    (WFrameCostedRoundtrip p x t w hp ht hxt hw hxw c hc).totalCost = 2 * c := by
+  change c + c = 2 * c
+  exact (two_mul c).symm
+
 /- Any claimed one-direction implementation is an extra premise, not a
 consequence of the local transvection algebra. -/
 theorem WSelectiveEdge_one_direction
