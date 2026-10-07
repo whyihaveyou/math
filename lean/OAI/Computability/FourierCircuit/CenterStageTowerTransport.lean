@@ -53,7 +53,6 @@ theorem towerPrefix_card (h k : ℕ) :
   | succ k ih =>
       change Fintype.card (TowerPrefix h k × Fin h) = h ^ (k + 1)
       simp only [Fintype.card_prod, Fintype.card_fin, ih, pow_succ]
-      ring
 
 noncomputable def towerPrefixFinEquiv (h k : ℕ) :
     TowerPrefix h k ≃ Fin (h ^ k) :=
