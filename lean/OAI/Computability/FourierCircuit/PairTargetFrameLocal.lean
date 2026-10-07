@@ -89,7 +89,6 @@ theorem sourceLabel_linearIndependent {h : ℕ} (F : Finset (Fin h)) (k : Fin h)
   have hj := congrFun hc j.val
   simpa only [combination_source_coordinate, Pi.zero_apply] using hj
 
-/-- There are exactly `h - 3` source coordinates for a pair and a disjoint target coordinate. -/
 /-- Vanishing on every source coordinate forces a vector in the source span to vanish. -/
 theorem sourceSpan_eq_zero_of_source_coordinates_zero {h : ℕ}
     (F : Finset (Fin h)) (k : Fin h) (x : V h)
@@ -112,8 +111,7 @@ theorem common_sourceSpan_eq_bot {h : ℕ} (F : Finset (Fin h))
     (hx : ∀ k : Fin h, k ∉ F → x ∈ sourceSpan F k) :
     x = 0 := by
   have hFlt : F.card < (Finset.univ : Finset (Fin h)).card := by
-    rw [hF, Finset.card_univ]
-    omega
+    simpa [hF, Finset.card_univ] using (show 2 < h by omega)
   obtain ⟨k, hk_univ, hkF⟩ :=
     Finset.exists_mem_notMem_of_card_lt_card hFlt
   have hxout : ∀ j : Fin h, j ∉ F → x j = 0 := by
@@ -166,7 +164,7 @@ theorem pairLabel_linearIndependent {h : ℕ} (F : Finset (Fin h)) :
   apply Fintype.linearIndependent_iff.mpr
   intro c hc j
   have hcoord := congrFun hc j.val
-  simpa only [pairLabel_pair_coordinate, Pi.zero_apply] using hcoord
+  simpa [Finset.sum_apply, pairLabel_pair_coordinate] using hcoord
 
 theorem pairIndex_card {h : ℕ} (F : Finset (Fin h))
     (hF : F.card = 2) :
@@ -187,8 +185,9 @@ theorem sourceSpan_le_pairSpan {h : ℕ} (F : Finset (Fin h)) (k : Fin h) :
   apply Submodule.span_le.mpr
   rintro v ⟨j, rfl⟩
   apply Submodule.subset_span
-  refine Set.mem_range_self ⟨j.val, ?_⟩
-  exact (mem_sourceCoordinates F k j.val).mp j.property |>.2
+  have hj : j.val ∉ F := (mem_sourceCoordinates F k j.val).mp j.property |>.2
+  let j' : PairIndex F := ⟨j.val, hj⟩
+  exact Set.mem_range_self j'
 
 def allTargetSourceSpan {h : ℕ} (F : Finset (Fin h)) : Submodule K (V h) :=
   ⨆ k : PairIndex F, sourceSpan F k.val
@@ -206,12 +205,12 @@ theorem pairSpan_le_allTargetSourceSpan {h : ℕ} (F : Finset (Fin h))
   apply Submodule.span_le.mpr
   rintro v ⟨j, rfl⟩
   have hout : (Finset.univ \ F : Finset (Fin h)).card = h - 2 := by
-    rw [Finset.card_sdiff, Finset.inter_eq_right.mpr (Finset.subset_univ F),
-      Finset.card_univ, hF]
+    simp [Finset.card_sdiff, hF]
   have hlt : ({j.val} : Finset (Fin h)).card <
       (Finset.univ \ F : Finset (Fin h)).card := by
     rw [hout]
     have : 2 ≤ h - 2 := by omega
+    simp only [Finset.card_singleton]
     omega
   obtain ⟨k, hkout, hkj⟩ :=
     Finset.exists_mem_notMem_of_card_lt_card hlt
@@ -221,7 +220,7 @@ theorem pairSpan_le_allTargetSourceSpan {h : ℕ} (F : Finset (Fin h))
     apply hkj
     simp [hEq]
   let t : SourceIndex F k :=
-    ⟨j.val, (mem_sourceCoordinates F k j.val).2.mpr ⟨hkj', j.property⟩⟩
+    ⟨j.val, (mem_sourceCoordinates F k j.val).2 ⟨hkj', j.property⟩⟩
   have ht : sourceLabel F k t ∈ sourceSpan F k := sourceLabel_mem F k t
   have ht' : sourceLabel F k t ∈ allTargetSourceSpan F :=
     Submodule.mem_iSup_of_mem ⟨k, hkF⟩ ht
