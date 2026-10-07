@@ -138,7 +138,7 @@ theorem inter_card_lt_three {h : ℕ} (S T : Triple h) (hne : S ≠ T) :
   have heqcard : (S.1 ∩ T.1).card = 3 := by omega
   have hIS : S.1 ∩ T.1 = S.1 := by
     apply Finset.eq_of_subset_of_card_le Finset.inter_subset_left
-    omega
+    simpa [heqcard, triple_card S]
   have hST : S.1 ⊆ T.1 := by
     intro i hi
     have hi' : i ∈ S.1 ∩ T.1 := by
