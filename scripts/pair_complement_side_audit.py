@@ -121,6 +121,45 @@ def check_frame_cost(h):
         original = (b, b*(h-1)+1, h-2, 1)
         assert sum(original) == e*h
 
+def joint_gate_join_rank(h, anchor, *, disjoint):
+    """Join of aggregate spans touched by one target/source gate.
+
+    A gate for a target (or source) touches every pair aggregate in one of
+    the two relevant classes.  The active labels of those aggregates are the
+    spans returned by ``pair_span``.  This rank is the frame dimension forced
+    by one common gate before any new scheduling or copying is introduced.
+    """
+    anchor_set = set(anchor)
+    pairs = [
+        F for F in combinations(range(h), 2)
+        if (set(F).isdisjoint(anchor_set) if disjoint else set(F).issubset(anchor_set))
+    ]
+    rows = []
+    for F in pairs:
+        _, labels = pair_span(h, F, disjoint=disjoint)
+        rows.extend(indicator(T) for T in labels)
+    return rank_gf2(rows)
+
+
+def check_joint_gate_joins(h):
+    """Check the common-gate join obstruction at ``h=24``.
+
+    Both three-pair A families and 210-pair B families already join to the
+    full active factor.  The same holds for source-side row-2 families.  This
+    does not rule out a redesigned schedule; it only rules out treating all
+    aggregate touches as one rank-``h-2`` common gate.
+    """
+    target = (0, 1, 2)
+    source = (0, 1, 3)
+    joins = {
+        "row0_A_target": joint_gate_join_rank(h, target, disjoint=False),
+        "row0_B_target": joint_gate_join_rank(h, target, disjoint=True),
+        "row2_A_source": joint_gate_join_rank(h, source, disjoint=False),
+        "row2_B_source": joint_gate_join_rank(h, source, disjoint=True),
+    }
+    assert joins == {name: h for name in joins}, joins
+    return joins
+
 def h24_arithmetic():
     h = 24
     v = comb(h, 3)
@@ -146,6 +185,7 @@ def h24_arithmetic():
         "candidate_width_reduction": Fraction(W_original, W_candidate),
         "original_side_roles_per_invocation": v*d_nbr,
         "candidate_side_roles_per_invocation": 2*pair_count,
+        "joint_gate_join_ranks": check_joint_gate_joins(h),
     }
 
 if __name__ == "__main__":
@@ -153,5 +193,6 @@ if __name__ == "__main__":
         check_scalar(h)
         check_spans(h)
         check_frame_cost(h)
+    # The full-dimensional join is only asserted for the h=24 audit below;
+    # keep the small scalar/span checks above reusable for other h.
     print(h24_arithmetic())
-
