@@ -29,6 +29,7 @@ namespace FusedFrameLocalCertificate
 
 open CenterFramedInvocation
 open FusedCentreInvocation
+open CompressedInvocation
 open CenterBoundaryTensorLift
 open CenterBoundaryTensorProjection
 open CenterBoundaryShearCandidate
@@ -53,13 +54,13 @@ fibrewise and does not require `ι = Fin 1`.
 
 structure Data where
   framed : CenterFramedInvocation.FramedState h K
-  prefix : ι → F
-  prefix_unit : dotProduct prefix prefix = (1 : F)
+  pre : ι → F
+  pre_unit : dotProduct pre pre = (1 : F)
   witness : Fin h
   witness_zero : framed.frame.target witness = 0
   source_row : Address ι h
   source_row_mem : source_row ∈
-    SideRowGeneralArbitrary.L2 prefix framed.frame.source
+    SideRowGeneralArbitrary.L2 pre framed.frame.source
 
 /-! A fused scalar forward map which retains the frame label. -/
 
@@ -86,11 +87,11 @@ theorem lifted_readout_legal (d : Data (ι := ι) (h := h) (K := K)) :
         CenterBoundaryTensorLift.lift
           (unitCoordinateEquiv d.framed.frame.target d.witness
             d.framed.frame.target_unit d.witness_zero)
-          (CenterRowGeneral.insert d.prefix d.framed.frame.target) ∈
-      SideRowGeneralArbitrary.L5 d.prefix d.framed.frame.target := by
+          (CenterRowGeneral.insert d.pre d.framed.frame.target) ∈
+      SideRowGeneralArbitrary.L5 d.pre d.framed.frame.target := by
   exact CenterBoundaryTensorProjection.lifted_sheared_readout_mem_L5
-    d.prefix d.framed.frame.source d.framed.frame.target
-    d.prefix_unit d.framed.frame.target_unit
+    d.pre d.framed.frame.source d.framed.frame.target
+    d.pre_unit d.framed.frame.target_unit
     d.framed.frame.source_target_orthogonal d.witness d.witness_zero
     d.source_row d.source_row_mem
 
@@ -105,8 +106,8 @@ theorem valid (d : Data (ι := ι) (h := h) (K := K)) :
           CenterBoundaryTensorLift.lift
             (unitCoordinateEquiv d.framed.frame.target d.witness
               d.framed.frame.target_unit d.witness_zero)
-            (CenterRowGeneral.insert d.prefix d.framed.frame.target) ∈
-        SideRowGeneralArbitrary.L5 d.prefix d.framed.frame.target := by
+            (CenterRowGeneral.insert d.pre d.framed.frame.target) ∈
+        SideRowGeneralArbitrary.L5 d.pre d.framed.frame.target := by
   exact ⟨fusedForward_scalar_update d.framed, lifted_readout_legal d⟩
 
 /-! The concrete first-prefix object is useful to callers: an arbitrary scalar
@@ -122,8 +123,8 @@ def h24Data
     (hz : z ∈ SideRowGeneralArbitrary.L2 p h24PrefixFrame.source) :
     Data (ι := ι) (h := 24) (K := K) :=
   { framed := CenterFramedInvocation.h24 s
-    prefix := p
-    prefix_unit := hp
+    pre := p
+    pre_unit := hp
     witness := w
     witness_zero := hw
     source_row := z
@@ -144,7 +145,7 @@ theorem h24_valid
               h24PrefixFrame.target_unit hw)
             (CenterRowGeneral.insert p h24PrefixFrame.target) ∈
         SideRowGeneralArbitrary.L5 p h24PrefixFrame.target := by
-  simpa [h24Data] using
+  simpa [h24Data, CenterFramedInvocation.h24] using
     (valid (h24Data (K := K) s p hp w hw z hz))
 
 end FusedFrameLocalCertificate
