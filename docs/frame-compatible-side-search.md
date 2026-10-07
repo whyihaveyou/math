@@ -41,31 +41,35 @@ Adding the target line to either individual restricted span adds one active
 direction.  These dimensions are computed by exact Gaussian elimination over
 (mathbb F_2), not floating point arithmetic.
 
-The grouped role count is
+The 213 groups are target-indexed.  They must therefore be replicated for
+all (v=\binom{24}{3}=2{,}024) target triples, just as the baseline bank has
+the factor (v d_{\rm nbr}).  The corrected grouped role count is
 
 \[
- W_{\rm even}=2N_0+I_0(213+h)=19{,}495{,}605{,}184,
+ W_{\rm even}=2N_0+I_0(v\cdot213+h)=5{,}315{,}127{,}110{,}656,
 \]
 
-so the next power-of-two padding remains (2^{35}).  With the existing
-centre saving (Δ=2{,}425{,}172{,}992), an **optimistic conditional** charge of
-two directional units per grouped pair gives
+so the next power-of-two padding is (2^{43}).  With the existing centre
+saving (\(\Delta=2{,}425{,}172{,}992\)), the same **optimistic conditional**
+charge of two directional units per grouped pair and target gives
 
 \[
- 2\binom{24}{3}^2(213)=1{,}745{,}141{,}376,
+ 2\binom{24}{3}^2v(213)=3{,}532{,}166{,}145{,}024,
  \quad
- \Delta_{\rm opt}=680{,}031{,}616,
+ \Delta_{\rm opt}=-3{,}529{,}740{,}972{,}032,
 \]
 
 and normalized margin
 
 \[
- \frac{\Delta_{\rm opt}}{24^3\,2^{35}}
- =\frac{5{,}312{,}747}{3{,}710{,}851{,}743{,}744}
- \approx 1.43168\times 10^{-6}.
+ \frac{\Delta_{\rm opt}}{24^3\,2^{43}}
+ =-\frac{861{,}753{,}167}{29{,}686{,}813{,}949{,}952}
+ \approx -2.90281\times 10^{-5}.
 \]
 
-This is a promising *arithmetic target*, not an achieved exponent improvement.
+The earlier unreplicated (19{,}495{,}605{,}184) figure was an accounting
+error, not an exponent improvement.  After restoring the target factor, even
+the optimistic model is negative.
 It also fails the stronger no-target-dependent-accumulation requirement: the
 source filter ``|T∩S|=0`` or ``2`` is part of each aggregate definition.  A
 target-independent pair bank must retain all 276 pairs and cancel the
@@ -77,8 +81,8 @@ two-direction-per-codimension accounting gives codimensions (3) for (C_0)
 and (1) for (C_2).  The resulting conditional penalty is
 
 \[
- 2\binom{24}{3}^2(210\cdot3+3\cdot1)=5{,}186{,}265{,}216,
- \Delta_{\rm codim}=-2{,}761{,}092{,}224.
+ 2\binom{24}{3}^2v(210\cdot3+3\cdot1)=10{,}497{,}000{,}797{,}184,
+ \Delta_{\rm codim}=-10{,}494{,}575{,}624{,}192.
 \]
 
 This is larger than Δ and reverses the margin.

@@ -163,13 +163,16 @@ def audit() -> dict[str, object]:
     m = H**3
     centre_saving = 2 * n0 - 2 * i0 * H**2
     grouped_pair_count = sum(map(len, classes.values()))
-    role_count = 2 * n0 + i0 * (grouped_pair_count + H)
+    # The 213 groups are target-indexed: every invocation carries one copy
+    # for each of the v target triples.  The side bank therefore has v*213
+    # aggregate roles, just as the baseline bank has v*dNbr roles.
+    role_count = 2 * n0 + i0 * (v * grouped_pair_count + H)
     padding = 1
     while padding < role_count:
         padding <<= 1
 
     block = v**2
-    optimistic_penalty = 2 * block * grouped_pair_count
+    optimistic_penalty = 2 * block * v * grouped_pair_count
     optimistic_margin = centre_saving - optimistic_penalty
     optimistic_normalized = Fraction(optimistic_margin, m * padding)
 
@@ -177,7 +180,7 @@ def audit() -> dict[str, object]:
     # target-restricted span, charge two directions for that exact codimension.
     codim0 = (H - 2) - (H - 5)
     codim2 = (H - 2) - (H - 3)
-    codim_penalty = 2 * block * (len(classes[0]) * codim0 + len(classes[2]) * codim2)
+    codim_penalty = 2 * block * v * (len(classes[0]) * codim0 + len(classes[2]) * codim2)
     codim_margin = centre_saving - codim_penalty
     codim_normalized = Fraction(codim_margin, m * padding)
 
