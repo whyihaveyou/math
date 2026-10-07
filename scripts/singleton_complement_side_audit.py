@@ -100,7 +100,7 @@ def audit() -> dict[str, object]:
     assert ranks["E2"] == H - 1
     assert ranks["D_join_plus_E2"] == H - 1
     target_vector = indicator(TARGET)
-    assert all((row & target_vector).bit_count() % 2 == 0 for row in d_join + e_rows)
+    assert all(bin(row & target_vector).count("1") % 2 == 0 for row in d_join + e_rows)
 
     class_counts = {
         "r0": sum(intersection_class(source) == 0 for source in TRIPLES),
