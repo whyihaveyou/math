@@ -7,9 +7,11 @@ import OAI.Computability.FourierCircuit.SideMomentFactorization
 The moment factorization has a diagonal term `x_S` that cannot be read from
 the side bank alone.  This file records the minimal interface extension: a
 linear map `K : X → X` is read directly from the immutable source bank in the
-two target shears.  The old values are still restored, and the proof is purely
-algebraic.  Frame labels and the cost of the direct channel remain separate
-obligations.
+second target shear (and with the opposite sign in the reverse invocation).
+Putting `-K x` in row 0 as well would cancel the direct term, so the asymmetric
+placement is essential.  The old values are still restored, and the proof is
+purely algebraic.  Frame labels and the cost of the direct channel remain
+separate obligations.
 -/
 
 namespace OAI
