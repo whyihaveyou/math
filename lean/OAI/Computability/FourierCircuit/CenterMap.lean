@@ -59,7 +59,7 @@ theorem compressed_RG_basis
       (by
         intro hnot
         exact False.elim (hnot (Finset.mem_attach _ T)))
-    simpa using hs
+    simpa only [ite_eq_left rfl, ite_true] using hs
   simp_rw [hinc]
   rw [hsum]
   rw [← Finset.sum_sub_distrib]
