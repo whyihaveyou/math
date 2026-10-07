@@ -24,13 +24,13 @@ namespace ExactFourier
 namespace ComplexShearGateBridge
 
 private def inputIndex {n : ℕ} (k : Fin n) : Fin (n + 1 + 2) :=
-  ⟨k.val, by omega⟩
+  k.castSucc.castSucc.castSucc
 
 private def firstGateIndex {n : ℕ} : Fin (n + 1 + 1) :=
-  ⟨n + 1, by omega⟩
+  Fin.last (n + 1)
 
 private def secondGateIndex {n : ℕ} : Fin (n + 1 + 2) :=
-  ⟨n + 2, by omega⟩
+  Fin.last (n + 1 + 1)
 
 /-- Two scalar gates realize one arbitrary complex transvection.
 
@@ -41,8 +41,8 @@ coordinates, which are free in `LinearDAG`.
 noncomputable def twoGateShear {n : ℕ} (s : Shear (Fin n)) : LinearDAG n n where
   size := 2
   program :=
-    (Program.nil.step (Gate.scale s.c ⟨s.j.val, by omega⟩)).step
-      (Gate.add ⟨s.i.val, by omega⟩ firstGateIndex)
+    (Program.nil.step (Gate.scale s.c s.j.castSucc)).step
+      (Gate.add s.i.castSucc.castSucc firstGateIndex)
   outputs := fun k => if k = s.i then secondGateIndex else inputIndex k
 
 @[simp] theorem twoGateShear_size {n : ℕ} (s : Shear (Fin n)) :
@@ -55,7 +55,8 @@ theorem twoGateShear_eval {n : ℕ} (s : Shear (Fin n)) (x : Fin n → ℂ) :
   by_cases hk : k = s.i
   · subst k
     simp [twoGateShear, LinearDAG.eval, Program.eval, Shear.act,
-      firstGateIndex, secondGateIndex, inputIndex]
+      firstGateIndex, secondGateIndex, inputIndex, Gate.eval,
+      Fin.snoc_last, Fin.snoc_castSucc]
   · simp [twoGateShear, LinearDAG.eval, Program.eval, Shear.act,
       firstGateIndex, secondGateIndex, inputIndex, hk]
 
