@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 from itertools import combinations
+from fractions import Fraction
 from typing import Iterable
 
 
@@ -142,6 +143,19 @@ def audit(h: int = 24) -> dict[str, object]:
     rank_a2 = gf2_rank(two_rows)
     rank_aeven = gf2_rank(even_rows)
 
+    # Conditional route ledger: I0 invocations, one residual unit per common
+    # channel.  The one-unit assumption is intentionally explicit; it is not
+    # a lower bound for a different physical gate or a packed schedule.
+    n0 = v**3
+    i0 = 3 * v**2
+    centre_saving = 2 * n0 - 2 * i0 * h**2
+    linear_floor_charge = i0 * rank_a2
+    linear_floor_margin = centre_saving - linear_floor_charge
+    m = h**3
+    padding = 1
+    while padding < 2 * n0 + i0 * (2 * v + h):
+        padding <<= 1
+
     return {
         "h": h,
         "target_count_v": v,
@@ -184,6 +198,22 @@ def audit(h: int = 24) -> dict[str, object]:
             "reason": (
                 "A_two is a square integer matrix and its full GF(2) rank "
                 "certifies an odd nonzero determinant"
+            ),
+        },
+        "conditional_one_unit_channel_ledger": {
+            "N0": n0,
+            "I0": i0,
+            "centre_saving": centre_saving,
+            "minimum_common_channels": rank_a2,
+            "charge_at_one_unit_per_channel": linear_floor_charge,
+            "effective_margin": linear_floor_margin,
+            "normalization_m_times_padding": m * padding,
+            "effective_normalized_margin": str(
+                Fraction(linear_floor_margin, m * padding)
+            ),
+            "scope": (
+                "conditional on one residual unit per shared channel; not a "
+                "physical schedule or universal cost lower bound"
             ),
         },
         "scope": (

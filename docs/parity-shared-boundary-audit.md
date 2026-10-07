@@ -87,6 +87,22 @@ under that premise.  It does not rule out a different nonlinear or
 interactive circuit, and it is not a lower bound for arbitrary complex linear
 circuits outside this factorization model.
 
+For orientation, impose one additional accounting premise: each shared bank
+channel consumes one residual direction per invocation.  With the existing
+`h=24` ledger (`I₀ = 12,289,728`, centre saving `2,425,172,992`), the rank
+floor gives
+
+```text
+minimum channels              2,024
+conditional channel charge   24,874,409,472
+effective margin            -22,449,236,480
+normalized margin ≈ -2.3636·10^-5
+```
+
+This is a conditional route audit only.  It identifies the exact quantity a
+zero-charge shared construction would have to beat; it is not a claim that
+every physical implementation pays one unit per channel.
+
 The result is therefore a route obstruction rather than a universal circuit
 lower bound: the local frame-compatible parity labels remain valid, but a
 shared frame with zero amortized residual charge needs a construction that

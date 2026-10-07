@@ -38,6 +38,15 @@ not a Lean rank theorem: the Lean file currently proves containment.  It
 explains why the local parity-label fact alone does not lower the residual
 dimension of the two-intersection bank.
 
+The Lean companion
+[`ParityTargetBoundaryRank.lean`](../lean/OAI/Computability/FourierCircuit/ParityTargetBoundaryRank.lean)
+does formally prove the ambient h=24 target-boundary dimension `23` by
+rank-nullity.  A separate cross-target audit
+[`parity-shared-boundary-audit.md`](parity-shared-boundary-audit.md) shows why
+this local 23-dimensional space cannot simply be reused for every target:
+pooling the labels over all targets has rank 24, and the target-independent
+linear `A₂=R B` model has a 2,024-channel floor.
+
 ## h=24 arithmetic
 
 The zero-charge center margin is
