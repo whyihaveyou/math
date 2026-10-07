@@ -237,6 +237,34 @@ theorem sixPhaseNormalized_gt_one_e_minus_nine :
   rw [sixPhaseNormalized_eq]
   norm_num
 
+/-! A gate-level implementation can now discharge the remaining cost
+    obligation by supplying an actual finite step type.  The lower bound from
+    `ThreeStageReturnSchedule` says that a complete six-phase schedule needs
+    at least `6 * (I * h)` events.  If a future construction also gives the
+    matching upper bound, its realized cost is exactly the six-phase ledger
+    and inherits the strict `10^-9` margin below. -/
+
+def scheduleNormalizedMargin {Step : Type*} [Fintype Step] : ℚ :=
+  ((CenterBoundaryShearCandidate.H24.centreFusionSaving -
+      (Fintype.card Step : ℤ)) : ℚ) /
+    ((CenterCompression.H24.m : ℚ) * CenterCompression.H24.Wstar)
+
+theorem schedule_card_eq_six_phase
+    {Step : Type*} [Fintype Step]
+    (s : ThreeStageReturnSchedule I h Step)
+    (hupper : Fintype.card Step ≤ 6 * (I * h)) :
+    Fintype.card Step = 6 * (I * h) := by
+  exact le_antisymm hupper (three_stage_return_schedule_lower_bound s)
+
+theorem schedule_normalized_gt_one_e_minus_nine
+    {Step : Type*} [Fintype Step]
+    (s : ThreeStageReturnSchedule I h Step)
+    (hupper : Fintype.card Step ≤ 6 * (I * h)) :
+    (1 : ℚ) / 10 ^ 9 < scheduleNormalizedMargin (Step := Step) := by
+  have hcard := schedule_card_eq_six_phase s hupper
+  rw [scheduleNormalizedMargin, hcard]
+  exact sixPhaseNormalized_gt_one_e_minus_nine
+
 end H24
 
 /-! ## Minimal gate-level interface still missing
