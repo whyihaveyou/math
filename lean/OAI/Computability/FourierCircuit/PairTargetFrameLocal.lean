@@ -159,6 +159,38 @@ def pairSpan {h : ℕ} (F : Finset (Fin h)) : Submodule K (V h) :=
   · have hval : j.val ≠ i.val := fun heq => hij (Subtype.ext heq.symm)
     simp [pairLabel, indicator, i.property, j.property, hval, hij]
 
+/-- Pair labels are an orthonormal family for the binary dot form. -/
+theorem pairLabel_dot {h : ℕ} (F : Finset (Fin h))
+    (hF : F.card = 2) (i j : PairIndex F) :
+    dotForm (pairLabel F i) (pairLabel F j) = if i = j then 1 else 0 := by
+  by_cases hij : i = j
+  · subst j
+    rw [pairLabel, indicator_dot]
+    have hcard : (insert i.val F).card = 3 := by simp [i.property, hF]
+    simp only [Finset.inter_self]
+    rw [hcard]
+    decide
+  · rw [pairLabel, pairLabel, indicator_dot]
+    have hinter : insert i.val F ∩ insert j.val F = F := by
+      ext x
+      constructor
+      · intro hx
+        rcases Finset.mem_inter.mp hx with ⟨hxi, hxj⟩
+        simp only [Finset.mem_insert] at hxi hxj
+        rcases hxi with hxi | hxi
+        · rcases hxj with hxj | hxj
+          · exfalso
+            exact hij (Subtype.ext (hxi.symm.trans hxj))
+          · have hbad : i.val ∈ F := by simpa [← hxi] using hxj
+            exact (i.property hbad).elim
+        · exact hxi
+      · intro hxf
+        exact Finset.mem_inter.mpr ⟨Finset.mem_insert_of_mem hxf,
+          Finset.mem_insert_of_mem hxf⟩
+    rw [hinter, hF]
+    simp [hij]
+    decide
+
 theorem pairLabel_linearIndependent {h : ℕ} (F : Finset (Fin h)) :
     LinearIndependent K (pairLabel F) := by
   apply Fintype.linearIndependent_iff.mpr
