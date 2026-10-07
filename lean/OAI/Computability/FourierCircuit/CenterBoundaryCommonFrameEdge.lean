@@ -201,6 +201,39 @@ theorem selective_endpoints_not_nested
   · exact selectiveSource_not_le_selectiveTarget p x t w hp ht hxt hw h
   · exact selectiveTarget_not_le_selectiveSource p x t w hp hxw hw h
 
+/- A nested path through the join of two incomparable finite-dimensional
+labels must pay at least one new direction on each side. -/
+noncomputable def joinResidualCost {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (S T : Submodule F (Address ι h)) : ℕ :=
+  Module.finrank F ↥(S ⊔ T) - Module.finrank F ↥S
+
+theorem joinResidualCost_ge_one
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (S T : Submodule F (Address ι h)) (hnot : ¬ T ≤ S) :
+    1 ≤ joinResidualCost S T := by
+  have hlt : S < S ⊔ T := left_lt_sup.mpr hnot
+  have hdim := Submodule.finrank_lt_finrank_of_lt hlt
+  unfold joinResidualCost
+  omega
+
+theorem selective_join_roundtrip_cost_ge_two
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (p : ι → F) (x t : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F))
+    (hxt : dotProduct x t = 0) (hxw : x w = 0) (hw : t w = 0) :
+    2 ≤ joinResidualCost (selectiveSource p x t)
+          (selectiveTarget p x t w) +
+        joinResidualCost (selectiveTarget p x t w)
+          (selectiveSource p x t) := by
+  have h₁ := joinResidualCost_ge_one
+    (selectiveSource p x t) (selectiveTarget p x t w)
+    (selectiveTarget_not_le_selectiveSource p x t w hp hxw hw)
+  have h₂ := joinResidualCost_ge_one
+    (selectiveTarget p x t w) (selectiveSource p x t)
+    (selectiveSource_not_le_selectiveTarget p x t w hp ht hxt hw)
+  omega
+
 /- The transvection maps the selected source subspace into the selected legal
 target subspace. -/
 theorem W_maps_selectiveSource
