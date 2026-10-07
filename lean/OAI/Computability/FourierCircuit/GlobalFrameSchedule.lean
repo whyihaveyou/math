@@ -255,6 +255,83 @@ theorem canonical_total_direction_count (h : ℕ) (hh : 2 ≤ h) :
   dsimp [centreCount, sideCount]
   omega
 
+/-! ## Arbitrary finite-depth extension
+
+The three concrete prefix sizes above are the first three terms of the
+geometric address tower `Fin (h^k)`.  The next definition records the same
+local certificate at every finite depth.  It only transports the audited
+unit/orthogonality and direction-count facts; it deliberately does not
+identify the changing prefix spaces with a physical gate schedule.
+-/
+
+/-- A unit coordinate prefix at the `k`-th address level. -/
+noncomputable def recursivePrefix (h : ℕ) (hh : 2 ≤ h) (k : ℕ) :
+    Fin (h ^ k) → F :=
+  prefixUnit (zeroIndex (by positivity))
+
+theorem recursivePrefix_unit (h : ℕ) (hh : 2 ≤ h) (k : ℕ) :
+    dotProduct (recursivePrefix h hh k) (recursivePrefix h hh k) = (1 : F) := by
+  exact prefixUnit_unit (zeroIndex (by positivity))
+
+/-- Alternating active labels used by the finite-depth extension. -/
+noncomputable def recursiveActive (h : ℕ) (hh : 2 ≤ h) (k : ℕ) : Active h :=
+  if Even k then stageX hh else stageY hh
+
+theorem recursiveActive_unit (h : ℕ) (hh : 2 ≤ h) (k : ℕ) :
+    dotProduct (recursiveActive h hh k) (recursiveActive h hh k) = (1 : F) := by
+  by_cases hk : Even k
+  · rw [recursiveActive, if_pos hk]
+    exact xLabel_unit (h := h) (by omega)
+  · rw [recursiveActive, if_neg hk]
+    exact yLabel_unit (h := h) hh
+
+theorem recursiveActive_step_orthogonal (h : ℕ) (hh : 2 ≤ h) (k : ℕ) :
+    dotProduct (recursiveActive h hh k) (recursiveActive h hh (k + 1)) = (0 : F) := by
+  rcases Nat.even_or_odd k with hk | hk
+  · have hnext : ¬ Even (k + 1) := Nat.not_even_iff_odd.mpr hk.add_one
+    rw [recursiveActive, if_pos hk, recursiveActive, if_neg hnext]
+    exact labels_orthogonal (h := h) hh
+  · have hnext : Even (k + 1) := hk.add_one
+    rw [recursiveActive, if_neg (Nat.not_even_iff_odd.mpr hk),
+      recursiveActive, if_pos hnext]
+    rw [dotProduct_comm]
+    exact labels_orthogonal (h := h) hh
+
+/-- The certified local frame at every finite address depth. -/
+noncomputable def recursiveStage (h : ℕ) (hh : 2 ≤ h) (k : ℕ) :
+    GeneralStageFrame (Fin (h ^ k)) h :=
+  GeneralStageFrame.mkCertified
+    (recursivePrefix h hh k)
+    (recursiveActive h hh k)
+    (recursiveActive h hh (k + 1))
+    (recursivePrefix_unit h hh k)
+    (recursiveActive_unit h hh k)
+    (recursiveActive_unit h hh (k + 1))
+    (recursiveActive_step_orthogonal h hh k)
+    hh
+
+theorem recursiveStage_transition (h : ℕ) (hh : 2 ≤ h) (k : ℕ) :
+    (recursiveStage h hh k).target = (recursiveStage h hh (k + 1)).source := by
+  rfl
+
+theorem recursiveStage_counts (h : ℕ) (hh : 2 ≤ h) (k : ℕ) :
+    centreCount (recursiveStage h hh k) = h ∧
+      sideCount (recursiveStage h hh k) = h - 2 := by
+  constructor
+  · exact (recursiveStage h hh k).centre_directions
+  · exact (recursiveStage h hh k).side_directions
+
+theorem recursive_total_direction_count (h : ℕ) (hh : 2 ≤ h) (n : ℕ) :
+    (∑ k ∈ Finset.range n, centreCount (recursiveStage h hh k)) = n * h ∧
+      (∑ k ∈ Finset.range n, sideCount (recursiveStage h hh k)) = n * (h - 2) := by
+  have hc : ∀ k, centreCount (recursiveStage h hh k) = h :=
+    fun k => (recursiveStage_counts h hh k).1
+  have hs : ∀ k, sideCount (recursiveStage h hh k) = h - 2 :=
+    fun k => (recursiveStage_counts h hh k).2
+  constructor
+  · simp [hc]
+  · simp [hs]
+
 /-- Concrete h = 24 transition and direction certificate. -/
 theorem h24_schedule_certificate :
     (canonicalThreeStage 24 (by norm_num)).stage1.target =
