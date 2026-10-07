@@ -191,6 +191,26 @@ theorem pairLabel_dot {h : ℕ} (F : Finset (Fin h))
     simp [hij]
     decide
 
+/-- The pair span is nondegenerate for the binary dot form (disjoint from its orthogonal). -/
+theorem pairSpan_disjoint_orthogonal {h : ℕ} (F : Finset (Fin h))
+    (hF : F.card = 2) :
+    Disjoint (pairSpan F)
+      ((pairSpan F).orthogonalBilin (dotForm : _)) := by
+  rw [Submodule.disjoint_def]
+  intro x hx hxorth
+  change ∀ z ∈ pairSpan F, dotForm z x = 0 at hxorth
+  rw [pairSpan] at hx
+  obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun K).mp hx
+  have hczero : ∀ j : PairIndex F, c j = 0 := by
+    intro j
+    have horthj :=
+      hxorth (pairLabel F j) (Submodule.subset_span (Set.mem_range_self j))
+    have hsum := congrArg (fun y => dotForm (pairLabel F j) y) hc
+    rw [horthj] at hsum
+    simp only [map_sum, map_smul, pairLabel_dot F hF] at hsum
+    simpa using hsum
+  simpa [hczero] using hc.symm
+
 theorem pairLabel_linearIndependent {h : ℕ} (F : Finset (Fin h)) :
     LinearIndependent K (pairLabel F) := by
   apply Fintype.linearIndependent_iff.mpr
