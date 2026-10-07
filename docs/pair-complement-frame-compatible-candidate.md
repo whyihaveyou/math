@@ -81,3 +81,15 @@ At `h = 24` the transported span still has rank 22.  This is a concrete
 premise for reusing a B-bank after an active-label permutation; it does not
 claim that the permutation is a legal complex gate or supply the missing
 physical all-prefix schedule.
+
+## Tensor-side frame bridge
+
+`PairComplementFramePermutationBridge.lean` lifts the active-label equivalence to
+`ι × Fin h` addresses through `CenterBoundaryTensorLift`.  For a fixed prefix
+`p`, the inserted disjoint B-bank is defined as the range of the insertion map
+restricted to `disjointTripleSpan F`.  The theorem
+`lifted_bank_map_eq` proves that this submodule is carried exactly to the
+inserted bank for `F.image e`; the h=24 specialization preserves the rank-22
+B-bank certificate.  This supplies a concrete tensor-side frame-transport
+premise for the conditional pair/complement ledger.  It still does not assert
+complex-gate legality, scalar/gate commutation, or a global all-prefix DAG.

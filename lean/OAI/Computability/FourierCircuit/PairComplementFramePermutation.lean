@@ -15,6 +15,7 @@ namespace ExactFourier
 namespace PairComplementDisjointSpan
 
 open FrameLabels
+open PairTargetFrameLocal
 
 
 /-- Reindex active coordinates by a permutation of `Fin h`. -/
@@ -37,6 +38,66 @@ noncomputable def activeReindex {h : ℕ} (e : Fin h ≃ Fin h) :
 
 @[simp] theorem activeReindex_apply {h : ℕ} (e : Fin h ≃ Fin h)
     (x : V h) (i : Fin h) : activeReindex e x i = x (e.symm i) := rfl
+
+/-- Reindexing sends a binary indicator to the indicator of the permuted set. -/
+theorem activeReindex_indicator {h : ℕ} (e : Fin h ≃ Fin h)
+    (T : Finset (Fin h)) :
+    activeReindex e (indicator T) = indicator (T.image e) := by
+  funext i
+  by_cases hi : e.symm i ∈ T
+  · have him : i ∈ T.image e :=
+      Finset.mem_image.mpr ⟨e.symm i, hi, e.apply_symm_apply i⟩
+    simp [activeReindex, indicator, hi, him]
+  · have him : i ∉ T.image e := by
+      intro him
+      rcases Finset.mem_image.mp him with ⟨a, ha, heq⟩
+      have hae : a = e.symm i := by
+        apply e.injective
+        simpa using heq
+      exact hi (hae ▸ ha)
+    simp [activeReindex, indicator, hi, him]
+
+@[simp] theorem activeReindex_pairLabel {h : ℕ} (e : Fin h ≃ Fin h)
+    (F : Finset (Fin h)) (j : PairIndex F) :
+    activeReindex e (pairLabel F j) =
+      indicator ((insert j.val F).image e) := by
+  exact activeReindex_indicator e (insert j.val F)
+
+/-- Exact transport of the A-bank pair span under an active-label permutation. -/
+theorem activeReindex_pairSpan_eq {h : ℕ} (e : Fin h ≃ Fin h)
+    (F : Finset (Fin h)) :
+    Submodule.map (activeReindex e).toLinearMap (pairSpan F) =
+      pairSpan (F.image e) := by
+  rw [pairSpan, Submodule.map_span]
+  congr 1
+  ext v
+  constructor
+  · rintro ⟨x, ⟨j, rfl⟩, rfl⟩
+    let j' : PairIndex (F.image e) :=
+      ⟨e j.val, by
+        intro hmem
+        rcases Finset.mem_image.mp hmem with ⟨a, ha, heq⟩
+        have hae : a = j.val := by
+          apply e.injective
+          simpa using heq
+        exact j.property (hae ▸ ha)⟩
+    refine ⟨j', ?_⟩
+    change indicator (insert j'.val (F.image e)) =
+      activeReindex e (indicator (insert j.val F))
+    rw [activeReindex_indicator]
+    simp [j']
+  · rintro ⟨j, rfl⟩
+    let j' : PairIndex F :=
+      ⟨e.symm j.val, by
+        intro hmem
+        apply j.property
+        exact Finset.mem_image.mpr
+          ⟨e.symm j.val, hmem, e.apply_symm_apply j.val⟩⟩
+    refine ⟨pairLabel F j', ⟨j', rfl⟩, ?_⟩
+    change activeReindex e (indicator (insert j'.val F)) =
+      indicator (insert j.val (F.image e))
+    rw [activeReindex_indicator]
+    simp [j']
 
 /-- The coordinate submodule complementary to `F` maps into the complementary
 submodule of the permuted pair. -/
