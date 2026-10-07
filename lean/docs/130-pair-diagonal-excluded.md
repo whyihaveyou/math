@@ -123,6 +123,16 @@ one-transition number is therefore a concrete design target: it must be
 realized by a cross-stage frame schedule, not assumed from the local rank
 calculation.
 
+The corrected all-pair frame audit in
+[`AllPairFrameCostAudit.lean`](../OAI/Computability/FourierCircuit/AllPairFrameCostAudit.lean)
+makes the missing premise explicit.  A physical full pair aggregate occupies
+the `h-2` dimensional pair span.  Under the nested, no-relabeling route
+`H -> H_k -> K_k`, the conditional transition count is `1 + 2 = 3`, not the
+optimistic 2 used above.  At `h=24`, `pairBlock = 1,130,654,976`, so the
+corrected effective saving is `-966,791,936`.  This is a conditional audit of
+that frame model, not a universal lower bound; a genuinely new encoding or
+transport could evade it.
+
 The companion script
 [`pair_target_frame_intersection.py`](../scripts/pair_target_frame_intersection.py)
 checks two separate reuse quantities.  For a fixed pair `F`, the
