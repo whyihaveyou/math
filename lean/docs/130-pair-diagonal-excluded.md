@@ -89,3 +89,13 @@ through every target using that pair aggregate; it needs an explicit
 target-dependent transport or a different shared representation.  This is a
 restriction on one proposed reuse strategy, not a lower bound for arbitrary
 linear circuits.
+
+The Lean module
+[`PairTargetFrameLocal.lean`](../OAI/Computability/FourierCircuit/PairTargetFrameLocal.lean)
+formalizes the local statement without an enumeration-specific shortcut.  For
+any pair-sized `F` and `k` outside `F`, the diagonal-excluded source labels are
+linearly independent, span a submodule of the `k`-coordinate hyperplane, and
+have exact dimension `h-3`.  It also proves that the common intersection of
+these source spans over all `k` outside `F` is zero (for `h ≥ 4`).  These are
+finite-field frame facts only; they make the reuse obligation explicit rather
+than supplying the missing transport schedule.
