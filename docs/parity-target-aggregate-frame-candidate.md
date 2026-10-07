@@ -29,6 +29,15 @@ in the proposed gates, that their scalar maps commute with those gates, or that
 the banks fit into one global DAG schedule.  Those are explicit parameters of
 `PhysicalParitySplitPremise` and remain open premises.
 
+The companion exact GF(2) audit in
+[`scripts/parity_split_side_audit.py`](../scripts/parity_split_side_audit.py)
+reports, for `h=24` and `S={0,1,2}`, ranks `21` for the zero-intersection
+class and `23` for the two-intersection class; their union also has rank `23`,
+the dimension of the target hyperplane.  This is an exact finite computation,
+not a Lean rank theorem: the Lean file currently proves containment.  It
+explains why the local parity-label fact alone does not lower the residual
+dimension of the two-intersection bank.
+
 ## h=24 arithmetic
 
 The zero-charge center margin is
