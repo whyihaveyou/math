@@ -102,6 +102,16 @@ def audit() -> dict[str, object]:
     minor = tuple(tuple(matrix[r][c] for c in indices) for r in range(H))
     determinant = determinant_fraction(minor)
     rank = rank_fraction(matrix)
+    # The unshifted source map oldG has h incidence rows and one global row.
+    # Its global row is exactly one third of the sum of incidence rows, so the
+    # source trajectory already has rank h inside the h+1-coordinate bank.
+    old_matrix = tuple(
+        tuple(Fraction(1 if i in triple else 0)
+              for triple in TRIPLES)
+        for i in range(H)
+    ) + (tuple(Fraction(1) for _ in TRIPLES),)
+    old_rank = rank_fraction(old_matrix)
+    assert old_rank == H
     expected_det = Fraction(5)
     assert len(TRIPLES) == 2024
     assert len(selected) == H
@@ -116,6 +126,9 @@ def audit() -> dict[str, object]:
         "rank_over_Q": rank,
         "surjective_to_centre_bank": rank == H,
         "kernel_dimension_over_Q": len(TRIPLES) - rank,
+        "old_bank_coordinate_count": H + 1,
+        "old_source_map_rank_over_Q": old_rank,
+        "old_global_row_relation": "global = (sum of incidence rows) / 3",
         "scope": (
             "linear centre-only maps reproducing compressedG on arbitrary "
             "triple inputs; nonlinear or differently factored circuits are "
