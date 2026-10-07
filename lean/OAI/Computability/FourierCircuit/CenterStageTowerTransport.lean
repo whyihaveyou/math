@@ -73,6 +73,34 @@ noncomputable def towerPrefixProductFinEquiv (h : ℕ) : (k : ℕ) →
       ((towerPrefixProductFinEquiv h k).prodCongr (Equiv.refl (Fin h))).trans
         finProdFinEquiv
 
+/-! Reindexing along a prefix equivalence is an isometry for the binary dot
+product and commutes with tensor insertion.  This is the exact coordinate
+bridge one may use with `towerPrefixProductFinEquiv`; it still says nothing
+about whether the induced permutation is available in the gate model. -/
+
+def prefixReindex {α β : Type*} (e : α ≃ β)
+    (p : α → F) : β → F := p ∘ e.symm
+
+def addressReindex {α β : Type*} {h : ℕ} (e : α ≃ β)
+    (v : α × Fin h → F) : β × Fin h → F :=
+  v ∘ (e.prodCongr (Equiv.refl (Fin h))).symm
+
+theorem prefixReindex_dot {α β : Type*} [Fintype α] [Fintype β]
+    (e : α ≃ β) (p q : α → F) :
+    dotProduct (prefixReindex e p) (prefixReindex e q) =
+      dotProduct p q := by
+  change (∑ y : β, p (e.symm y) * q (e.symm y)) = _
+  exact Fintype.sum_equiv e.symm
+    (fun y => p (e.symm y) * q (e.symm y))
+    (fun x => p x * q x) (fun _ => rfl)
+
+theorem addressReindex_insert {α β : Type*} {h : ℕ}
+    (e : α ≃ β) (p : α → F) (a : Active h) :
+    addressReindex e (CenterRowGeneral.insert p a) =
+      CenterRowGeneral.insert (prefixReindex e p) a := by
+  funext z
+  rfl
+
 abbrev PrefixLabel (h k : ℕ) := TowerPrefix h k → F
 abbrev Address (h k : ℕ) := TowerPrefix h k × Fin h → F
 
