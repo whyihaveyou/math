@@ -15,7 +15,10 @@ For every finite `n` and every complex shear `s` on `Fin n`,
 adds that value to `x s.i`; the other outputs are read-only input wires.  The
 proof is `twoGateShear_eval`, followed by `Shear.act_eq_mulVec`.  The packaged
 `ScalarShearWitness` exposes the same result with a size bound suitable for a
-later schedule theorem.
+later schedule theorem.  In the special case `s.c = 1`,
+`oneGateUnitShear s` uses one `Gate.add` and `UnitShearWitness` proves exact
+size one and exact matrix semantics.  The structure `Shear` already carries
+`i ≠ j`; the unit-gate theorem therefore covers the distinct-coordinate case.
 
 This is a local semantic bridge only.  The binary frame labels live over
 `ZMod 2`, while complex gates act on `ℂ`-valued wires.  No map from a binary
@@ -41,11 +44,27 @@ that the current positive h=19/h=20 certificate cannot be claimed for this
 explicit scalar-gate instantiation without additional compression, primitive
 transvection gates, or a different schedule.
 
+Conversely, `ComplexShearGateCostAuditOneGateH19H20.lean` records the
+unit-coefficient one-gate comparison.  It recovers the primitive six-phase
+margins exactly:
+
+```text
+h = 19:  margin = 142,722,072,
+         normalized = 2601 / 274877906944
+h = 20:  margin = 415,872,000,
+         normalized = 3249 / 274877906944
+```
+
+Those positive values are still conditional: they require a proved
+binary-frame-to-complex-coordinate map, frame preservation, bank commutation,
+and a global schedule using one unit gate per directional step.
+
 Build with:
 
 ```bash
 cd lean
 lake build \
   OAI.Computability.FourierCircuit.ComplexShearGateBridge \
-  OAI.Computability.FourierCircuit.ComplexShearGateCostAuditH19H20
+  OAI.Computability.FourierCircuit.ComplexShearGateCostAuditH19H20 \
+  OAI.Computability.FourierCircuit.ComplexShearGateCostAuditOneGateH19H20
 ```

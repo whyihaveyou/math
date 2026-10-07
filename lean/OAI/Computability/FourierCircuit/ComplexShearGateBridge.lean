@@ -85,6 +85,65 @@ noncomputable def scalarShearWitness {n : ℕ} (s : Shear (Fin n)) :
 @[simp] theorem scalarShearWitness_size {n : ℕ} (s : Shear (Fin n)) :
     (scalarShearWitness s).circuit.size = 2 := rfl
 
+
+/-- Direct input wires for the one-gate unit-coefficient realization. -/
+private def unitInputIndex {n : ℕ} (k : Fin n) : Fin (n + 1) :=
+  k.castSucc
+
+private def unitGateIndex {n : ℕ} : Fin (n + 1) :=
+  Fin.last n
+
+/-- When the shear coefficient is `1`, a single `Gate.add` realizes the
+transvection.  This is the exact unit-coefficient case relevant to a possible
+primitive one-direction route; arbitrary coefficients still use the two-gate
+bridge above. -/
+noncomputable def oneGateUnitShear {n : ℕ} (s : Shear (Fin n))
+    (hc : s.c = (1 : ℂ)) : LinearDAG n n where
+  size := 1
+  program := Program.nil.step (Gate.add s.i.castSucc s.j.castSucc)
+  outputs := fun k => if k = s.i then unitGateIndex else unitInputIndex k
+
+@[simp] theorem oneGateUnitShear_size {n : ℕ} (s : Shear (Fin n))
+    (hc : s.c = (1 : ℂ)) :
+    (oneGateUnitShear s hc).size = 1 := rfl
+
+/-- Exact semantics of the unit-coefficient one-gate realization. -/
+theorem oneGateUnitShear_eval {n : ℕ} (s : Shear (Fin n))
+    (hc : s.c = (1 : ℂ)) (x : Fin n → ℂ) :
+    (oneGateUnitShear s hc).eval x = s.act x := by
+  funext k
+  by_cases hk : k = s.i
+  · subst k
+    simp [oneGateUnitShear, LinearDAG.eval, Program.eval, Shear.act,
+      unitGateIndex, unitInputIndex, hc, Gate.eval]
+  · simp [oneGateUnitShear, LinearDAG.eval, Program.eval, Shear.act,
+      unitGateIndex, unitInputIndex, hc, Gate.eval, hk]
+
+/-- Matrix form of the unit-coefficient realization. -/
+theorem oneGateUnitShear_matrix {n : ℕ} (s : Shear (Fin n))
+    (hc : s.c = (1 : ℂ)) :
+    ∀ x, (oneGateUnitShear s hc).eval x = s.toMatrix.mulVec x := by
+  intro x
+  rw [oneGateUnitShear_eval, Shear.act_eq_mulVec]
+
+/-- A one-gate witness for a unit-coefficient shear. -/
+structure UnitShearWitness (n : ℕ) (s : Shear (Fin n)) where
+  coefficient_one : s.c = (1 : ℂ)
+  circuit : LinearDAG n n
+  size_eq_one : circuit.size = 1
+  computes : ∀ x, circuit.eval x = s.toMatrix.mulVec x
+
+noncomputable def unitShearWitness {n : ℕ} (s : Shear (Fin n))
+    (hc : s.c = (1 : ℂ)) : UnitShearWitness n s where
+  coefficient_one := hc
+  circuit := oneGateUnitShear s hc
+  size_eq_one := oneGateUnitShear_size s hc
+  computes := oneGateUnitShear_matrix s hc
+
+@[simp] theorem unitShearWitness_size {n : ℕ} (s : Shear (Fin n))
+    (hc : s.c = (1 : ℂ)) :
+    (unitShearWitness s hc).circuit.size = 1 := rfl
+
 end ComplexShearGateBridge
 end ExactFourier
 end OAI
