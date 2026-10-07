@@ -66,6 +66,11 @@ and normalized margin
 \]
 
 This is a promising *arithmetic target*, not an achieved exponent improvement.
+It also fails the stronger no-target-dependent-accumulation requirement: the
+source filter ``|T∩S|=0`` or ``2`` is part of each aggregate definition.  A
+target-independent pair bank must retain all 276 pairs and cancel the
+intersection-one contributions, which is the separate all-pair audit and its
+corrected negative margin.
 The rank audit exposes the missing frame obligation.  If each group must leave
 its shared (22)-dimensional pair span and return to its restricted span, a
 two-direction-per-codimension accounting gives codimensions (3) for (C_0)
