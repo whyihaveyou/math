@@ -80,6 +80,11 @@ def optimisticMargin : ℤ :=
 def correctedMargin : ℤ :=
   (centreSaving : ℤ) - (correctedPenalty : ℤ)
 
+/-- The corrected margin normalized by the multiplier and pair padding. -/
+def correctedNormalizedMargin : ℚ :=
+  (correctedMargin : ℚ) /
+    ((CenterCompression.H24.m : ℚ) * (padding : ℚ))
+
 /-- A fixed pair used to instantiate the local pair-span dimension theorem. -/
 def pairF : Finset (Fin 24) := {0, 1}
 
@@ -172,6 +177,15 @@ theorem correctedMargin_eq : correctedMargin = -966791936 := by
 
 theorem correctedMargin_neg : correctedMargin < 0 := by
   rw [correctedMargin_eq]
+  norm_num
+
+theorem correctedNormalizedMargin_eq :
+    correctedNormalizedMargin = -3776531 / 1855425871872 := by
+  norm_num [correctedNormalizedMargin, correctedMargin_eq,
+    CenterCompression.H24.m_eq, padding_eq]
+
+theorem correctedNormalizedMargin_neg : correctedNormalizedMargin < 0 := by
+  rw [correctedNormalizedMargin_eq]
   norm_num
 
 /-- The corrected charge exceeds the centre saving, so the corresponding
