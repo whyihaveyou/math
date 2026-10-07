@@ -25,6 +25,8 @@ abbrev F := ZMod 2
 abbrev D (h : ℕ) := Fin h → F
 abbrev E (h : ℕ) := Fin h → D h
 
+variable {h : ℕ}
+
 /-- Fibrewise contraction against the prefix unit label. -/
 abbrev projectP {h : ℕ} (p : Fin h → F) : E h →ₗ[F] D h :=
   CenterRowTransition.projectP p
