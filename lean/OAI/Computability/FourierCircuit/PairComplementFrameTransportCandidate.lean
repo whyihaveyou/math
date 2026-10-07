@@ -18,6 +18,7 @@ namespace ExactFourier
 namespace PairComplementFrameTransportCandidate
 
 open PairComplementDisjointSpan
+open PairTargetFrameLocal
 open PairComplementFrameCompatibleCandidate
 open PairComplementFramePermutationBridge
 
@@ -30,19 +31,26 @@ def H24TransportPremise : Prop :=
     Fset.card = 2 →
       Submodule.map (activeReindex e).toLinearMap
           (disjointTripleSpan Fset) = disjointTripleSpan (Fset.image e) ∧
+      Submodule.map (activeReindex e).toLinearMap
+          (pairSpan Fset) = pairSpan (Fset.image e) ∧
       ∀ (p : Fin 1 → F),
         dotProduct p p = (1 : F) →
-          Submodule.map (liftedReindex (ι := Fin 1) e).toLinearMap
+          (Submodule.map (liftedReindex (ι := Fin 1) e).toLinearMap
               (insertedDisjointBank p Fset) =
-            insertedDisjointBank p (Fset.image e)
+            insertedDisjointBank p (Fset.image e) ∧
+           Submodule.map (liftedReindex (ι := Fin 1) e).toLinearMap
+              (insertedPairBank p Fset) =
+            insertedPairBank p (Fset.image e))
 
 /-- The transport premise is discharged by the active and tensor bridge
 certificates. -/
 theorem h24_transport_premise : H24TransportPremise := by
   intro e Fset hF
-  refine ⟨activeReindex_disjointSpan_eq e Fset hF (by norm_num), ?_⟩
+  refine ⟨activeReindex_disjointSpan_eq e Fset hF (by norm_num),
+    activeReindex_pairSpan_eq e Fset, ?_⟩
   intro p hp
-  exact PairComplementFramePermutationBridge.H24.lifted_b_bank_map_eq e p Fset hF
+  exact ⟨PairComplementFramePermutationBridge.H24.lifted_b_bank_map_eq e p Fset hF,
+    PairComplementFramePermutationBridge.H24.lifted_pair_bank_map_h24 e p Fset hF⟩
 
 /-- The transported tensor bank keeps the rank used in the aggregate ledger. -/
 theorem h24_inserted_bank_rank
@@ -50,6 +58,12 @@ theorem h24_inserted_bank_rank
     (Fset : Finset (Fin 24)) (hF : Fset.card = 2) :
     Module.finrank F (insertedDisjointBank p Fset) = 22 := by
   exact PairComplementFramePermutationBridge.H24.inserted_b_bank_rank p hp Fset hF
+
+theorem h24_inserted_pair_bank_rank
+    (p : Fin 1 → F) (hp : dotProduct p p = (1 : F))
+    (Fset : Finset (Fin 24)) (hF : Fset.card = 2) :
+    Module.finrank F (insertedPairBank p Fset) = 22 := by
+  exact PairComplementFramePermutationBridge.H24.inserted_a_bank_rank p hp Fset hF
 
 /-- A single premise combining the already-proved integer ledger with the new
 frame-transport facts. -/

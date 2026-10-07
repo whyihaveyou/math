@@ -29,3 +29,8 @@ lake build OAI.Computability.FourierCircuit.PairComplementFramePermutation \
   OAI.Computability.FourierCircuit.PairComplementFramePermutationBridge
 ```
 
+
+The same bridge now covers the A-bank `pairSpan` as well as the B-bank
+`disjointTripleSpan`, including exact h=24 rank 22 for both inserted banks.
+This matches the two pair moments used by the exact scalar
+`PairComplementInvocation` identity.

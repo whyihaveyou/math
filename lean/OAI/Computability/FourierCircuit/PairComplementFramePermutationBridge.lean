@@ -21,6 +21,7 @@ namespace ExactFourier
 namespace PairComplementFramePermutationBridge
 
 open PairComplementDisjointSpan
+open PairTargetFrameLocal
 open CenterBoundaryTensorLift
 open CenterRowGeneral
 
@@ -100,6 +101,72 @@ theorem lifted_bank_map_eq (e : Fin h ≃ Fin h)
     rw [hz_eq, liftedReindex_symm, lift_insert]
     exact ⟨⟨(activeReindex e).symm x, hxpre⟩, rfl⟩
 
+/- The inserted A-bank uses the pair span rather than the disjoint-triple
+   span.  It is needed because the exact scalar pair/complement readout carries
+   both A and B moments. -/
+def insertedPairBank (p : ι → F) (Fset : Finset (Fin h)) :
+    Submodule F (Address ι h) :=
+  LinearMap.range ((CenterRowGeneral.insert p).comp
+    (pairSpan Fset).subtype)
+
+/-- Active permutations transport the inserted A-bank exactly. -/
+theorem lifted_pair_bank_map_le (e : Fin h ≃ Fin h)
+    (p : ι → F) (Fset : Finset (Fin h))
+    (hF : Fset.card = 2) :
+    Submodule.map (liftedReindex e).toLinearMap
+        (insertedPairBank p Fset) ≤
+      insertedPairBank p (Fset.image e) := by
+  intro z hz
+  rcases Submodule.mem_map.mp hz with ⟨y, hy, rfl⟩
+  rcases hy with ⟨x, rfl⟩
+  refine ⟨⟨activeReindex e x, ?_⟩, ?_⟩
+  · have hspan := activeReindex_pairSpan_eq e Fset
+    rw [← hspan]
+    exact Submodule.mem_map.mpr ⟨x, x.property, rfl⟩
+  · simp [liftedReindex_insert]
+
+theorem lifted_pair_bank_map_eq (e : Fin h ≃ Fin h)
+    (p : ι → F) (Fset : Finset (Fin h))
+    (hF : Fset.card = 2) :
+    Submodule.map (liftedReindex e).toLinearMap
+        (insertedPairBank p Fset) =
+      insertedPairBank p (Fset.image e) := by
+  apply le_antisymm
+  · exact lifted_pair_bank_map_le e p Fset hF
+  · intro z hz
+    refine Submodule.mem_map.mpr
+      ⟨(liftedReindex e).symm z, ?_, (liftedReindex e).apply_symm_apply z⟩
+    rcases hz with ⟨x, hzx⟩
+    have hspan := activeReindex_pairSpan_eq e Fset
+    have hxmap : (x : Active h) ∈
+        Submodule.map (activeReindex e).toLinearMap (pairSpan Fset) := by
+      rw [hspan]
+      exact x.property
+    have hxpre : (activeReindex e).symm (x : Active h) ∈ pairSpan Fset := by
+      rcases Submodule.mem_map.mp hxmap with ⟨y, hy, hxy⟩
+      have hy_eq : y = (activeReindex e).symm (x : Active h) := by
+        apply (activeReindex e).injective
+        exact hxy.trans ((activeReindex e).apply_symm_apply _).symm
+      simpa [hy_eq] using hy
+    have hz_eq : z = CenterRowGeneral.insert p x := hzx.symm
+    rw [hz_eq, liftedReindex_symm, lift_insert]
+    exact ⟨⟨(activeReindex e).symm x, hxpre⟩, rfl⟩
+
+/-- The inserted A-bank has the pair-space rank `h - 2`. -/
+theorem inserted_pair_bank_finrank
+    (p : ι → F) (hp : dotProduct p p = (1 : F))
+    (Fset : Finset (Fin h)) (hF : Fset.card = 2) :
+    Module.finrank F (insertedPairBank p Fset) = h - 2 := by
+  rw [insertedPairBank]
+  have hcomp : Function.Injective
+      ((CenterRowGeneral.insert p).comp (pairSpan Fset).subtype) := by
+    intro x y hxy
+    apply Subtype.ext
+    apply CenterRowGeneral.insert_injective p hp
+    exact hxy
+  rw [LinearMap.finrank_range_of_inj hcomp]
+  simpa using (pairSpan_finrank Fset hF)
+
 /-- The inserted B-bank has exactly the active-bank rank when the prefix
 insertion is unit.  This is the rank fact used by the frame-cost ledger. -/
 theorem inserted_bank_finrank
@@ -134,6 +201,20 @@ theorem inserted_b_bank_rank
     (Fset : Finset (Fin 24)) (hF : Fset.card = 2) :
     Module.finrank F (insertedDisjointBank p Fset) = 22 := by
   simpa using inserted_bank_finrank p hp Fset hF (by norm_num)
+
+theorem lifted_pair_bank_map_h24
+    (e : Fin 24 ≃ Fin 24) (p : ι → F) (Fset : Finset (Fin 24))
+    (hF : Fset.card = 2) :
+    Submodule.map (liftedReindex e).toLinearMap
+        (insertedPairBank p Fset) =
+      insertedPairBank p (Fset.image e) := by
+  exact lifted_pair_bank_map_eq e p Fset hF
+
+theorem inserted_a_bank_rank
+    (p : ι → F) (hp : dotProduct p p = (1 : F))
+    (Fset : Finset (Fin 24)) (hF : Fset.card = 2) :
+    Module.finrank F (insertedPairBank p Fset) = 22 := by
+  simpa using inserted_pair_bank_finrank p hp Fset hF
 
 theorem b_bank_rank_transport
     (e : Fin 24 ≃ Fin 24) (Fset : Finset (Fin 24)) (hF : Fset.card = 2) :
