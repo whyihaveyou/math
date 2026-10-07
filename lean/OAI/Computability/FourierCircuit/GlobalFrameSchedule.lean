@@ -99,6 +99,16 @@ structure ThreeStageFrame (h : ℕ) (hh : 2 ≤ h) where
   transition12 : stage1.target = stage2.source
   transition23 : stage2.target = stage3.source
 
+/-- Number of centre directions in a stage frame. -/
+noncomputable def centreCount {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (s : GeneralStageFrame ι h) : ℕ :=
+  Module.finrank F (CenterRowGeneral.residual (h := h) s.pre)
+
+/-- Number of newly inserted side directions in a stage frame. -/
+noncomputable def sideCount {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (s : GeneralStageFrame ι h) : ℕ :=
+  Module.finrank F (SideRowGeneralArbitrary.residual (ι := ι) s.pre s.source s.target)
+
 /-- Canonical prefixes and alternating active labels for the three rows. -/
 noncomputable def canonicalThreeStage (h : ℕ) (hh : 2 ≤ h) : ThreeStageFrame h hh :=
   { stage1 := GeneralStageFrame.mkCertified
@@ -234,8 +244,16 @@ theorem canonical_side_nesting (h : ℕ) (hh : 2 ≤ h) :
 
 /-- The finite schedule has `3*h` centre and `3*(h-2)` side directions. -/
 theorem canonical_total_direction_count (h : ℕ) (hh : 2 ≤ h) :
-    3 * h = 3 * h ∧ 3 * (h - 2) = 3 * (h - 2) := by
-  exact ⟨rfl, rfl⟩
+    centreCount (canonicalThreeStage h hh).stage1 +
+          centreCount (canonicalThreeStage h hh).stage2 +
+          centreCount (canonicalThreeStage h hh).stage3 = 3 * h ∧
+    sideCount (canonicalThreeStage h hh).stage1 +
+          sideCount (canonicalThreeStage h hh).stage2 +
+          sideCount (canonicalThreeStage h hh).stage3 = 3 * (h - 2) := by
+  have hc := canonical_centre_counts h hh
+  have hs := canonical_side_counts h hh
+  dsimp [centreCount, sideCount]
+  omega
 
 /-- Concrete h = 24 transition and direction certificate. -/
 theorem h24_schedule_certificate :
