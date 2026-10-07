@@ -50,6 +50,19 @@ lemma sourceVec_zero_at_w : sourceVec w = 0 := by
 lemma targetVec_zero_at_w : targetVec w = 0 := by
   simp [targetVec, w, targetA, indicator]
 
+abbrev z : Fin H := 22
+
+lemma targetVec_zero_at_z : targetVec z = 0 := by
+  simp [targetVec, z, targetA, indicator]
+
+lemma source_target_vec_orthogonal :
+    dotProduct sourceVec targetVec = (0 : ZMod 2) := by
+  change FrameLabels.dotForm (indicator sourceA) (indicator targetA) = (0 : ZMod 2)
+  have heven : Even (targetA ∩ sourceA).card := by
+    simpa [Finset.inter_comm] using source_target_even
+  simpa [FrameLabels.dotForm, BinaryTransvection.bilinearDot, dotProduct_comm]
+    using (FrameLabels.indicator_orthogonal_of_even targetA sourceA heven)
+
 noncomputable abbrev sourceTransport : V ≃ₗ[ZMod 2] V :=
   BinaryTransvection.unitCoordinateEquiv sourceVec w sourceVec_unit sourceVec_zero_at_w
 
@@ -82,6 +95,23 @@ theorem target_line_transport : targetTransport (BinaryTransvection.coordinate w
   exact BinaryTransvection.unitCoordinateEquiv_coordinate
     targetVec w targetVec_unit targetVec_zero_at_w
 
+noncomputable abbrev pairTransport : V ≃ₗ[ZMod 2] V :=
+  BinaryTransvection.twoCoordinateEquiv sourceVec targetVec w z
+    sourceVec_unit targetVec_unit sourceVec_zero_at_w targetVec_zero_at_z
+
+/-- The two labelled directions have an explicit codimension-two coordinate
+    transport.  This is the finite h = 24 instance of the side residual frame
+    step used by the stage audit. -/
+theorem pair_complement_transport :
+    (BinaryTransvection.coordinateHyperplaneTwo w z).comap
+        pairTransport.toLinearMap =
+      (Submodule.span (ZMod 2) ({sourceVec, targetVec} : Set V)).orthogonalBilin
+        (BinaryTransvection.bilinearDot : _) := by
+  exact BinaryTransvection.twoCoordinateEquiv_comap_orthogonal
+    sourceVec targetVec w z sourceVec_unit targetVec_unit
+    source_target_vec_orthogonal sourceVec_zero_at_w targetVec_zero_at_w
+    targetVec_zero_at_z (by decide)
+
 /-- The concrete source-to-target neighbour step is compatible with both the
     line inclusion and explicit complement transports. -/
 theorem concrete_neighbour_direction_step :
@@ -92,9 +122,13 @@ theorem concrete_neighbour_direction_step :
         BinaryTransvection.coordinateHyperplane w ∧
       (((ZMod 2) ∙ targetVec).orthogonalBilin
           (BinaryTransvection.bilinearDot : _)).comap targetTransport.toLinearMap =
-        BinaryTransvection.coordinateHyperplane w := by
+        BinaryTransvection.coordinateHyperplane w ∧
+      (BinaryTransvection.coordinateHyperplaneTwo w z).comap
+          pairTransport.toLinearMap =
+        (Submodule.span (ZMod 2) ({sourceVec, targetVec} : Set V)).orthogonalBilin
+          (BinaryTransvection.bilinearDot : _) := by
   exact ⟨centre_neighbor_removed_le_parent, source_complement_transport,
-    target_complement_transport⟩
+    target_complement_transport, pair_complement_transport⟩
 
 /-- At h = 24 each of the three centre prefix sizes has exactly 24 residual
     directions.  This is the direction-step count used by the arithmetic
