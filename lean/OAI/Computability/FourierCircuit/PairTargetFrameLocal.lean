@@ -90,6 +90,42 @@ theorem sourceLabel_linearIndependent {h : ℕ} (F : Finset (Fin h)) (k : Fin h)
   simpa only [combination_source_coordinate, Pi.zero_apply] using hj
 
 /-- There are exactly `h - 3` source coordinates for a pair and a disjoint target coordinate. -/
+/-- Vanishing on every source coordinate forces a vector in the source span to vanish. -/
+theorem sourceSpan_eq_zero_of_source_coordinates_zero {h : ℕ}
+    (F : Finset (Fin h)) (k : Fin h) (x : V h)
+    (hx : x ∈ sourceSpan F k)
+    (hxzero : ∀ j : Fin h, j ∈ sourceCoordinates F k → x j = 0) :
+    x = 0 := by
+  rw [sourceSpan] at hx
+  obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun K).mp hx
+  have hczero : ∀ j : SourceIndex F k, c j = 0 := by
+    intro j
+    have hcoord := congrFun hc j.val
+    rw [combination_source_coordinate] at hcoord
+    rw [hxzero j.val j.property] at hcoord
+    exact hcoord
+  simpa [hczero] using hc.symm
+
+/-- All target-dependent diagonal-excluded pair spans have zero common intersection. -/
+theorem common_sourceSpan_eq_bot {h : ℕ} (F : Finset (Fin h))
+    (hF : F.card = 2) (hh : 4 ≤ h) (x : V h)
+    (hx : ∀ k : Fin h, k ∉ F → x ∈ sourceSpan F k) :
+    x = 0 := by
+  have hFlt : F.card < (Finset.univ : Finset (Fin h)).card := by
+    rw [hF, Finset.card_univ]
+    omega
+  obtain ⟨k, hk_univ, hkF⟩ :=
+    Finset.exists_mem_notMem_of_card_lt_card hFlt
+  have hxout : ∀ j : Fin h, j ∉ F → x j = 0 := by
+    intro j hj
+    have hjmem : x ∈ BinaryTransvection.coordinateHyperplane j := by
+      exact sourceSpan_le_coordinateHyperplane F j hj (hx j hj)
+    change x j = 0 at hjmem
+    exact hjmem
+  apply sourceSpan_eq_zero_of_source_coordinates_zero F k x (hx k hkF)
+  intro j hj
+  exact hxout j ((mem_sourceCoordinates F k j).mp hj).2
+
 theorem sourceIndex_card {h : ℕ} (F : Finset (Fin h)) (k : Fin h)
     (hF : F.card = 2) (hk : k ∉ F) :
     Fintype.card (SourceIndex F k) = h - 3 := by
