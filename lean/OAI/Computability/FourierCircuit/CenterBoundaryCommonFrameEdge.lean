@@ -391,6 +391,83 @@ structure SelectiveEdge {ι : Type*} [Fintype ι] [DecidableEq ι]
   restricted_transport : ∀ z, map z ∈ target ↔ z ∈ source
   directionalCost : ℕ
 
+/- Reversing a restricted edge uses the inverse linear equivalence.  This
+   keeps the transport interface symmetric while leaving the directional
+   cost as an explicit field. -/
+noncomputable def SelectiveEdge.reverse
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    {source target : Submodule F (Address ι h)}
+    (E : SelectiveEdge source target) : SelectiveEdge target source where
+  map := E.map.symm
+  isometry := by
+    intro z z'
+    simpa only [LinearEquiv.apply_symm_apply] using
+      (E.isometry (E.map.symm z) (E.map.symm z')).symm
+  restricted_transport := by
+    intro z
+    simpa only [LinearEquiv.apply_symm_apply] using
+      (E.restricted_transport (E.map.symm z)).symm
+  directionalCost := E.directionalCost
+
+@[simp] theorem SelectiveEdge.reverse_cost
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    {source target : Submodule F (Address ι h)}
+    (E : SelectiveEdge source target) :
+    (E.reverse).directionalCost = E.directionalCost := by
+  rfl
+
+/- A frame-cost certificate records the extra premise needed to turn the
+   local restricted transport into a route accounting statement: the edge's
+   declared directional cost must dominate the residual dimension introduced
+   by its endpoint labels.  This is an interface condition, not a claim that
+   every algebraic transvection has such an implementation. -/
+structure FrameCostedSelectiveEdge {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {h : ℕ} (source target : Submodule F (Address ι h)) where
+  edge : SelectiveEdge source target
+  frameCost_lower : joinResidualCost source target ≤ edge.directionalCost
+
+/- Two frame-costed restricted edges form a conditional round-trip schedule.
+   The two directions may use different maps and different declared costs. -/
+structure FrameCostedRoundtrip {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {h : ℕ} (source target : Submodule F (Address ι h)) where
+  forward : FrameCostedSelectiveEdge source target
+  backward : FrameCostedSelectiveEdge target source
+
+def FrameCostedRoundtrip.totalCost
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    {source target : Submodule F (Address ι h)}
+    (R : FrameCostedRoundtrip source target) : ℕ :=
+  R.forward.edge.directionalCost + R.backward.edge.directionalCost
+
+theorem FrameCostedRoundtrip.totalCost_ge_join
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    {source target : Submodule F (Address ι h)}
+    (R : FrameCostedRoundtrip source target) :
+    joinResidualCost source target + joinResidualCost target source ≤ R.totalCost := by
+  have hf : joinResidualCost source target ≤ R.forward.edge.directionalCost :=
+    R.forward.frameCost_lower
+  have hb : joinResidualCost target source ≤ R.backward.edge.directionalCost :=
+    R.backward.frameCost_lower
+  dsimp [FrameCostedRoundtrip.totalCost]
+  omega
+
+/- For the selective centre endpoints, the exact one-dimensional join costs
+   turn the generic frame certificate into an exact two-unit round-trip lower
+   bound.  The theorem still has the frame-cost premises packaged in `R`; it
+   does not assert that an arbitrary implementation of `W` satisfies them. -/
+theorem selective_frame_costed_roundtrip_ge_two
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
+    (p : ι → F) (x t : Active h) (w : Fin h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F))
+    (hxt : dotProduct x t = 0) (hxw : x w = 0) (hw : t w = 0)
+    (R : FrameCostedRoundtrip
+      (selectiveSource p x t) (selectiveTarget p x t w)) :
+    2 ≤ R.totalCost := by
+  have hge := FrameCostedRoundtrip.totalCost_ge_join R
+  rw [selective_join_roundtrip_cost_eq_two p x t w hp ht hxt hxw hw] at hge
+  exact hge
+
 noncomputable def WSelectiveEdge
     {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
     (p : ι → F) (x t : Active h) (w : Fin h)
