@@ -37,6 +37,38 @@ the aggregate frame, and read the three pair moments at a target without paying
 those transitions repeatedly. In particular, the rank check does not justify
 treating one pair wire as simultaneously carrying all `a_{F,S}`.
 
+There is also a scalar obstruction to the simplest version of this proposal.
+The three moments with `F subset S` see only triples meeting `S` in at least
+two coordinates.  A triple `T` disjoint from `S` contributes zero to all three
+of these moments, but the original side correction has coefficient `+1/2` on
+such a `T` (over the characteristic-zero scalar model).  For example, at
+`h >= 6`, take `S = {0,1,2}`, `T = {3,4,5}`, and a source vector supported on
+`T`.  Any linear readout of the three diagonal-excluded pair moments is zero,
+whereas the required correction is nonzero.  Thus the numerical pair-only
+candidate below is **not even a complete scalar factorization**.  A viable
+replacement must add the disjoint and one-intersection pair classes, or use a
+different moment identity, before frame costs can be audited.
+
+The scalar repair is explicit.  If `a_F = sum_{T superset F} x_T` and
+`b_{F,S} = a_F - x_S` for `F subset S`, then the required diagonal-free side
+coefficient can be written as
+
+    side(S,x) = -(1/3) sum_{F subset S} b_{F,S}
+                -(1/12) sum_{|F intersect S| = 1} a_F
+                +(1/6) sum_{F intersect S = emptyset} a_F.
+
+This identity is a scalar classification by intersection size, not a circuit
+construction.  It says that all three pair classes suffice algebraically; it
+also makes clear why the three `F subset S` moments alone do not.
+
+The standalone Lean file
+[`PairScalarNoGo.lean`](../OAI/Computability/FourierCircuit/PairScalarNoGo.lean)
+also gives an eight-triple alternating witness at `h=6`: every ordered pair
+moment and the global moment vanish, while the source is nonzero.  Hence those
+aggregates cannot replace the entire source bank by any left inverse.  This
+does not rule out a construction that retains a separate direct source term;
+it records the information that pair/global moments alone lose.
+
 ## Conditional arithmetic
 
 Ignoring that unresolved reuse problem, suppose a pair-prefix implementation
@@ -81,14 +113,18 @@ calculation.
 
 The companion script
 [`pair_target_frame_intersection.py`](../scripts/pair_target_frame_intersection.py)
-checks a sharper reuse obligation.  For a fixed pair `F`, the diagonal-
-excluded source span for each target `F union {k}` has rank `h-3`, but the
-intersection of those spans over all `k` is zero (at both `h=24` and `h=34`).
-Thus a one-transition construction cannot simply carry one fixed label frame
-through every target using that pair aggregate; it needs an explicit
-target-dependent transport or a different shared representation.  This is a
-restriction on one proposed reuse strategy, not a lower bound for arbitrary
-linear circuits.
+checks two separate reuse quantities.  For a fixed pair `F`, the
+diagonal-excluded source span for each target `F union {k}` has rank `h-3`,
+their **union** has rank `h-2`, and their intersection is zero (at both
+`h=24` and `h=34`).  The zero intersection alone is not an obstruction: a
+fixed accumulation frame must contain the union of the source spans.  If a
+single fixed readout frame is also required to lie in every target label
+`u_k^perp`, it is restricted to the two-dimensional intersection of those
+target orthogonal complements.  The simultaneous inclusions would require
+`H subset L subset H^perp` for the nondegenerate source span `H`, which is
+impossible.  This is a conditional no-go for that fixed-frame, no-reframing
+architecture, not a lower bound for arbitrary linear circuits; a real
+improvement needs a target-dependent transport or a new shared encoding.
 
 The Lean module
 [`PairTargetFrameLocal.lean`](../OAI/Computability/FourierCircuit/PairTargetFrameLocal.lean)

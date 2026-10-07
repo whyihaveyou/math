@@ -3,9 +3,12 @@
 
 For a fixed pair F={0,1}, let S_k be the span of triple indicators
 F union {l} with l != k.  These are the diagonal-excluded source spans for
-the targets F union {k}.  The script computes their ranks and the dimension
-of their common intersection.  This is a local frame-reuse audit, not a
-linear-circuit verifier.
+the targets F union {k}.  The script computes their ranks, the rank of their
+union, and the dimension of their common intersection.  The intersection
+alone is not a fixed-frame no-go: under a stronger no-reframing model one
+must compare the source-span union with the intersection of the target
+orthogonal labels.  This is a local frame-reuse audit, not a linear-circuit
+verifier.
 """
 import argparse
 from itertools import combinations
@@ -101,8 +104,10 @@ def main(h):
            "each_target_span_rank": rank(spans[0])})
     for rows in spans[1:]:
         common = intersection_basis(common, rows, h)
-    print({"common_intersection_rank": len(common),
-           "interpretation": "fixed-label reuse across all targets"})
+    union = row_basis([row for rows in spans for row in rows])
+    print({"source_union_rank": len(union),
+           "common_intersection_rank": len(common),
+           "interpretation": "source-span data; fixed-frame comparison needs target orthogonals"})
 
 
 if __name__ == "__main__":
