@@ -18,3 +18,9 @@ Compile with:
 cd lean
 lake build OAI.Computability.FourierCircuit.PairComplementFrameTransportCandidate
 ```
+
+The package also re-exports the exact h=24 scalar identity from
+`PairComplementInvocation`: the compressed centre readout plus the two-bank
+pair aggregate readout recovers the source map.  Thus the A/B transport facts
+now correspond to both banks used by the verified scalar identity; physical
+complex-gate realization and all-prefix scheduling remain separate premises.

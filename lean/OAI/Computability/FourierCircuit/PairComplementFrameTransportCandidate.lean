@@ -1,5 +1,6 @@
 import OAI.Computability.FourierCircuit.PairComplementFramePermutationBridge
 import OAI.Computability.FourierCircuit.PairComplementFrameCompatibleCandidate
+import OAI.Computability.FourierCircuit.PairComplementInvocation
 import Mathlib.Tactic
 
 /-!
@@ -64,6 +65,17 @@ theorem h24_inserted_pair_bank_rank
     (Fset : Finset (Fin 24)) (hF : Fset.card = 2) :
     Module.finrank F (insertedPairBank p Fset) = 22 := by
   exact PairComplementFramePermutationBridge.H24.inserted_a_bank_rank p hp Fset hF
+
+/-- The exact h=24 scalar pair/complement invocation identity.  This is the
+algebraic map whose two pair banks are transported by the frame premise above. -/
+theorem h24_scalar_pair_complement_identity
+    {K : Type*} [Field K] [CharZero K]
+    (x : PairComplementInvocation.Source → K) :
+    CompressedInvocation.OrderedPairs.RHom
+          (CenterCompression.compressedG x) +
+        PairComplementInvocation.aggregateReadHom
+          (PairComplementInvocation.aggregateInput x) = x := by
+  exact PairComplementInvocation.identity x
 
 /-- A single premise combining the already-proved integer ledger with the new
 frame-transport facts. -/
