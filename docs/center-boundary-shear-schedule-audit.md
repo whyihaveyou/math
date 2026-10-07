@@ -13,7 +13,7 @@ before the shear charge. Charging one active direction per centre role costs
 I₀h=294,953,472. The explicit lift-and-return event model charges six phases,
 6I₀h=1,769,720,832, and leaves the normalized margin
 
-    2,624,369 / 237,494,511,599,616 ≈ 1.10499×10⁻⁸ > 10⁻⁹.
+    2,624,369 / 237,494,511,599,616 ≈ 1.10502×10⁻⁸ > 10⁻⁹.
 
 `CenterBoundaryShearScheduleAudit.lean` now exposes the remaining obligation
 as a machine-checkable interface. A future physical schedule must provide a
