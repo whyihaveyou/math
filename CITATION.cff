@@ -12,7 +12,7 @@ abstract: >-
   The release records finite-network and conditional research candidates and
   explicitly leaves the complete all-length frame-labelled recursion open.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.7-incidence-span-equality"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.7-zenodo"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
