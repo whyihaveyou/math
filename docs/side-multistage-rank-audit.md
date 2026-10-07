@@ -38,3 +38,9 @@ or designs where the side coordinates are not auxiliary linear factors.
 The certificate is exact; no floating-point rank calculation is used. The
 four-class coefficients and the polynomial identity are emitted by the script
 and are checked by assertions.
+
+The abstract factorization inequality is also formalized in
+[`lean/OAI/Computability/FourierCircuit/LinearMultistageRank.lean`](../lean/OAI/Computability/FourierCircuit/LinearMultistageRank.lean): for `q` copies of one finite-dimensional bank `R`,
+`finrank X ≤ q * finrank R` whenever the composed correction is surjective.
+Heterogeneous banks can be bundled into their finite product, so the script's
+`Σ_i r_i` formulation is the corresponding general statement.
