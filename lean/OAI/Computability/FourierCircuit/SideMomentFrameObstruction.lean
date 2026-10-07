@@ -57,6 +57,41 @@ theorem varyingFramePenalty_exceeds_saving :
     CenterCompression.H24.v,
     Nat.choose]
 
+/-
+If one shared moment line is required to contain the join of all target
+triple lines, the indicator-span identity contributes at least `h - 1`
+residual dimensions per target.  This is a conditional cost model, not a
+universal lower bound on every possible moment network: a tree of smaller
+aggregates could avoid this premise.
+-/
+def targetJoinPenalty : ℕ := 2 * I0 * v * (h - 1)
+
+theorem targetJoinPenalty_eq : targetJoinPenalty = 1144222835712 := by
+  norm_num [targetJoinPenalty, I0, v, h,
+    SideMomentArithmetic.H24.I0,
+    SideMomentArithmetic.H24.v,
+    SideMomentArithmetic.H24.h,
+    CenterCompression.H24.I0,
+    CenterCompression.H24.v,
+    CenterCompression.H24.h,
+    Nat.choose]
+
+theorem targetJoinPenalty_exceeds_saving :
+    SideMomentArithmetic.H24.deltaMoment ≤ targetJoinPenalty := by
+  norm_num [targetJoinPenalty, SideMomentArithmetic.H24.deltaMoment,
+    I0, v, h, N0,
+    SideMomentArithmetic.H24.I0,
+    SideMomentArithmetic.H24.v,
+    SideMomentArithmetic.H24.h,
+    SideMomentArithmetic.H24.N0,
+    CenterCompression.H24.I0,
+    CenterCompression.H24.v,
+    CenterCompression.H24.h,
+    CenterCompression.H24.N0,
+    CenterCompression.H24.dNbr,
+    CenterCompression.H24.m,
+    Nat.choose]
+
 theorem momentPenalty_exceeds_saving :
     SideMomentArithmetic.H24.deltaMoment ≤ momentPenalty := by
   norm_num [momentPenalty, SideMomentArithmetic.H24.deltaMoment,
