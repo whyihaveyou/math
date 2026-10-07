@@ -67,7 +67,19 @@ also gives an eight-triple alternating witness at `h=6`: every ordered pair
 moment and the global moment vanish, while the source is nonzero.  Hence those
 aggregates cannot replace the entire source bank by any left inverse.  This
 does not rule out a construction that retains a separate direct source term;
-it records the information that pair/global moments alone lose.
+it records the information that pair/global moments alone lose.  The same file
+also proves a sharper local statement: the three `F subset S` moments together
+with the direct target value `x_S` still cannot recover the disjoint-triple
+contribution.  This is the exact Lean version of the `S={0,1,2}`,
+`T={3,4,5}` counterexample above.
+
+The complementary file
+[`AllPairMomentIdentity.lean`](../OAI/Computability/FourierCircuit/AllPairMomentIdentity.lean)
+formally checks the repaired scalar identity at `h=6` over `ℚ`: all three
+pair classes have coefficients `-1/3`, `-1/12`, and `+1/6`, yielding the
+diagonal-free side map.  It does not prove a frame-compatible circuit; the
+physical pair aggregate still occupies the full pair span, and the direct
+`x_S` channel must be scheduled separately.
 
 ## Conditional arithmetic
 
