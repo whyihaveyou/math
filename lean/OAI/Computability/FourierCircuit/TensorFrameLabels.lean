@@ -24,6 +24,84 @@ def tensor3 {h : ℕ} (A B C : Finset (Fin h)) :
     Fin h × (Fin h × Fin h) → ZMod 2 :=
   fun x => indicator A x.1 * indicator B x.2.1 * indicator C x.2.2
 
+def pure3 {h : ℕ} (a b c : Fin h → ZMod 2) :
+    Fin h × (Fin h × Fin h) → ZMod 2 :=
+  fun x => a x.1 * b x.2.1 * c x.2.2
+
+theorem pure3_dot
+    {h : ℕ} (a b c a' b' c' : Fin h → ZMod 2) :
+    dotProduct (pure3 a b c) (pure3 a' b' c') =
+      dotProduct a a' * dotProduct b b' * dotProduct c c' := by
+  classical
+  change (∑ x : Fin h × (Fin h × Fin h),
+      pure3 a b c x * pure3 a' b' c' x) =
+    (∑ i : Fin h, a i * a' i) *
+      (∑ j : Fin h, b j * b' j) *
+        (∑ k : Fin h, c k * c' k)
+  simp only [pure3]
+  rw [Fintype.sum_prod_type]
+  simp only [Fintype.sum_prod_type]
+  let K : ZMod 2 := ∑ k, c k * c' k
+  have hinner : ∀ i j, (∑ k,
+      a i * b j * c k * (a' i * b' j * c' k)) =
+      (a i * a' i) * ((b j * b' j) * K) := by
+    intro i j
+    calc
+      (∑ k, a i * b j * c k * (a' i * b' j * c' k)) =
+          ∑ k, (a i * a' i) *
+            ((b j * b' j) * (c k * c' k)) := by
+            apply Finset.sum_congr rfl
+            intro k hk
+            ring
+      _ = (a i * a' i) * ((b j * b' j) * K) := by
+            calc
+              (∑ k, (a i * a' i) *
+                  ((b j * b' j) * (c k * c' k))) =
+                  (a i * a' i) *
+                    (∑ k, (b j * b' j) * (c k * c' k)) := by
+                symm
+                simpa [mul_assoc] using
+                  (Finset.mul_sum (s := (Finset.univ : Finset (Fin h)))
+                    (fun k => (b j * b' j) * (c k * c' k))
+                    (a i * a' i))
+              _ = (a i * a' i) * ((b j * b' j) * K) := by
+                congr 1
+                symm
+                simpa [K] using
+                  (Finset.mul_sum (s := (Finset.univ : Finset (Fin h)))
+                    (fun k => c k * c' k) (b j * b' j))
+  simp_rw [hinner]
+  calc
+    (∑ i, ∑ j, (a i * a' i) * ((b j * b' j) * K)) =
+        (∑ i, a i * a' i) *
+          (∑ j, (b j * b' j) * K) := by
+      symm
+      exact Fintype.sum_mul_sum (fun i => a i * a' i)
+        (fun j => (b j * b' j) * K)
+    _ = (∑ i, a i * a' i) *
+        ((∑ j, b j * b' j) * K) := by
+      congr 1
+      rw [← Finset.sum_mul]
+    _ = (∑ i, a i * a' i) *
+        (∑ j, b j * b' j) *
+        (∑ k, c k * c' k) := by
+      simp [K, mul_assoc]
+
+theorem pure3_norm_of_unit
+    {h : ℕ} (a b c : Fin h → ZMod 2)
+    (ha : dotProduct a a = 1) (hb : dotProduct b b = 1)
+    (hc : dotProduct c c = 1) :
+    dotProduct (pure3 a b c) (pure3 a b c) = (1 : ZMod 2) := by
+  rw [pure3_dot, ha, hb, hc]
+  decide
+
+theorem pure3_orthogonal_of_first
+    {h : ℕ} (a b c a' b' c' : Fin h → ZMod 2)
+    (ha : dotProduct a a' = 0) :
+    dotProduct (pure3 a b c) (pure3 a' b' c') = 0 := by
+  rw [pure3_dot, ha]
+  simp
+
 def tensorDotForm {h : ℕ} :
     (Fin h × (Fin h × Fin h) → ZMod 2) →ₗ[ZMod 2]
       (Fin h × (Fin h × Fin h) → ZMod 2) →ₗ[ZMod 2] ZMod 2 :=
