@@ -113,6 +113,17 @@ theorem tripleIndicators_span_eq_top_of_four {h : ℕ} (hh : 4 ≤ h) :
     TripleSpan h = ⊤ := by
   exact tripleIndicators_span_eq_top (by omega)
 
+theorem contains_all_triple_indicators_eq_top {h : ℕ} (hh : 3 < h)
+    (S : Submodule (ZMod 2) (Fin h → ZMod 2))
+    (hS : ∀ T : Finset (Fin h), T.card = 3 → indicator T ∈ S) :
+    S = ⊤ := by
+  apply le_antisymm le_top
+  rw [← tripleIndicators_span_eq_top hh]
+  apply Submodule.span_le.2
+  intro x hx
+  rcases hx with ⟨T, hT, rfl⟩
+  exact hS T hT
+
 theorem h24_tripleIndicators_span_eq_top :
     TripleSpan 24 = ⊤ := by
   exact tripleIndicators_span_eq_top_of_four (by norm_num)
