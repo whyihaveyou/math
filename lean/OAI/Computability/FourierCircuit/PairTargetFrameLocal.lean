@@ -141,4 +141,102 @@ theorem sourceSpan_finrank {h : ℕ} (F : Finset (Fin h)) (k : Fin h)
   rw [sourceSpan, finrank_span_eq_card (sourceLabel_linearIndependent F k)]
   exact sourceIndex_card F k hF hk
 
+
+/-- All possible third coordinates of a pair, before excluding a target. -/
+abbrev PairIndex {h : ℕ} (F : Finset (Fin h)) :=
+  {j : Fin h // j ∉ F}
+
+def pairLabel {h : ℕ} (F : Finset (Fin h))
+    (j : PairIndex F) : V h := indicator (insert j.val F)
+
+def pairSpan {h : ℕ} (F : Finset (Fin h)) : Submodule K (V h) :=
+  Submodule.span K (Set.range (pairLabel F))
+
+@[simp] theorem pairLabel_pair_coordinate {h : ℕ} (F : Finset (Fin h))
+    (i j : PairIndex F) :
+    pairLabel F i j.val = if i = j then 1 else 0 := by
+  by_cases hij : i = j
+  · subst i
+    simp [pairLabel, indicator]
+  · have hval : j.val ≠ i.val := fun heq => hij (Subtype.ext heq.symm)
+    simp [pairLabel, indicator, i.property, j.property, hval, hij]
+
+theorem pairLabel_linearIndependent {h : ℕ} (F : Finset (Fin h)) :
+    LinearIndependent K (pairLabel F) := by
+  apply Fintype.linearIndependent_iff.mpr
+  intro c hc j
+  have hcoord := congrFun hc j.val
+  simpa only [pairLabel_pair_coordinate, Pi.zero_apply] using hcoord
+
+theorem pairIndex_card {h : ℕ} (F : Finset (Fin h))
+    (hF : F.card = 2) :
+    Fintype.card (PairIndex F) = h - 2 := by
+  have hcard : Fintype.card {j : Fin h // j ∈ F} = F.card := by
+    exact Fintype.card_coe F
+  rw [Fintype.card_subtype_compl (fun j : Fin h => j ∈ F),
+    Fintype.card_fin, hcard, hF]
+
+theorem pairSpan_finrank {h : ℕ} (F : Finset (Fin h))
+    (hF : F.card = 2) :
+    Module.finrank K (pairSpan F) = h - 2 := by
+  rw [pairSpan, finrank_span_eq_card (pairLabel_linearIndependent F)]
+  exact pairIndex_card F hF
+
+theorem sourceSpan_le_pairSpan {h : ℕ} (F : Finset (Fin h)) (k : Fin h) :
+    sourceSpan F k ≤ pairSpan F := by
+  apply Submodule.span_le.mpr
+  rintro v ⟨j, rfl⟩
+  apply Submodule.subset_span
+  refine Set.mem_range_self ⟨j.val, ?_⟩
+  exact (mem_sourceCoordinates F k j.val).mp j.property |>.2
+
+def allTargetSourceSpan {h : ℕ} (F : Finset (Fin h)) : Submodule K (V h) :=
+  ⨆ k : PairIndex F, sourceSpan F k.val
+
+theorem allTargetSourceSpan_le_pairSpan {h : ℕ} (F : Finset (Fin h)) :
+    allTargetSourceSpan F ≤ pairSpan F := by
+  apply iSup_le
+  intro k
+  exact sourceSpan_le_pairSpan F k.val
+
+/-- For `h ≥ 4`, every pair source label appears in some target-excluded span. -/
+theorem pairSpan_le_allTargetSourceSpan {h : ℕ} (F : Finset (Fin h))
+    (hF : F.card = 2) (hh : 4 ≤ h) :
+    pairSpan F ≤ allTargetSourceSpan F := by
+  apply Submodule.span_le.mpr
+  rintro v ⟨j, rfl⟩
+  have hout : (Finset.univ \ F : Finset (Fin h)).card = h - 2 := by
+    rw [Finset.card_sdiff, Finset.inter_eq_right.mpr (Finset.subset_univ F),
+      Finset.card_univ, hF]
+  have hlt : ({j.val} : Finset (Fin h)).card <
+      (Finset.univ \ F : Finset (Fin h)).card := by
+    rw [hout]
+    have : 2 ≤ h - 2 := by omega
+    omega
+  obtain ⟨k, hkout, hkj⟩ :=
+    Finset.exists_mem_notMem_of_card_lt_card hlt
+  have hkF : k ∉ F := (Finset.mem_sdiff.mp hkout).2
+  have hkj' : j.val ≠ k := by
+    intro hEq
+    apply hkj
+    simp [hEq]
+  let t : SourceIndex F k :=
+    ⟨j.val, (mem_sourceCoordinates F k j.val).2.mpr ⟨hkj', j.property⟩⟩
+  have ht : sourceLabel F k t ∈ sourceSpan F k := sourceLabel_mem F k t
+  have ht' : sourceLabel F k t ∈ allTargetSourceSpan F :=
+    Submodule.mem_iSup_of_mem ⟨k, hkF⟩ ht
+  exact ht'
+
+theorem allTargetSourceSpan_eq_pairSpan {h : ℕ} (F : Finset (Fin h))
+    (hF : F.card = 2) (hh : 4 ≤ h) :
+    allTargetSourceSpan F = pairSpan F := by
+  exact le_antisymm (allTargetSourceSpan_le_pairSpan F)
+    (pairSpan_le_allTargetSourceSpan F hF hh)
+
+theorem allTargetSourceSpan_finrank {h : ℕ} (F : Finset (Fin h))
+    (hF : F.card = 2) (hh : 4 ≤ h) :
+    Module.finrank K (allTargetSourceSpan F) = h - 2 := by
+  rw [allTargetSourceSpan_eq_pairSpan F hF hh]
+  exact pairSpan_finrank F hF
+
 end OAI.ExactFourier.PairTargetFrameLocal
