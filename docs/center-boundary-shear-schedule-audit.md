@@ -22,9 +22,12 @@ forward/return event set. If it also proves an upper bound of 6I₀h steps,
 Lean forces the step count to equal the six-phase ledger and derives the
 strict 10⁻⁹ margin.
 
-This is still conditional. The file does not construct the complex gate,
-tensor lift, frame-preserving eight-row insertion, or global restoration.
-The upper-bound premise is exactly the part a gate-level implementation must
+The active-factor tensor lift and its projection/readout boundary law are now
+proved locally in `CenterBoundaryTensorLift.lean` and
+`CenterBoundaryTensorProjection.lean`. The result is still conditional: the
+file does not construct the complex gate, prove scalar commutation for the
+full eight-row state, or give global restoration across all prefix types. The
+upper-bound premise is exactly the part a gate-level implementation must
 supply; it is not assumed as an established circuit theorem.
 
 Compile:

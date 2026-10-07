@@ -1,4 +1,5 @@
 import OAI.Computability.FourierCircuit.CenterBoundaryShearCandidate
+import OAI.Computability.FourierCircuit.CenterBoundaryTensorProjection
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic
 
@@ -32,6 +33,8 @@ namespace ExactFourier
 namespace CenterBoundaryShearScheduleAudit
 
 open CenterBoundaryShearCandidate
+open CenterBoundaryTensorLift
+open CenterBoundaryTensorProjection
 open SideRowGeneralArbitrary
 open BinaryTransvection
 
@@ -267,28 +270,37 @@ theorem schedule_normalized_gt_one_e_minus_nine
 
 end H24
 
-/-! ## Minimal gate-level interface still missing
+/-! ## Concrete local tensor-lift bridge
 
-The following structures intentionally contain no implementation.  They name
-exactly the obligations needed to turn the local binary transport into a
-physical eight-row theorem.
+The active-factor lift and its projection/readout laws are proved in
+`CenterBoundaryTensorLift` and `CenterBoundaryTensorProjection`.  The two
+theorems below expose those results from this schedule audit, so the remaining
+open obligation is no longer the existence of a local tensor lift.  What is
+still missing is a legal complex gate realizing the binary transport, its
+commutation with the eight-row scalar map, and one global schedule across all
+prefix types.
 -/
 
-/-- A tensor lift must act on prefix-active addresses and commute with line
-insertion.  Here `Addr` is left abstract because the current eight-row code
-uses several non-definitionally equal address presentations. -/
-structure TensorLiftInterface (h : ℕ) (Addr : Type*) where
-  transport : (Active h ≃ₗ[F] Active h) → Addr → Addr
-  insert : (Active h) → Addr
-  lift_insert : ∀ (U : Active h ≃ₗ[F] Active h) (t : Active h),
-    transport U (insert t) = insert (U t)
+theorem concrete_prefix_tensor_lift_interface
+    {ι : Type*} {h : ℕ} (p : ι → F) :
+    Nonempty (CenterBoundaryTensorLift.PrefixTensorLiftInterface (h := h) p) := by
+  exact ⟨CenterBoundaryTensorLift.interface p⟩
 
-/-!
-No gate-level structure is introduced here.  A non-vacuous gate interface must
-provide a tensor lift, a frame-membership theorem for the fused six-row gate,
-and a scalar commutation/restoration theorem.  Defining such a structure
-without those laws would only rename the open obligation.
--/
+theorem concrete_lifted_shear_boundary
+    {ι : Type*} [Fintype ι] {h : ℕ}
+    (p : ι → F) (x t : Active h)
+    (hp : dotProduct p p = (1 : F))
+    (ht : dotProduct t t = (1 : F))
+    (hxt : dotProduct x t = 0)
+    (w : Fin h) (hw : t w = 0)
+    (z : SideRowGeneralArbitrary.E ι h)
+    (hz : z ∈ SideRowGeneralArbitrary.L2 p x) :
+    z + CenterBoundaryTensorLift.lift
+        (BinaryTransvection.unitCoordinateEquiv t w ht hw)
+        (CenterRowGeneral.insert p t) ∈
+      SideRowGeneralArbitrary.L5 p t := by
+  exact CenterBoundaryTensorProjection.lifted_sheared_readout_mem_L5
+    p x t hp ht hxt w hw z hz
 
 end CenterBoundaryShearScheduleAudit
 end ExactFourier
