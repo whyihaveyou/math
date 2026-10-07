@@ -78,3 +78,14 @@ The ordinary current pair hierarchy charges four residual units per aggregate
 one-transition number is therefore a concrete design target: it must be
 realized by a cross-stage frame schedule, not assumed from the local rank
 calculation.
+
+The companion script
+[`pair_target_frame_intersection.py`](../scripts/pair_target_frame_intersection.py)
+checks a sharper reuse obligation.  For a fixed pair `F`, the diagonal-
+excluded source span for each target `F union {k}` has rank `h-3`, but the
+intersection of those spans over all `k` is zero (at both `h=24` and `h=34`).
+Thus a one-transition construction cannot simply carry one fixed label frame
+through every target using that pair aggregate; it needs an explicit
+target-dependent transport or a different shared representation.  This is a
+restriction on one proposed reuse strategy, not a lower bound for arbitrary
+linear circuits.
