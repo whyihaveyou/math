@@ -123,6 +123,26 @@ theorem h18_fused_readout
       source_row := z
       source_row_mem := hz }
 
+theorem h18_valid
+    {ι : Type*} [Fintype ι]
+    (s : CenterFramedInvocation.ScalarState 18 K)
+    (p : ι → F) (hp : dotProduct p p = (1 : F))
+    (w : Fin 18) (hw : h18PrefixFrame.target w = 0)
+    (z : Address ι 18)
+    (hz : z ∈ SideRowGeneralArbitrary.L2 p h18PrefixFrame.source) :
+    (FusedFrameLocalCertificate.fusedForward (h18Framed s)).scalar =
+        {s with y := s.y + s.x} ∧
+      (FusedFrameLocalCertificate.fusedForward (h18Framed s)).frame =
+        h18PrefixFrame ∧
+      z +
+          CenterBoundaryTensorLift.lift
+            (unitCoordinateEquiv h18PrefixFrame.target w
+              h18PrefixFrame.target_unit hw)
+            (CenterRowGeneral.insert p h18PrefixFrame.target) ∈
+        SideRowGeneralArbitrary.L5 p h18PrefixFrame.target := by
+  exact ⟨(h18_fused_restore s).1, (h18_fused_restore s).2,
+    h18_fused_readout s p hp w hw z hz⟩
+
 /-! ## The numerical claim remains explicitly conditional -/
 
 theorem h18_normalized_gt_one_e_minus_nine :
