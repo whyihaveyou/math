@@ -88,6 +88,64 @@ theorem compressed_plus_moment_side
             ∑ T ∈ (tripleSet h).attach, x T) + 2 * x S := by ring
     _ = 2 * x S := by rw [hzero]; ring
 
+
+def sideRead {h : ℕ} {K : Type*} [Field K]
+    (S : Triple h) (a0 : K) (a1 : Fin h → K) : K :=
+  (a0 - ∑ i ∈ S.1, a1 i) / 2
+
+def centerRead {h : ℕ} {K : Type*} [Field K]
+    (S : Triple h) (c : Fin h → K) : K :=
+  (∑ i ∈ S.1, c i) / 2
+
+theorem sideRead_update
+    {h : ℕ} {K : Type*} [Field K] [CharZero K]
+    (S : Triple h) (x : Triple h → K) (a0 : K) (a1 : Fin h → K) :
+    sideRead S (a0 + sideMoment0 x)
+      (fun i => a1 i + sideMoment1 x i) =
+      sideRead S a0 a1 +
+        (sideMoment0 x - ∑ i ∈ S.1, sideMoment1 x i) / 2 := by
+  unfold sideRead
+  rw [Finset.sum_add_distrib]
+  ring
+
+theorem centerRead_update
+    {h : ℕ} {K : Type*} [Field K] [CharZero K]
+    (S : Triple h) (x : Triple h → K) (c : Fin h → K) :
+    centerRead S (fun i => c i + compressedG (K := K) x i) =
+      centerRead S c + compressedR S (compressedG (K := K) x) := by
+  unfold centerRead compressedR
+  rw [Finset.sum_add_distrib]
+  ring
+
+theorem invocation_identity
+    {h : ℕ} {K : Type*} [Field K] [CharZero K]
+    (S : Triple h) (x y : Triple h → K)
+    (a0 : K) (a1 : Fin h → K) (c : Fin h → K) :
+    (y S - sideRead S a0 a1 - centerRead S c) +
+        sideRead S (a0 + sideMoment0 x)
+          (fun i => a1 i + sideMoment1 x i) +
+        centerRead S (fun i => c i + compressedG (K := K) x i) + x S =
+      y S + x S := by
+  rw [sideRead_update, centerRead_update]
+  have hmoment :
+      (sideMoment0 x - ∑ i ∈ S.1, sideMoment1 x i) / 2 + x S =
+        sideMomentAction S x := by
+    unfold sideMomentAction
+    ring
+  calc
+    y S - sideRead S a0 a1 - centerRead S c +
+          (sideRead S a0 a1 + (sideMoment0 x -
+            ∑ i ∈ S.1, sideMoment1 x i) / 2) +
+          (centerRead S c + compressedR S (compressedG (K := K) x)) + x S =
+        y S + compressedR S (compressedG (K := K) x) +
+          ((sideMoment0 x - ∑ i ∈ S.1, sideMoment1 x i) / 2 + x S) := by ring
+    _ = y S + compressedR S (compressedG (K := K) x) + sideMomentAction S x := by
+      rw [hmoment]
+    _ = y S + (compressedR S (compressedG (K := K) x) + sideMomentAction S x) := by ring
+    _ = y S + x S := by
+      rw [compressed_plus_moment_side]
+
+
 end SideMomentFactorization
 end ExactFourier
 end OAI
