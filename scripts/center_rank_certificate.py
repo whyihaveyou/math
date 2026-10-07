@@ -110,6 +110,10 @@ def audit() -> dict[str, object]:
               for triple in TRIPLES)
         for i in range(H)
     ) + (tuple(Fraction(1) for _ in TRIPLES),)
+    assert all(
+        old_matrix[-1][c] == sum(old_matrix[i][c] for i in range(H)) / 3
+        for c in range(len(TRIPLES))
+    )
     old_rank = rank_fraction(old_matrix)
     assert old_rank == H
     expected_det = Fraction(5)
