@@ -110,6 +110,33 @@ theorem unitCoordinateEquiv_coordinate (t : ι → ZMod 2) (w : ι)
     unitCoordinateEquiv t w ht hw (coordinate w) = t :=
   unit_shift_maps_coordinate t w hw
 
+theorem unitCoordinateEquiv_unit (t : ι → ZMod 2) (w : ι)
+    (ht : dotProduct t t = 1) (hw : t w = 0) :
+    unitCoordinateEquiv t w ht hw t = coordinate w := by
+  change transvection (t + coordinate w) t = coordinate w
+  rw [transvection_apply]
+  have hdot : dotProduct (t + coordinate w) t = 1 := by
+    simp [add_dotProduct, coordinate_dot, ht, hw]
+  rw [hdot]
+  ext i
+  simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul, one_mul,
+    coordinate, Pi.single_apply]
+  by_cases hi : i = w
+  · subst i
+    simp [hw]
+  · simp [hi, CharTwo.add_self_eq_zero]
+
+theorem unitCoordinateEquiv_fix (t : ι → ZMod 2) (w : ι)
+    (ht : dotProduct t t = 1) (hw : t w = 0)
+    (q : ι → ZMod 2) (hqt : dotProduct t q = 0) (hqw : q w = 0) :
+    unitCoordinateEquiv t w ht hw q = q := by
+  change transvection (t + coordinate w) q = q
+  rw [transvection_apply]
+  have hdot : dotProduct (t + coordinate w) q = 0 := by
+    simp [add_dotProduct, coordinate_dot, hqt, hqw]
+  rw [hdot]
+  simp
+
 def coordinateEval (w : ι) :
     (ι → ZMod 2) →ₗ[ZMod 2] ZMod 2 where
   toFun x := x w
@@ -141,6 +168,127 @@ theorem unitCoordinateEquiv_comap_orthogonal (t : ι → ZMod 2) (w : ι)
   change bilinearDot t (unitCoordinateEquiv t w ht hw x) = 0 ↔ _
   change dotProduct t (unitCoordinateEquiv t w ht hw x) = 0 ↔ x w = 0
   rw [unitCoordinateEquiv_dot_coordinate t w ht hw x]
+
+def coordinateHyperplaneTwo (w z : ι) :
+    Submodule (ZMod 2) (ι → ZMod 2) :=
+  coordinateHyperplane w ⊓ coordinateHyperplane z
+
+def twoCoordinateEquiv (x y : ι → ZMod 2) (w z : ι)
+    (hx : dotProduct x x = 1) (hy : dotProduct y y = 1)
+    (hxw : x w = 0) (hyz : y z = 0) :
+    (ι → ZMod 2) ≃ₗ[ZMod 2] (ι → ZMod 2) :=
+  (unitCoordinateEquiv x w hx hxw).trans
+    (unitCoordinateEquiv y z hy hyz)
+
+theorem twoCoordinateEquiv_dot (x y : ι → ZMod 2) (w z : ι)
+    (hx : dotProduct x x = 1) (hy : dotProduct y y = 1)
+    (hxw : x w = 0) (hyz : y z = 0) (a b : ι → ZMod 2) :
+    dotProduct (twoCoordinateEquiv x y w z hx hy hxw hyz a)
+      (twoCoordinateEquiv x y w z hx hy hxw hyz b) = dotProduct a b := by
+  change dotProduct
+      (unitCoordinateEquiv y z hy hyz (unitCoordinateEquiv x w hx hxw a))
+      (unitCoordinateEquiv y z hy hyz (unitCoordinateEquiv x w hx hxw b)) = _
+  rw [unitCoordinateEquiv_dot y z hy hyz]
+  exact unitCoordinateEquiv_dot x w hx hxw a b
+
+theorem twoCoordinateEquiv_x (x y : ι → ZMod 2) (w z : ι)
+    (hx : dotProduct x x = 1) (hy : dotProduct y y = 1)
+    (hxy : dotProduct x y = 0) (hxw : x w = 0)
+    (hyw : y w = 0) (hyz : y z = 0) (hzw : z ≠ w) :
+    twoCoordinateEquiv x y w z hx hy hxw hyz x = coordinate w := by
+  change unitCoordinateEquiv y z hy hyz
+      (unitCoordinateEquiv x w hx hxw x) = coordinate w
+  rw [unitCoordinateEquiv_unit x w hx hxw]
+  apply unitCoordinateEquiv_fix y z hy hyz (coordinate w)
+  · rw [dot_coordinate]
+    exact hyw
+  · simp [coordinate, hzw]
+
+theorem twoCoordinateEquiv_y (x y : ι → ZMod 2) (w z : ι)
+    (hx : dotProduct x x = 1) (hy : dotProduct y y = 1)
+    (hxy : dotProduct x y = 0) (hxw : x w = 0)
+    (hyw : y w = 0) (hyz : y z = 0) (hzw : z ≠ w) :
+    twoCoordinateEquiv x y w z hx hy hxw hyz y = coordinate z := by
+  change unitCoordinateEquiv y z hy hyz
+      (unitCoordinateEquiv x w hx hxw y) = coordinate z
+  rw [unitCoordinateEquiv_fix x w hx hxw y hxy hyw]
+  exact unitCoordinateEquiv_unit y z hy hyz
+
+theorem twoCoordinateEquiv_comap_orthogonal (x y : ι → ZMod 2) (w z : ι)
+    (hx : dotProduct x x = 1) (hy : dotProduct y y = 1)
+    (hxy : dotProduct x y = 0) (hxw : x w = 0)
+    (hyw : y w = 0) (hyz : y z = 0) (hzw : z ≠ w) :
+    (coordinateHyperplaneTwo w z).comap
+        (twoCoordinateEquiv x y w z hx hy hxw hyz).toLinearMap =
+      (Submodule.span (ZMod 2) ({x, y} : Set (ι → ZMod 2))).orthogonalBilin
+        (bilinearDot : _) := by
+  ext q
+  rw [Submodule.mem_comap]
+  constructor
+  · intro hq
+    have hwq : (twoCoordinateEquiv x y w z hx hy hxw hyz q) w = 0 := by
+      exact (show twoCoordinateEquiv x y w z hx hy hxw hyz q ∈
+          coordinateHyperplane w from hq.1)
+    have hzq : (twoCoordinateEquiv x y w z hx hy hxw hyz q) z = 0 := by
+      exact (show twoCoordinateEquiv x y w z hx hy hxw hyz q ∈
+          coordinateHyperplane z from hq.2)
+    have hxq : dotProduct x q = 0 := by
+      calc
+        dotProduct x q = dotProduct
+            (twoCoordinateEquiv x y w z hx hy hxw hyz x)
+            (twoCoordinateEquiv x y w z hx hy hxw hyz q) := by
+              rw [twoCoordinateEquiv_dot]
+        _ = dotProduct (coordinate w)
+            (twoCoordinateEquiv x y w z hx hy hxw hyz q) := by
+              rw [twoCoordinateEquiv_x x y w z hx hy hxy hxw hyw hyz hzw]
+        _ = 0 := by rw [coordinate_dot, hwq]
+    have hyq : dotProduct y q = 0 := by
+      calc
+        dotProduct y q = dotProduct
+            (twoCoordinateEquiv x y w z hx hy hxw hyz y)
+            (twoCoordinateEquiv x y w z hx hy hxw hyz q) := by
+              rw [twoCoordinateEquiv_dot]
+        _ = dotProduct (coordinate z)
+            (twoCoordinateEquiv x y w z hx hy hxw hyz q) := by
+              rw [twoCoordinateEquiv_y x y w z hx hy hxy hxw hyw hyz hzw]
+        _ = 0 := by rw [coordinate_dot, hzq]
+    rw [Submodule.mem_orthogonalBilin_span]
+    intro a ha
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at ha
+    rcases ha with rfl | rfl
+    · exact hxq
+    · exact hyq
+  · intro hq
+    rw [Submodule.mem_orthogonalBilin_span] at hq
+    have hxq : dotProduct x q = 0 := hq (by simp)
+    have hyq : dotProduct y q = 0 := hq (by simp)
+    constructor
+    · change (twoCoordinateEquiv x y w z hx hy hxw hyz q) w = 0
+      calc
+        (twoCoordinateEquiv x y w z hx hy hxw hyz q) w =
+            dotProduct (coordinate w)
+              (twoCoordinateEquiv x y w z hx hy hxw hyz q) := by
+                rw [coordinate_dot]
+        _ = dotProduct
+            (twoCoordinateEquiv x y w z hx hy hxw hyz x)
+            (twoCoordinateEquiv x y w z hx hy hxw hyz q) := by
+              rw [twoCoordinateEquiv_x x y w z hx hy hxy hxw hyw hyz hzw]
+        _ = dotProduct x q := by
+          rw [twoCoordinateEquiv_dot]
+        _ = 0 := hxq
+    · change (twoCoordinateEquiv x y w z hx hy hxw hyz q) z = 0
+      calc
+        (twoCoordinateEquiv x y w z hx hy hxw hyz q) z =
+            dotProduct (coordinate z)
+              (twoCoordinateEquiv x y w z hx hy hxw hyz q) := by
+                rw [coordinate_dot]
+        _ = dotProduct
+            (twoCoordinateEquiv x y w z hx hy hxw hyz y)
+            (twoCoordinateEquiv x y w z hx hy hxw hyz q) := by
+              rw [twoCoordinateEquiv_y x y w z hx hy hxy hxw hyw hyz hzw]
+        _ = dotProduct y q := by
+          rw [twoCoordinateEquiv_dot]
+        _ = 0 := hyq
 
 end BinaryTransvection
 end ExactFourier
