@@ -208,6 +208,35 @@ theorem fused_margin_after_three_stages_positive :
     CenterCompression.H24.I0, CenterCompression.H24.v,
     CenterCompression.H24.h, Nat.choose]
 
+theorem fused_margin_after_six_phases_positive :
+    CenterBoundaryShearCandidate.H24.centreFusionSaving -
+        (6 * (I * h) : ℤ) > 0 := by
+  norm_num [CenterBoundaryShearCandidate.H24.centreFusionSaving,
+    CenterBoundaryShearCandidate.H24.v, CenterBoundaryShearCandidate.H24.h,
+    CenterCompression.H24.N0, I, h,
+    CenterCompression.H24.I0, CenterCompression.H24.v,
+    CenterCompression.H24.h, Nat.choose]
+
+def sixPhaseNormalized : ℚ :=
+  ((CenterBoundaryShearCandidate.H24.centreFusionSaving -
+      (6 * (I * h) : ℤ)) : ℚ) /
+    ((CenterCompression.H24.m : ℚ) * CenterCompression.H24.Wstar)
+
+theorem sixPhaseNormalized_eq :
+    sixPhaseNormalized = 2624369 / 237494511599616 := by
+  norm_num [sixPhaseNormalized,
+    CenterBoundaryShearCandidate.H24.centreFusionSaving,
+    CenterBoundaryShearCandidate.H24.v, CenterBoundaryShearCandidate.H24.h,
+    CenterCompression.H24.N0, CenterCompression.H24.m,
+    CenterCompression.H24.Wstar, I, h,
+    CenterCompression.H24.I0, CenterCompression.H24.v,
+    CenterCompression.H24.h, Nat.choose]
+
+theorem sixPhaseNormalized_gt_one_e_minus_nine :
+    (1 : ℚ) / 10 ^ 9 < sixPhaseNormalized := by
+  rw [sixPhaseNormalized_eq]
+  norm_num
+
 end H24
 
 /-! ## Minimal gate-level interface still missing
