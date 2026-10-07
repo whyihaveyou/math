@@ -13,12 +13,15 @@ more favorable boundary fantasies:
 * one transition only, while retaining codimension two;
 * one transition and codimension one.
 
-These are arithmetic stress tests, not frame constructions.  Even the second
-fantasy leaves less than 1.3e9 effective saving, far below the approximately
-4.637e9 saving needed for a 1e-9 exponent gap at the H=24 padded multiplier.
-Thus changing only persistence or codimension in this pair hierarchy cannot
-reach the requested scale; a successful route needs a different factorization
-or a genuinely new stage boundary.
+These are arithmetic stress tests, not frame constructions.  The effective
+savings below are normalized against the centre-compressed padded multiplier
+`W* = 2^45`; this fixed-padding comparison is useful for isolating boundary
+charges, but it is not the padding of the hypothetical pair network itself.
+Under the naive pair-role count, the role count is only `20,269,858,048` and
+the next power is `2^35`, so the exponent must be recomputed separately.
+The file therefore makes no claim that the optimistic variants miss `1e-9`.
+It only isolates the conditional boundary arithmetic; a full pair result still
+needs a frame-labelled stage and its actual role/padding count.
 -/
 
 namespace OAI
@@ -30,6 +33,14 @@ open CenterCompression
 open SideHierarchyArithmetic.H24
 
 def pairBlock : ℕ := invocationsPerStage * pairCount
+
+/- Naive scalar role count if the `276` pair aggregates replace the ordered
+   side bank, retaining the `h` surviving centre wires. -/
+def pairRoleCount : ℕ :=
+  2 * CenterCompression.H24.N0 +
+    CenterCompression.H24.I0 * (pairCount + CenterCompression.H24.h)
+
+def pairPadding : ℕ := 2 ^ 35
 
 def oneWayCodimTwoPenalty : ℕ := 2 * pairBlock
 
@@ -44,6 +55,14 @@ def effectiveCodimOneSaving : ℕ :=
 theorem pairBlock_eq : pairBlock = 1130654976 := by
   norm_num [pairBlock, invocationsPerStage, pairCount,
     h, v, CenterCompression.H24.h, CenterCompression.H24.v, Nat.choose]
+
+theorem pairRoleCount_eq : pairRoleCount = 20269858048 := by
+  norm_num [pairRoleCount, pairCount, h, v,
+    CenterCompression.H24.N0, CenterCompression.H24.I0,
+    CenterCompression.H24.h, CenterCompression.H24.v, Nat.choose]
+
+theorem pairPadding_eq : pairPadding = 34359738368 := by
+  norm_num [pairPadding]
 
 theorem oneWayCodimTwoPenalty_eq : oneWayCodimTwoPenalty = 2261309952 := by
   norm_num [oneWayCodimTwoPenalty, pairBlock, invocationsPerStage, pairCount,
