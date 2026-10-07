@@ -59,6 +59,20 @@ noncomputable def towerPrefixFinEquiv (h k : ℕ) :
   (Fintype.equivFin (TowerPrefix h k)).trans
     (finCongr (towerPrefix_card h k))
 
+/-! A product-order equivalence, useful when comparing the abstract tower
+with the concrete `Fin (h ^ k)` address convention.  Unlike
+`Fintype.equivFin`, this recursively uses `finProdFinEquiv`; it therefore
+keeps the old prefix coordinates as the first factor at every extension. -/
+
+noncomputable def towerPrefixProductFinEquiv (h : ℕ) : (k : ℕ) →
+    TowerPrefix h k ≃ Fin (h ^ k)
+  | 0 =>
+      (Fintype.equivFin (TowerPrefix h 0)).trans
+        (finCongr (by simp [TowerPrefix]))
+  | k + 1 =>
+      ((towerPrefixProductFinEquiv h k).prodCongr (Equiv.refl (Fin h))).trans
+        finProdFinEquiv
+
 abbrev PrefixLabel (h k : ℕ) := TowerPrefix h k → F
 abbrev Address (h k : ℕ) := TowerPrefix h k × Fin h → F
 
