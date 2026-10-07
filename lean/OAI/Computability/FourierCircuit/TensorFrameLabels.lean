@@ -111,6 +111,30 @@ def tensorDotForm {h : ℕ} :
     (by intro v w₁ w₂; simp [dotProduct, Finset.sum_add_distrib, mul_add])
     (by intro a v w; simp [dotProduct, Finset.mul_sum, mul_left_comm])
 
+theorem pure3_line_is_complement
+    {h : ℕ} (a b c : Fin h → ZMod 2)
+    (ha : dotProduct a a = 1) (hb : dotProduct b b = 1)
+    (hc : dotProduct c c = 1) :
+    IsCompl ((ZMod 2) ∙ pure3 a b c)
+      (((ZMod 2) ∙ pure3 a b c).orthogonalBilin
+        (tensorDotForm : _)) := by
+  have hnorm : dotProduct (pure3 a b c) (pure3 a b c) ≠ 0 := by
+    rw [pure3_norm_of_unit a b c ha hb hc]
+    decide
+  exact LinearMap.isCompl_span_singleton_orthogonal hnorm
+
+theorem pure3_line_nested_of_first_orth
+    {h : ℕ} (a b c a' b' c' : Fin h → ZMod 2)
+    (ha : dotProduct a a' = 0) :
+    (ZMod 2) ∙ pure3 a b c ≤
+      ((ZMod 2) ∙ pure3 a' b' c').orthogonalBilin
+        (tensorDotForm : _) := by
+  apply line_in_orthogonal_line tensorDotForm
+  have ha' : dotProduct a' a = 0 := by
+    rw [dotProduct_comm]
+    exact ha
+  exact pure3_orthogonal_of_first a' b' c' a b c ha'
+
 theorem tensor3_dot
     {h : ℕ} (A B C A' B' C' : Finset (Fin h)) :
     dotProduct (tensor3 A B C) (tensor3 A' B' C') =

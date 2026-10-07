@@ -290,6 +290,62 @@ theorem twoCoordinateEquiv_comap_orthogonal (x y : ι → ZMod 2) (w z : ι)
           rw [twoCoordinateEquiv_dot]
         _ = 0 := hyq
 
+theorem orthogonal_pair_decomp (x y : ι → ZMod 2)
+    (hx : dotProduct x x = 1) (hxy : dotProduct x y = 0) :
+    ((ZMod 2) ∙ y).orthogonalBilin (bilinearDot : _) =
+      (ZMod 2) ∙ x ⊔
+        (Submodule.span (ZMod 2) ({x, y} : Set (ι → ZMod 2))).orthogonalBilin
+          (bilinearDot : _) := by
+  ext v
+  constructor
+  · intro hv
+    rw [Submodule.orthogonalBilin_span_singleton] at hv
+    have hyv : dotProduct y v = 0 := LinearMap.mem_ker.mp hv
+    let a : ZMod 2 := dotProduct x v
+    let r : ι → ZMod 2 := v + a • x
+    have hrx : dotProduct x r = 0 := by
+      dsimp [r, a]
+      simp only [dotProduct_add, dotProduct_smul, smul_eq_mul, hx, mul_one]
+      exact CharTwo.add_self_eq_zero _
+    have hry : dotProduct y r = 0 := by
+      dsimp [r, a]
+      have hyx : dotProduct y x = 0 := by
+        rw [dotProduct_comm]
+        exact hxy
+      simp [dotProduct_add, dotProduct_smul, smul_eq_mul, hyx, hyv]
+    have hrpair : r ∈
+        (Submodule.span (ZMod 2) ({x, y} : Set (ι → ZMod 2))).orthogonalBilin
+          (bilinearDot : _) := by
+      rw [Submodule.mem_orthogonalBilin_span]
+      intro q hq
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hq
+      rcases hq with rfl | rfl
+      · exact hrx
+      · exact hry
+    have hvdecomp : v = a • x + r := by
+      dsimp [r]
+      ext i
+      calc
+        v i = v i + (a * x i + a * x i) := by
+          rw [CharTwo.add_self_eq_zero, add_zero]
+        _ = a * x i + (v i + a * x i) := by ring
+    rw [hvdecomp]
+    apply Submodule.mem_sup.mpr
+    exact ⟨a • x, Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self x),
+      r, hrpair, rfl⟩
+  · intro hv
+    rw [Submodule.orthogonalBilin_span_singleton]
+    change dotProduct y v = 0
+    rcases Submodule.mem_sup.mp hv with ⟨u, hu, r, hr, rfl⟩
+    rcases Submodule.mem_span_singleton.mp hu with ⟨a, rfl⟩
+    have hyr : dotProduct y r = 0 := by
+      rw [Submodule.mem_orthogonalBilin_span] at hr
+      exact hr (by simp)
+    have hyx : dotProduct y x = 0 := by
+      rw [dotProduct_comm]
+      exact hxy
+    simp [dotProduct_add, dotProduct_smul, smul_eq_mul, hyx, hyr]
+
 end BinaryTransvection
 end ExactFourier
 end OAI
