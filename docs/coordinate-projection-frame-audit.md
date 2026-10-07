@@ -73,6 +73,11 @@ side channels do not exist in the current frame schedule.  To make a
 rank-(h) projection useful, the circuit must change the side boundary to
 permit diagonal source/target channels (or move the residual into a new
 centre-like bank); that is a new frame construction, not a parameter tweak.
+More generally, at h=24 a modified schedule would need at most 98 nonzero
+diagonal residual channels to keep this two-direction charge below the centre
+saving.  The 2^36 width bucket permits at most 4,218 side roles per invocation,
+so an oblique projection with fewer diagonal entries would also have to keep
+its off-diagonal support very sparse.
 
 Run:
 

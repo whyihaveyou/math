@@ -53,6 +53,8 @@ centre_saving = 2 * N0 - 2 * I0 * H**2
 conditional_penalty = 2 * I0 * side_roles
 conditional_margin = centre_saving - conditional_penalty
 conditional_normalized = Fraction(conditional_margin, m * padding)
+max_diagonal_for_positive_margin = (centre_saving - 1) // (2 * I0)
+side_role_budget_at_padding = (padding - 2 * N0) // I0 - centre_roles
 
 print({
     "h": H,
@@ -77,4 +79,6 @@ print({
     "conditional_margin": conditional_margin,
     "conditional_normalized_margin": str(conditional_normalized),
     "conditional_normalized_margin_float": float(conditional_normalized),
+    "max_diagonal_roles_for_positive_margin": max_diagonal_for_positive_margin,
+    "side_role_budget_at_padding_2^36": side_role_budget_at_padding,
 })
