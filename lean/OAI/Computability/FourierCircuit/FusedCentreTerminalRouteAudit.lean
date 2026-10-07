@@ -14,11 +14,13 @@ explicit assumption that the terminal bank has one role per incidence.
 
 The endpoint common frames (`ell = h` or `ell = h - 1`) therefore cost one
 extra unit per incidence role.  All three arithmetic margins remain positive
-and above `10⁻⁹` after that correction.  The statement is only an arithmetic
-certificate for this role-count model: it does not construct a terminal gate,
-prove scalar/gate commutation, or give a circuit/all-length DFT theorem.
-The generic route audit still proves that a nonendpoint integral frame costs
-at least five extra units per role.
+and above `10⁻⁹` after that correction.  This is an unimplemented compression
+target: if the terminal gate instead requires one role per `baseCount h = v³`
+bank entry, all three endpoint margins are negative.  The statements are
+only arithmetic certificates for these explicit role-count models: they do
+not construct a terminal gate, prove scalar/gate commutation, or give a
+circuit/all-length DFT theorem.  The generic route audit still proves that a
+nonendpoint integral frame costs at least five extra units per role.
 -/
 
 namespace OAI
@@ -40,6 +42,11 @@ def endpointMargin (h : ℕ) : ℤ := adjustedMargin h (h : ℤ)
 
 def endpointNormalized (h padding : ℕ) : ℚ :=
   (endpointMargin h : ℚ) / ((h ^ 3 : ℕ) : ℚ) / (padding : ℚ)
+
+/- The alternative, uncompressed terminal route has one role for each entry
+   of a bank indexed by three triple coordinates. -/
+def fullBankMargin (h : ℕ) (ell : ℤ) : ℤ :=
+  fusedMargin h - (terminalCost (h : ℤ) ell - 1) * (baseCount h : ℤ)
 
 theorem endpointMargin16_eq : endpointMargin 16 = 14112000 := by
   norm_num [endpointMargin, adjustedMargin, fusedMargin, fusedSaving,
@@ -137,6 +144,43 @@ theorem nonendpointMargin18_le :
   norm_num [fusedMargin, fusedSaving, shearCharge, incidenceCount,
     baseCount, value, neighborDegree, Nat.choose] at hbound ⊢
   exact hbound
+
+theorem fullBankEndpointMargin16_eq : fullBankMargin 16 16 = -160563200 := by
+  norm_num [fullBankMargin, fusedMargin, fusedSaving, shearCharge,
+    incidenceCount, baseCount, value, terminalCost, Nat.choose]
+
+theorem fullBankEndpointMargin17_eq : fullBankMargin 17 17 = -243684800 := by
+  norm_num [fullBankMargin, fusedMargin, fusedSaving, shearCharge,
+    incidenceCount, baseCount, value, terminalCost, Nat.choose]
+
+theorem fullBankEndpointMargin18_eq : fullBankMargin 18 18 = -355567104 := by
+  norm_num [fullBankMargin, fusedMargin, fusedSaving, shearCharge,
+    incidenceCount, baseCount, value, terminalCost, Nat.choose]
+
+theorem fullBankMargin_le_endpointMargin (h : ℕ) (ell : ℤ) :
+    fullBankMargin h ell ≤ fullBankMargin h (h : ℤ) := by
+  have hcost := terminal_cost_ge_two (h : ℤ) ell
+  have hend : terminalCost (h : ℤ) (h : ℤ) = 2 := by
+    simp [terminalCost]
+  have hbase : 0 ≤ (baseCount h : ℤ) := by positivity
+  unfold fullBankMargin
+  rw [hend]
+  nlinarith
+
+/- A full bank route cannot repair its negative endpoint ledger by choosing
+   a different integral common frame.  This remains route-specific. -/
+theorem fullBank_routes_negative (ell16 ell17 ell18 : ℤ) :
+    fullBankMargin 16 ell16 < 0 ∧
+      fullBankMargin 17 ell17 < 0 ∧
+      fullBankMargin 18 ell18 < 0 := by
+  have h16 := fullBankMargin_le_endpointMargin 16 ell16
+  have h17 := fullBankMargin_le_endpointMargin 17 ell17
+  have h18 := fullBankMargin_le_endpointMargin 18 ell18
+  norm_num only [Nat.cast_ofNat] at h16 h17 h18
+  rw [fullBankEndpointMargin16_eq] at h16
+  rw [fullBankEndpointMargin17_eq] at h17
+  rw [fullBankEndpointMargin18_eq] at h18
+  omega
 
 end FusedCentreTerminalRouteAudit
 end ExactFourier

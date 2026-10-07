@@ -18,6 +18,20 @@ h = 18: 185,773,824
 After the same `h^3` and power-of-two padding normalization, each remains
 strictly above `10^-9` (the exact inequalities are checked by Lean).
 
+The incidence-role assumption is an unimplemented compression target.  If
+the terminal map instead needs one role per entry in the full `v^3` bank, the
+minimum endpoint-route margins are
+
+```text
+h = 16: -160,563,200
+h = 17: -243,684,800
+h = 18: -355,567,104
+```
+
+Every other integral common frame is at least as expensive, so the full-bank
+route is negative throughout this model.  A positive terminal construction
+must justify its compressed role count or use a different gate topology.
+
 This does not lower the common-frame per-role cost below two.  The endpoint
 frames are already the minimum: `terminalCost h ell = 2` exactly when
 `ell = h` or `ell = h - 1`; every other integral frame has cost at least six,
