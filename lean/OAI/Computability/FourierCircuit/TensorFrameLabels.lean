@@ -1,6 +1,5 @@
 import OAI.Computability.FourierCircuit.FrameLabels
 import OAI.Computability.FourierCircuit.BinaryTransvection
-import H24lean.BinaryTransvection
 import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!

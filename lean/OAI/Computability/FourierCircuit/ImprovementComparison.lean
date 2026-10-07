@@ -1,4 +1,4 @@
-import H24lean.CenterCompression
+import OAI.Computability.FourierCircuit.CenterCompression
 
 /-!
 # Exact comparison with the uncompressed-centre H=24 candidate
