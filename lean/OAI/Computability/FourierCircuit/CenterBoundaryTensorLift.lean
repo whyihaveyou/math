@@ -54,6 +54,24 @@ noncomputable def lift (U : Active h ≃ₗ[F] Active h) :
     (z : Address ι h) (q : ι × Fin h) :
     lift U z q = U (fun j => z (q.1, j)) q.2 := rfl
 
+/-- A fibrewise lift preserves the full address dot product whenever its
+    active-factor equivalence preserves the active dot product. -/
+theorem lift_dot [Fintype ι]
+    (U : Active h ≃ₗ[F] Active h)
+    (hU : ∀ a b : Active h,
+      dotProduct (U a) (U b) = dotProduct a b)
+    (z z' : Address ι h) :
+    dotProduct (lift U z) (lift U z') = dotProduct z z' := by
+  change (∑ q : ι × Fin h, lift U z q * lift U z' q) =
+    ∑ q : ι × Fin h, z q * z' q
+  rw [Fintype.sum_prod_type, Fintype.sum_prod_type]
+  apply Fintype.sum_congr
+  intro i
+  change dotProduct (U (fun j => z (i, j)))
+      (U (fun j => z' (i, j))) =
+    dotProduct (fun j => z (i, j)) (fun j => z' (i, j))
+  exact hU _ _
+
 /-- The lift commutes with prefix-active tensor insertion. -/
 theorem lift_insert (U : Active h ≃ₗ[F] Active h)
     (p : ι → F) (t : Active h) :
@@ -65,6 +83,20 @@ theorem lift_insert (U : Active h ≃ₗ[F] Active h)
     simp [smul_eq_mul]
   rw [hfun, U.map_smul]
   rfl
+
+/-- The concrete binary transvection has an isometric tensor lift. -/
+theorem unit_transvection_lift_dot
+    (t : Active h) (w : Fin h)
+    (ht : dotProduct t t = (1 : F)) (hw : t w = 0)
+    [Fintype ι]
+    (z z' : Address ι h) :
+    dotProduct
+        (lift (BinaryTransvection.unitCoordinateEquiv t w ht hw) z)
+        (lift (BinaryTransvection.unitCoordinateEquiv t w ht hw) z') =
+      dotProduct z z' := by
+  apply lift_dot
+  intro a b
+  exact BinaryTransvection.unitCoordinateEquiv_dot t w ht hw a b
 
 /-- A prefix-specific tensor-lift interface. -/
 structure PrefixTensorLiftInterface (p : ι → F) where
