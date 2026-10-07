@@ -101,6 +101,18 @@ theorem addressReindex_insert {α β : Type*} {h : ℕ}
   funext z
   rfl
 
+/- A prefix reindexing also commutes with a fibrewise active-factor shear.
+   This is the missing equality needed when a local boundary transport is
+   expressed first on the abstract product tower and then on `Fin (h^k)`
+   addresses. -/
+theorem addressReindex_lift {α β : Type*} {h : ℕ}
+    (e : α ≃ β) (U : Active h ≃ₗ[F] Active h)
+    (v : α × Fin h → F) :
+    addressReindex e (CenterBoundaryTensorLift.lift U v) =
+      CenterBoundaryTensorLift.lift U (addressReindex e v) := by
+  funext z
+  rfl
+
 abbrev PrefixLabel (h k : ℕ) := TowerPrefix h k → F
 abbrev Address (h k : ℕ) := TowerPrefix h k × Fin h → F
 
