@@ -15,8 +15,10 @@ amortized charge, a value at most 473 leaves a normalized margin above
 `10^-9` under the fixed `2^45` denominator. This is a design threshold, not
 an implementation result.
 
-A target-indexed physical bank must multiply the count by the 2,024 target
-triples. The same Lean file records the resulting stress tests:
+If `c0,c1,c2` are fixed-target prices rather than already-amortized prices,
+an independent target-family factor of 2,024 may be charged. The same Lean
+file records this explicitly labelled stress model (the `v^2` invocation block
+is retained by definition; this is not a universal physical cost identity):
 
 - two units for every class gives family margin `-4,574,466,169,856`;
 - even a single unit charged only to the three contained pairs gives family

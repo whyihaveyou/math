@@ -14,10 +14,11 @@ per-target weighted count is
     210*c0 + 63*c1 + 3*c2
 
 The `amortizedMargin` theorem below treats this count as an already-amortized
-price.  A physical target-indexed implementation must multiply it by `v`.
-The `familyMargin` theorems make that missing factor explicit: even the
-all-two-unit price is then negative.  Thus the threshold is a design target,
-not an established circuit saving.
+price against a retained `v^2` invocation block.  A different model may
+instead count one fixed-target aggregate family and add an independent factor
+`v`; `familyMargin` records that deliberately separate stress test.  It is not
+an identity for the physical circuit, and the threshold is only a design
+target, not an established saving.
 -/
 
 namespace OAI
@@ -46,6 +47,7 @@ def amortizedMargin (c0 c1 c2 : ℕ) : ℤ :=
 def amortizedNormalizedMargin (c0 c1 c2 : ℕ) : ℚ :=
   (amortizedMargin c0 c1 c2 : ℚ) / ((m : ℚ) * (padding : ℚ))
 
+/- An explicit extra target-family replication factor for a stress model. -/
 def familyWeightedCount (c0 c1 c2 : ℕ) : ℕ :=
   v * weightedCount c0 c1 c2
 
