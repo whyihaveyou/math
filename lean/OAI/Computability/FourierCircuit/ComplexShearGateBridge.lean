@@ -87,11 +87,11 @@ noncomputable def scalarShearWitness {n : ℕ} (s : Shear (Fin n)) :
 
 
 /-- Direct input wires for the one-gate unit-coefficient realization. -/
-private def unitInputIndex {n : ℕ} (k : Fin n) : Fin (n + 1) :=
-  k.castSucc
+private def unitInputIndex {n : ℕ} (k : Fin n) : Fin (n + 1 + 1) :=
+  k.castSucc.castSucc
 
-private def unitGateIndex {n : ℕ} : Fin (n + 1) :=
-  Fin.last n
+private def unitGateIndex {n : ℕ} : Fin (n + 1 + 1) :=
+  Fin.last (n + 1)
 
 /-- When the shear coefficient is `1`, a single `Gate.add` realizes the
 transvection.  This is the exact unit-coefficient case relevant to a possible
