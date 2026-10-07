@@ -11,9 +11,9 @@ indicator vectors of three-element sets containing `i`.  This module records
 the local frame facts used by the side-moment design: every such generator lies
 in the hyperplane orthogonal to the complement label (zero at `i`, one
 elsewhere), that hyperplane has dimension `h - 1`, and explicit incidence
-combinations recover a coordinate vector and pair differences.  For `h ≥ 4`,
-the final theorem in the file proves equality with that hyperplane.  This is
-still only a local label certificate; it does not provide a circuit schedule.
+combinations recover a coordinate vector and pair differences.  Equality of
+the incidence span with the hyperplane, and any resulting circuit schedule,
+are intentionally left open.
 
 This is only a local label certificate.  It does not assert a complete framed
 circuit or a complexity bound.
@@ -139,7 +139,7 @@ theorem incidence_indicator_orthogonal {h : ℕ} {i : Fin h}
 /-- The incidence span is contained in the complement-label orthogonal hyperplane. -/
 theorem incidenceSpan_le_orthogonal {h : ℕ} {i : Fin h} :
     IncidenceSpan h i ≤
-      ((K ∙ complementLabel i).orthogonalBilin (FrameLabels.dotForm (h := h))) := by
+      ((K ∙ complementLabel i).orthogonalBilin (dotForm : _)) := by
   apply Submodule.span_le.2
   rintro v ⟨T, hT, hiT, rfl⟩
   change ∀ z ∈ (K ∙ complementLabel i), dotForm z (indicator T) = 0
@@ -192,101 +192,3 @@ theorem orthogonal_finrank {h : ℕ} (hh : 2 ≤ h) (i : Fin h) :
 end IncidenceTripleSpan
 end ExactFourier
 end OAI
-
-namespace OAI.ExactFourier.IncidenceTripleSpan
-
-open FrameLabels
-
-/-- For `h ≥ 4`, the incidence triples through `i` span the complement-label
-orthogonal hyperplane.  The proof is by recovering `e_i`, every pair difference
-`e_x + e_b` away from `i`, and decomposing an arbitrary even-parity vector. -/
-theorem incidenceSpan_eq_orthogonal {h : ℕ} (hh : 4 ≤ h) (i : Fin h) :
-    IncidenceSpan h i =
-      ((K ∙ complementLabel i).orthogonalBilin
-        (FrameLabels.dotForm (h := h))) := by
-  apply le_antisymm (incidenceSpan_le_orthogonal (h := h) (i := i))
-  rw [Submodule.orthogonalBilin_span_singleton]
-  intro x hx
-  rw [LinearMap.mem_ker] at hx
-  obtain ⟨a, b, c, hai, hbi, hba, hci, hca, hcb⟩ :=
-    TripleSpan.exists_three_away (by omega : 3 < h) i
-  have hei : TripleSpan.basisVec i ∈ IncidenceSpan h i :=
-    basisVec_i_mem hh i a b c hai hbi hba hci hca hcb
-  obtain ⟨r, hri⟩ :=
-    Fintype.exists_ne_of_one_lt_card (α := Fin h) (by
-      rw [Fintype.card_fin]
-      omega) i
-  have hpair : ∀ x b : Fin h, x ≠ i → b ≠ i → x ≠ b →
-      TripleSpan.basisVec x + TripleSpan.basisVec b ∈ IncidenceSpan h i := by
-    intro x b hxi hbi' hxb'
-    let forbidden : Finset (Fin h) := {i, x, b}
-    have hforbidden : forbidden.card = 3 := by
-      simp [forbidden, hxi, hxi.symm, hbi', hbi'.symm, hxb', hxb'.symm]
-    have hlt : forbidden.card < (Finset.univ : Finset (Fin h)).card := by
-      rw [hforbidden, Finset.card_univ, Fintype.card_fin]
-      omega
-    obtain ⟨c', hcuniv, hcforbidden⟩ :=
-      Finset.exists_mem_notMem_of_card_lt_card hlt
-    apply pair_difference_mem (c := c') hxi hbi'
-    · intro hcb
-      apply hcforbidden
-      simp [forbidden, hcb]
-    · intro hcx
-      apply hcforbidden
-      simp [forbidden, hcx]
-    · exact hxb'
-    · intro hci'
-      apply hcforbidden
-      simp [forbidden, hci']
-  let S : Finset (Fin h) := (Finset.univ.erase i).erase r
-  have hS_mem : ∀ j ∈ S, j ≠ i ∧ j ≠ r := by
-    intro j hj
-    simpa [S, and_comm] using hj
-  have hsum_mem :
-      (x i) • TripleSpan.basisVec i +
-        ∑ j ∈ S, (x j) •
-          (TripleSpan.basisVec j + TripleSpan.basisVec r) ∈ IncidenceSpan h i := by
-    apply (IncidenceSpan h i).add_mem
-    · exact (IncidenceSpan h i).smul_mem (x i) hei
-    · apply Submodule.sum_mem
-      intro j hj
-      have hj' := hS_mem j hj
-      exact (IncidenceSpan h i).smul_mem (x j)
-        (hpair j r hj'.1 (by exact hri) (by exact hj'.2))
-  have hsum_eq :
-      x i • TripleSpan.basisVec i +
-        ∑ j ∈ S, (x j) •
-          (TripleSpan.basisVec j + TripleSpan.basisVec r) = x := by
-    funext k
-    by_cases hki : k = i
-    · subst k
-      simp [TripleSpan.basisVec, S]
-    · by_cases hkr : k = r
-      · subst k
-        have hpar := hx
-        simp [dotForm, complementLabel, indicator, dotProduct] at hpar
-        -- The parity equation says the sum over `S` equals the `r` coordinate.
-        rw [← Finset.sum_erase_add (Finset.univ.erase i)
-          (fun j => x j) (by simp [hri])]
-        rw [← Finset.sum_erase_add (Finset.univ : Finset (Fin h))
-          (fun j => x j) (by simp [hri])]
-        -- The remaining sum is exactly the defining parity equation.
-        simpa [S, TripleSpan.basisVec, hki, hkr, Finset.sum_add_distrib,
-          Finset.mul_sum, smul_eq_mul] using hpar
-      · have hkS : k ∈ S ↔ k ≠ i ∧ k ≠ r := by
-          simp [S, hki, hkr]
-        have hsingle :
-            (∑ j ∈ S, (x j) •
-              (TripleSpan.basisVec j + TripleSpan.basisVec r)) k = x k := by
-          rw [Finset.sum_apply]
-          rw [Finset.sum_congr rfl]
-          intro j hj
-          by_cases hjk : j = k
-          · subst j
-            simp [TripleSpan.basisVec, hki, hkr, hkS.mpr ⟨hki, hkr⟩]
-          · simp [TripleSpan.basisVec, hjk, hjk.symm, hkr, hki]
-        simp [TripleSpan.basisVec, hki, hkr, hsingle]
-  rw [← hsum_eq]
-  exact hsum_mem
-
-end OAI.ExactFourier.IncidenceTripleSpan
