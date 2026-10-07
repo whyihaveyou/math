@@ -92,6 +92,36 @@ theorem targetJoinPenalty_exceeds_saving :
     CenterCompression.H24.m,
     Nat.choose]
 
+/- The diagonal-free factorization removes the v target-indexed side lines,
+   but it has to supply one direct x_S bank shear for every target in every
+   invocation.  The following is only a conditional cost model: it assumes
+   that each such direct two-bank gate consumes at least one residual unit. -/
+def directRoleCount : ℕ := I0 * v
+
+theorem directRoleCount_eq : directRoleCount = 24874409472 := by
+  norm_num [directRoleCount, I0, v,
+    SideMomentArithmetic.H24.I0,
+    SideMomentArithmetic.H24.v,
+    SideMomentArithmetic.H24.h,
+    CenterCompression.H24.I0,
+    CenterCompression.H24.v,
+    CenterCompression.H24.h,
+    Nat.choose]
+
+theorem direct_one_residual_exceeds_saving :
+    SideMomentArithmetic.H24.deltaMoment ≤ directRoleCount := by
+  norm_num [directRoleCount, SideMomentArithmetic.H24.deltaMoment,
+    I0, v, h, N0,
+    SideMomentArithmetic.H24.I0,
+    SideMomentArithmetic.H24.v,
+    SideMomentArithmetic.H24.h,
+    SideMomentArithmetic.H24.N0,
+    CenterCompression.H24.I0,
+    CenterCompression.H24.v,
+    CenterCompression.H24.h,
+    CenterCompression.H24.N0,
+    Nat.choose]
+
 theorem momentPenalty_exceeds_saving :
     SideMomentArithmetic.H24.deltaMoment ≤ momentPenalty := by
   norm_num [momentPenalty, SideMomentArithmetic.H24.deltaMoment,

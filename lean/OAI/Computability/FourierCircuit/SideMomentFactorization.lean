@@ -22,6 +22,19 @@ def sideMomentAction {h : ℕ} {K : Type*} [Field K]
     (S : Triple h) (x : Triple h → K) : K :=
   (sideMoment0 x - ∑ i ∈ S.1, sideMoment1 x i + 2 * x S) / 2
 
+/- The same correction with its diagonal term removed.  The missing `x S`
+   is then supplied by a direct source-to-target bank shear. -/
+def sideMomentNoDiag {h : ℕ} {K : Type*} [Field K]
+    (S : Triple h) (x : Triple h → K) : K :=
+  (sideMoment0 x - ∑ i ∈ S.1, sideMoment1 x i) / 2
+
+theorem sideMomentAction_eq_noDiag_add
+    {h : ℕ} {K : Type*} [Field K] [CharZero K]
+    (S : Triple h) (x : Triple h → K) :
+    sideMomentAction S x = sideMomentNoDiag S x + x S := by
+  unfold sideMomentAction sideMomentNoDiag
+  ring
+
 theorem incidence_weighted
     {h : ℕ} {K : Type*} [Field K] [CharZero K]
     (S : Triple h) (x : Triple h → K) :
@@ -144,6 +157,27 @@ theorem invocation_identity
     _ = y S + (compressedR S (compressedG (K := K) x) + sideMomentAction S x) := by ring
     _ = y S + x S := by
       rw [compressed_plus_moment_side]
+
+/- The diagonal-free moment correction cancels the compressed centre map.
+   This is the algebraic form behind a possible direct bank shear. -/
+theorem compressed_plus_moment_noDiag
+    {h : ℕ} {K : Type*} [Field K] [CharZero K]
+    (S : Triple h) (x : Triple h → K) :
+    compressedR S (compressedG (K := K) x) + sideMomentNoDiag S x = 0 := by
+  calc
+    compressedR S (compressedG (K := K) x) + sideMomentNoDiag S x =
+        (compressedR S (compressedG (K := K) x) + sideMomentAction S x) - x S := by
+          rw [sideMomentAction_eq_noDiag_add]
+          ring
+    _ = x S - x S := by rw [compressed_plus_moment_side]
+    _ = 0 := sub_self _
+
+theorem compressed_plus_moment_noDiag_direct
+    {h : ℕ} {K : Type*} [Field K] [CharZero K]
+    (S : Triple h) (x : Triple h → K) :
+    compressedR S (compressedG (K := K) x) + sideMomentNoDiag S x + x S = x S := by
+  rw [compressed_plus_moment_noDiag]
+  ring
 
 
 end SideMomentFactorization
