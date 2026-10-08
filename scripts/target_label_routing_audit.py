@@ -64,6 +64,8 @@ def route_rows(h: int = 24, cover_size: int = 4) -> dict[str, object]:
         raise ValueError("h must be at least 4")
     if cover_size < 4:
         raise ValueError("a singleton cover of all triples needs at least four labels")
+    if cover_size > h:
+        raise ValueError("the singleton cover cannot use more coordinates than h")
 
     cover = tuple(range(cover_size))
     triples = tuple(combinations(range(h), 3))
