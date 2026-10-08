@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this audit or its Lean certificates, please cite the versioned release."
 type: software
 title: "A Lean-checked parameter audit for exact discrete Fourier transforms"
-version: "0.2.40"
+version: "0.2.42"
 date-released: "2026-10-09"
 authors:
   - name: "QZP"
@@ -61,12 +61,17 @@ abstract: >-
   diagonal phase profiles are relabelled exactly.  These are free
   address/monomial semantics; they do not provide the charged complex shear,
   global schedule, or an unconditional all-length exponent theorem.
+  This version further formalizes the target-routed zero-switch ledger and
+  proves that, under the inherited 13824*(1-epsilon) recurrence, its exponent
+  gap is strictly below 10^-9; it also proves epsilon < 5*10^-9.  This is a
+  route-specific conditional upper bound, not a lower bound for arbitrary
+  complex circuits.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.40-dense-address-matrix-bridge"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.42-dense-routed-exponent-bound"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.23244964"
-    description: "Zenodo DOI for v0.2.40-dense-address-matrix-bridge"
+    value: "10.5281/zenodo.23245544"
+    description: "Zenodo DOI for v0.2.42-dense-routed-exponent-bound"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
