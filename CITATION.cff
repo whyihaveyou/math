@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this audit or its Lean certificates, please cite the versioned release."
 type: software
 title: "A Lean-checked parameter audit for exact discrete Fourier transforms"
-version: "0.2.20"
+version: "0.2.21"
 date-released: "2026-10-08"
 authors:
   - name: "QZP"
@@ -12,11 +12,11 @@ abstract: >-
   The release records finite-network and conditional research candidates and
   explicitly leaves the complete all-length frame-labelled recursion open.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.20-binary-walsh-orthogonality"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.21-binary-walsh-normalization"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.23228544"
-    description: "Zenodo DOI for the preceding v0.2.19-orthogonal-projection-phase-audit archive"
+    value: "10.5281/zenodo.23228729"
+    description: "Zenodo DOI for the preceding v0.2.20-binary-walsh-orthogonality archive"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
