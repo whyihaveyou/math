@@ -236,6 +236,30 @@ theorem no_fin2_shear_support_transport (s : Shear (Fin 2)) :
   rw [hleft, hright] at heq
   norm_num at heq
 
+/-! A scalar-gate corollary of the preceding support obstruction.  The
+`UnitShearWitness` is an actual `LinearDAG` containing one `Gate.add`; its
+`computes` field identifies the resulting scalar program with the complex
+shear matrix.  Therefore even this concrete one-gate realization cannot be
+used as a global semantic implementation of the binary transvection.  This
+is the smallest gate-level attachment of the binary/frame no-go; it does not
+exclude a different multi-gate matrix or a non-support frame invariant. -/
+
+theorem no_unitShearWitness_fin2_support_transport
+    (s : Shear (Fin 2))
+    (W : ComplexShearGateBridge.UnitShearWitness 2 s) :
+    ¬ (∀ x : Fin 2 → F2,
+      bitVectorToComplex (BinaryTransvection.transvection twoOnes x) =
+        W.circuit.eval (bitVectorToComplex x)) := by
+  intro htransport
+  apply no_fin2_shear_support_transport s
+  intro x
+  calc
+    bitVectorToComplex (BinaryTransvection.transvection twoOnes x) =
+        W.circuit.eval (bitVectorToComplex x) := htransport x
+    _ = s.toMatrix.mulVec (bitVectorToComplex x) := W.computes _
+    _ = s.act (bitVectorToComplex x) :=
+      (Shear.act_eq_mulVec s (bitVectorToComplex x)).symm
+
 end BinaryComplexFrameMap
 end ExactFourier
 end OAI
