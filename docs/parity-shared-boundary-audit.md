@@ -44,6 +44,23 @@ source labels, neither parity bank can lie in any fixed target boundary.  A
 target-dependent frame change, a nonlinear source formation, or an
 interactive route is outside this statement.
 
+The Lean companion
+[`ParityGlobalBoundaryNoGo.lean`](../lean/OAI/Computability/FourierCircuit/ParityGlobalBoundaryNoGo.lean)
+now proves a generic structural obstruction for every `h ≥ 4`:
+
+```text
+(∀ S : Triple h, v ∈ targetBoundary S) → v = 0.
+```
+
+Thus the intersection of all target boundaries is the zero space. The proof
+uses the formal triple-indicator spanning theorem and the nondegeneracy of
+the binary dot product. It does not infer a lower bound for a route that
+changes the target-labelled frame. The short exact audit
+[`scripts/parity_global_boundary_audit.py`](../scripts/parity_global_boundary_audit.py)
+checks the h=24 specialization (rank 24, common boundary dimension 0) and the
+all-target parity incidences: 2,691,920 zero-class pairs and 127,512 two-class
+pairs.
+
 The local ranks for comparison are
 
 ```text
