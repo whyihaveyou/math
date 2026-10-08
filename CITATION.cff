@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this audit or its Lean certificates, please cite the versioned release."
 type: software
 title: "A Lean-checked parameter audit for exact discrete Fourier transforms"
-version: "0.2.38"
+version: "0.2.39"
 date-released: "2026-10-09"
 authors:
   - name: "QZP"
@@ -53,12 +53,15 @@ abstract: >-
   switch-only and block-roundtrip conditional margins both exceed 10^-6.
   These are route-candidate width margins and do not close the physical gate
   or all-length schedule obligations.
+  This version additionally formalizes unique target-to-frame routing and the
+  exact one-switch serialized block order at h=24; the resulting >10^-9
+  normalized margin remains conditional on the physical schedule premises.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.38-two-frame-routing-arithmetic"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.39-dense-frame-switch-witness"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.23244576"
-    description: "Zenodo DOI for v0.2.38-two-frame-routing-arithmetic"
+    value: "10.5281/zenodo.23244670"
+    description: "Zenodo DOI for v0.2.39-dense-frame-switch-witness"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
