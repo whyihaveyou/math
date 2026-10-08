@@ -201,7 +201,10 @@ theorem finite_schedule_attachment_margin
     {sourceFormation scalarGateCommutation globalSchedule : Prop}
     {Frame Step : Type*} [Fintype Step]
     {n a : ℕ}
-    (A : FiniteScheduleAttachment (S := S) Frame Step n a) :
+    (A : FiniteScheduleAttachment (S := S)
+      (sourceFormation := sourceFormation)
+      (scalarGateCommutation := scalarGateCommutation)
+      (globalSchedule := globalSchedule) Frame Step n a) :
     sourceFormation ∧ scalarGateCommutation ∧ globalSchedule ∧
       ((1 : ℚ) / 10 ^ 9 <
         CenterBoundaryShearScheduleAudit.H24.scheduleNormalizedMargin
@@ -218,14 +221,17 @@ theorem finite_schedule_attachment_card
     {sourceFormation scalarGateCommutation globalSchedule : Prop}
     {Frame Step : Type*} [Fintype Step]
     {n a : ℕ}
-    (A : FiniteScheduleAttachment (S := S) Frame Step n a) :
+    (A : FiniteScheduleAttachment (S := S)
+      (sourceFormation := sourceFormation)
+      (scalarGateCommutation := scalarGateCommutation)
+      (globalSchedule := globalSchedule) Frame Step n a) :
     Fintype.card Step =
       6 * (CenterBoundaryShearScheduleAudit.H24.I *
         CenterBoundaryShearScheduleAudit.H24.h) := by
-  exact CenterBoundaryShearScheduleAudit.H24.schedule_card_eq_six_phase
-    (CenterBoundaryShearScheduleAudit.toSchedule A.schedule) A.gate_upper
+  apply CenterBoundaryShearScheduleAudit.H24.schedule_card_eq_six_phase
+    (CenterBoundaryShearScheduleAudit.toSchedule A.schedule)
+  exact CenterBoundaryShearScheduleAudit.gate_count_upper_to_step_upper A.gate_upper
 
 end ParityTargetAggregateFrameCandidate
 end ExactFourier
 end OAI
-
