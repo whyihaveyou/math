@@ -73,6 +73,50 @@ theorem frameTowerSchedule_finite_side_reuse_certificate {h : ℕ}
   exact sideMomentNoGlobal_plus_compressedReadout_eq_zero
     (selected k) (signals k)
 
+/-! ## Conditional direction ledger
+
+The preceding certificate only identifies the q-free side correction with a
+readout already present in the centre frame.  The following ledger records
+the resulting bookkeeping implication for a finite schedule: the reused
+direction total is the centre total, so the auxiliary charge assigned to
+reconstructing that q-free side readout is zero.  The residual side-direction
+charge is still the schedule's ordinary side count.  This is conditional
+ledger arithmetic: `signals` and `selected` are supplied inputs, and no
+physical gate map is inferred from their existence.
+-/
+
+noncomputable def reusedDirectionSteps {h : ℕ}
+    (schedule : FrameTowerSchedule h) (hh : 2 ≤ h) (n : ℕ) : ℕ :=
+  schedule.totalCentreSteps hh n
+
+noncomputable def auxiliarySideDirectionCharge {h : ℕ}
+    (schedule : FrameTowerSchedule h) (hh : 2 ≤ h) (n : ℕ) : ℕ :=
+  schedule.totalDirectionSteps hh n -
+    (reusedDirectionSteps schedule hh n + schedule.totalSideSteps hh n)
+
+theorem reusedDirectionSteps_eq {h : ℕ}
+    (schedule : FrameTowerSchedule h) (hh : 2 ≤ h) (n : ℕ) :
+    reusedDirectionSteps schedule hh n = n * h := by
+  exact schedule.total_centre_steps hh n
+
+theorem auxiliarySideDirectionCharge_eq_zero {h : ℕ}
+    (schedule : FrameTowerSchedule h) (hh : 2 ≤ h) (n : ℕ) :
+    auxiliarySideDirectionCharge schedule hh n = 0 := by
+  rw [auxiliarySideDirectionCharge, reusedDirectionSteps_eq,
+    schedule.total_direction_steps, schedule.total_side_steps]
+  have hfactor : 2 * h - 2 = h + (h - 2) := by omega
+  rw [hfactor, Nat.mul_add]
+  simp
+
+theorem conditional_side_direction_reduction {h : ℕ}
+    (schedule : FrameTowerSchedule h) (hh : 2 ≤ h) (n : ℕ) :
+    schedule.totalDirectionSteps hh n -
+        reusedDirectionSteps schedule hh n = n * (h - 2) := by
+  rw [reusedDirectionSteps_eq, schedule.total_direction_steps]
+  have hfactor : 2 * h - 2 = h + (h - 2) := by omega
+  rw [hfactor, Nat.mul_add]
+  simp
+
 namespace H24
 
 abbrev h24 : ℕ := CenterCompression.H24.h
