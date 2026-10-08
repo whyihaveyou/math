@@ -1,4 +1,5 @@
 import OAI.Computability.FourierCircuit.H18TerminalInterface
+import OAI.Computability.FourierCircuit.FusedCentreBoundaryArithmeticH18
 import Mathlib.Tactic
 
 /-!
@@ -189,6 +190,31 @@ theorem h18_fused_nonendpoint_positive_requires
     q ≤ 37554278 := by
   have hbound := h18_fused_nonendpoint_margin_le q ell hq h₁ h₂
   omega
+
+/-- Exact endpoint margin for the incidence-role terminal count.  This is a
+conditional arithmetic identity for the common-frame endpoint route; it does
+not assert that a global schedule realizes this route. -/
+theorem h18_fused_incidence_endpoint_margin_eq
+    (ell : ℤ) (hell : ell = 18 ∨ ell = 17) :
+    fusedMarginAfterTerminal
+        (FusedCentreBoundaryArithmeticH18.I0 : ℤ) ell = 185773824 := by
+  rw [h18_fused_endpoint_margin
+    (FusedCentreBoundaryArithmeticH18.I0 : ℤ) ell hell]
+  norm_num [FusedCentreBoundaryArithmeticH18.I0_eq]
+
+/-- The corresponding normalized endpoint margin is exactly the advertised
+rational value.  The statement remains conditional on the endpoint frame
+accounting above. -/
+theorem h18_fused_incidence_endpoint_normalized_eq
+    (ell : ℤ) (hell : ell = 18 ∨ ell = 17) :
+    ((fusedMarginAfterTerminal
+        (FusedCentreBoundaryArithmeticH18.I0 : ℤ) ell : ℚ) /
+      ((FusedCentreBoundaryArithmeticH18.m : ℚ) *
+        (FusedCentreBoundaryArithmeticH18.Wstar : ℚ))) =
+      8959 / 309237645312 := by
+  rw [h18_fused_incidence_endpoint_margin_eq ell hell]
+  norm_num [FusedCentreBoundaryArithmeticH18.m_eq,
+    FusedCentreBoundaryArithmeticH18.Wstar_eq]
 
 end H18TerminalRouteRequirement
 end ExactFourier
