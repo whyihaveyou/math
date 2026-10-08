@@ -63,11 +63,6 @@ private lemma pair12_mem (j : Fin 24) (hj : j ∉ ({1, 2} : Finset (Fin 24))) :
     le_sup_of_le_right le_rfl
   exact hle (pair_label_mem_pairSpan _ _ hj)
 
-private lemma targetPairJoinH24_contains
-    {T : Finset (Fin 24)} (hT : T.card = 3)
-    (hmem : indicator T ∈ targetPairJoinH24) :
-    indicator T ∈ targetPairJoinH24 := hmem
-
 /-- The explicit target `{0,1,2}` has a full pair-bank join in dimension 24. -/
 theorem h24_target_pair_join_eq_top : targetPairJoinH24 = ⊤ := by
   apply (Submodule.eq_top_iff_forall_basis_mem (Pi.basisFun K (Fin 24))).2
