@@ -1,4 +1,6 @@
 import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 
 /-! Conditional arithmetic only: a parameterised one-boundary fused-centre ledger.
