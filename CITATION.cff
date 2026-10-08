@@ -46,8 +46,8 @@ repository-code: "https://github.com/whyihaveyou/math"
 url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.35-conditional-exponent-gap"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.23242451"
-    description: "Zenodo DOI for the preceding v0.2.34-naturality-block-audit archive"
+    value: "10.5281/zenodo.23242745"
+    description: "Zenodo DOI for v0.2.35-conditional-exponent-gap"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
