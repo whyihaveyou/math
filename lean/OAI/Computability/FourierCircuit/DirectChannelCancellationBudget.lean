@@ -1,4 +1,5 @@
 import OAI.Computability.FourierCircuit.SideMomentRedundantGlobalAudit
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.Tactic
 
 /-!
@@ -63,6 +64,34 @@ theorem direct_forced_surjective
     Function.Surjective D := by
   rw [direct_forced_identity D hidentity]
   exact Function.surjective_id
+
+/- A factorized direct bank cannot have a smaller auxiliary rank.  This is
+   only a statement about the present additive model: after the fixed
+   q-free cancellation, the factorized map is forced to be the identity.
+   It makes no claim about arbitrary circuits or a different frame schedule. -/
+theorem direct_factorization_finrank_lower_bound
+    {R X : Type*} [Field K] [AddCommGroup X] [Module K X]
+    [AddCommGroup R] [Module K R] [FiniteDimensional K X]
+    [FiniteDimensional K R]
+    (U : R →ₗ[K] X) (V : X →ₗ[K] R)
+    (hidentity : ∀ (S : Triple h) (x : Triple h → K),
+      compressedR S (compressedG (K := K) x) + sideMomentNoGlobal S x +
+        (U (V x)) S = x S) :
+    Module.finrank K X ≤ Module.finrank K R := by
+  have hUV : U.comp V = LinearMap.id :=
+    direct_forced_identity (D := U.comp V) hidentity
+  apply LinearMap.finrank_le_finrank_of_injective
+  intro x y hxy
+  have hx : U (V x) = x := by
+    have h := congrArg (fun f : X →ₗ[K] X => f x) hUV
+    simpa using h
+  have hy : U (V y) = y := by
+    have h := congrArg (fun f : X →ₗ[K] X => f y) hUV
+    simpa using h
+  calc
+    x = U (V x) := hx.symm
+    _ = U (V y) := by rw [hxy]
+    _ = y := hy
 
 end Algebra
 
