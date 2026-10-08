@@ -29,6 +29,7 @@ abbrev Address (ι : Type*) (h : ℕ) := ι × Fin h → F
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
 
+omit [DecidableEq ι] in
 /-- Contracting a tensor inserted along a different prefix exposes their
     prefix dot product. -/
 theorem project_insert_cross (p q : ι → F) (a : Active h) :
@@ -41,6 +42,7 @@ theorem project_insert_cross (p q : ι → F) (a : Active h) :
   rw [hfun, dotProduct_smul]
   simp [smul_eq_mul, mul_comm]
 
+omit [DecidableEq ι] in
 theorem insert_cross_dot (p q : ι → F) (a b : Active h) :
     dotProduct (insert p a) (insert q b) =
       dotProduct p q * dotProduct a b := by
