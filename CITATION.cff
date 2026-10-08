@@ -30,8 +30,8 @@ repository-code: "https://github.com/whyihaveyou/math"
 url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.29-parity-attachment-rank-obstruction"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.23236438"
-    description: "Zenodo DOI for the preceding v0.2.27-conditional-side-reuse-ledger archive"
+    value: "10.5281/zenodo.23237644"
+    description: "Zenodo DOI for the v0.2.29-parity-attachment-rank-obstruction archive"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
