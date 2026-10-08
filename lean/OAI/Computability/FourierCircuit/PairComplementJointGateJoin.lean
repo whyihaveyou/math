@@ -1,4 +1,5 @@
 import OAI.Computability.FourierCircuit.PairTargetFrameLocal
+import OAI.Computability.FourierCircuit.PairComplementDisjointSpan
 import OAI.Computability.FourierCircuit.TripleSpan
 import Mathlib.Tactic
 
@@ -21,6 +22,7 @@ namespace PairComplementJointGateJoin
 
 open FrameLabels
 open PairTargetFrameLocal
+open PairComplementDisjointSpan
 
 abbrev K := ZMod 2
 abbrev V (h : ℕ) := Fin h → K
@@ -30,6 +32,12 @@ def targetPairJoinH24 : Submodule K (V 24) :=
   pairSpan ({0, 1} : Finset (Fin 24)) ⊔
     pairSpan ({0, 2} : Finset (Fin 24)) ⊔
       pairSpan ({1, 2} : Finset (Fin 24))
+
+/- Three disjoint B-banks, all target-disjoint from `{0,1,2}`. -/
+def targetDisjointJoinH24 : Submodule K (V 24) :=
+  disjointTripleSpan ({3, 4} : Finset (Fin 24)) ⊔
+    disjointTripleSpan ({3, 5} : Finset (Fin 24)) ⊔
+      disjointTripleSpan ({4, 5} : Finset (Fin 24))
 
 private lemma indicator_reorder {h : ℕ} (a b c : Fin h) :
     indicator ({a, b, c} : Finset (Fin h)) =
@@ -62,6 +70,39 @@ private lemma pair12_mem (j : Fin 24) (hj : j ∉ ({1, 2} : Finset (Fin 24))) :
   have hle : pairSpan ({1, 2} : Finset (Fin 24)) ≤ targetPairJoinH24 :=
     le_sup_of_le_right le_rfl
   exact hle (pair_label_mem_pairSpan _ _ hj)
+
+private lemma basisVec_mem_disjointPair
+    (F : Finset (Fin 24)) (hF : F.card = 2)
+    (i : Fin 24) (hiF : i ∉ F) :
+    TripleSpan.basisVec i ∈ disjointTripleSpan F := by
+  rw [disjointTripleSpan_eq_awaySubmodule F hF (by norm_num)]
+  intro j hj
+  have hji : j ≠ i := by
+    intro h
+    apply hiF
+    simpa [h] using hj
+  simp [TripleSpan.basisVec, Pi.single_apply, hji]
+
+private lemma basisVec_mem_disjoint34 (i : Fin 24)
+    (hi : i ∉ ({3, 4} : Finset (Fin 24))) :
+    TripleSpan.basisVec i ∈ targetDisjointJoinH24 := by
+  have hle : disjointTripleSpan ({3, 4} : Finset (Fin 24)) ≤ targetDisjointJoinH24 :=
+    le_sup_of_le_left (le_sup_of_le_left le_rfl)
+  exact hle (basisVec_mem_disjointPair _ (by decide) i hi)
+
+private lemma basisVec_mem_disjoint35 (i : Fin 24)
+    (hi : i ∉ ({3, 5} : Finset (Fin 24))) :
+    TripleSpan.basisVec i ∈ targetDisjointJoinH24 := by
+  have hle : disjointTripleSpan ({3, 5} : Finset (Fin 24)) ≤ targetDisjointJoinH24 :=
+    le_sup_of_le_left (le_sup_of_le_right le_rfl)
+  exact hle (basisVec_mem_disjointPair _ (by decide) i hi)
+
+private lemma basisVec_mem_disjoint45 (i : Fin 24)
+    (hi : i ∉ ({4, 5} : Finset (Fin 24))) :
+    TripleSpan.basisVec i ∈ targetDisjointJoinH24 := by
+  have hle : disjointTripleSpan ({4, 5} : Finset (Fin 24)) ≤ targetDisjointJoinH24 :=
+    le_sup_of_le_right le_rfl
+  exact hle (basisVec_mem_disjointPair _ (by decide) i hi)
 
 /-- The explicit target `{0,1,2}` has a full pair-bank join in dimension 24. -/
 theorem h24_target_pair_join_eq_top : targetPairJoinH24 = ⊤ := by
@@ -136,6 +177,20 @@ theorem h24_target_pair_join_eq_top : targetPairJoinH24 = ⊤ := by
         have hi121 : indicator ({i, 1, 2} : Finset (Fin 24)) ∈ targetPairJoinH24 := by
           exact pair12_mem i hiF12
         exact targetPairJoinH24.add_mem (targetPairJoinH24.add_mem hi012 hi020) hi121
+
+/-- Three target-disjoint B-bank spans also already join to the full factor. -/
+theorem h24_target_disjoint_pair_join_eq_top : targetDisjointJoinH24 = ⊤ := by
+  apply (Submodule.eq_top_iff_forall_basis_mem (Pi.basisFun K (Fin 24))).2
+  intro i
+  rw [Pi.basisFun_apply]
+  change TripleSpan.basisVec i ∈ targetDisjointJoinH24
+  by_cases hi3 : i = 3
+  · subst i
+    exact basisVec_mem_disjoint45 3 (by decide)
+  · by_cases hi4 : i = 4
+    · subst i
+      exact basisVec_mem_disjoint35 4 (by decide)
+    · exact basisVec_mem_disjoint34 i (by simp [hi3, hi4])
 
 end PairComplementJointGateJoin
 end ExactFourier

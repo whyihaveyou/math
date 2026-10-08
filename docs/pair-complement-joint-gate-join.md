@@ -7,7 +7,10 @@ J = pairSpan {0,1} ⊔ pairSpan {0,2} ⊔ pairSpan {1,2}.
 ```
 
 The Lean theorem `h24_target_pair_join_eq_top` proves `J = ⊤` in
-`(Fin 24 → ZMod 2)`.  The proof writes each coordinate basis vector as the
+`(Fin 24 → ZMod 2)`.  The companion theorem
+`h24_target_disjoint_pair_join_eq_top` gives the same full-join result for
+three target-disjoint B-bank spans (`{3,4}`, `{3,5}`, and `{4,5}`).  The first
+proof writes each coordinate basis vector as the
 four-point identity
 
 ```text
