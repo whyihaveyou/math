@@ -299,8 +299,9 @@ def route_rows(h: int = 24, cover_size: int = 4) -> dict[str, object]:
         "arbitrary_two_frame_cover": complementary,
         "arbitrary_two_frame_route_ledgers": two_frame_ledgers,
         "scope": (
-            "finite singleton cover and conditional direction accounting; no "
-            "complex gate, global schedule, or all-length DFT theorem"
+            "finite singleton and arbitrary-label covers with conditional "
+            "direction accounting; no complex gate, global schedule, or "
+            "all-length DFT theorem"
         ),
     }
 
