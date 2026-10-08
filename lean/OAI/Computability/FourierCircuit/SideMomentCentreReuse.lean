@@ -1,5 +1,6 @@
 import OAI.Computability.FourierCircuit.SideMomentRedundantGlobalAudit
 import OAI.Computability.FourierCircuit.SideMomentFactorization
+import OAI.Computability.FourierCircuit.CenterAllLengthBridge
 import Mathlib.Tactic
 
 /-!
@@ -25,6 +26,7 @@ namespace SideMomentCentreReuse
 open CenterCompression
 open SideMomentFactorization
 open SideMomentRedundantGlobalAudit
+open CenterAllLengthBridge
 
 variable {h : ℕ} {K : Type*} [Field K] [CharZero K]
 
@@ -44,6 +46,32 @@ theorem sideMomentNoGlobal_plus_compressedReadout_eq_zero
     sideMomentNoGlobal S x + compressedR S (compressedG (K := K) x) = 0 := by
   rw [sideMomentNoGlobal_eq_neg_compressedReadout]
   abel
+
+/-! ## Finite-prefix attachment to the frame schedule
+
+The frame schedule and the moment identity have different state types: a
+schedule index carries only `ZMod 2` labels, whereas the identity takes a
+`Triple h → K` signal and a selected `Triple h`.  The following certificate
+keeps that boundary explicit.  It attaches an independently supplied family
+of moment inputs to each finite schedule index and combines the pointwise
+reuse identity with the schedule's existing frame and direction ledgers.
+It therefore does not claim that the frame labels generate the moment inputs.
+-/
+
+theorem frameTowerSchedule_finite_side_reuse_certificate {h : ℕ}
+    (schedule : FrameTowerSchedule h) (hh : 2 ≤ h) (n : ℕ)
+    (signals : ℕ → Triple h → K) (selected : ℕ → Triple h) :
+    (∀ k ∈ Finset.range n,
+      sideMomentNoGlobal (selected k) (signals k) +
+          compressedR (selected k) (compressedG (K := K) (signals k)) = 0) ∧
+    schedule.totalCentreSteps hh n = n * h ∧
+    schedule.totalSideSteps hh n = n * (h - 2) ∧
+    schedule.totalDirectionSteps hh n = n * (2 * h - 2) := by
+  refine ⟨?_, schedule.total_centre_steps hh n,
+    schedule.total_side_steps hh n, schedule.total_direction_steps hh n⟩
+  intro k hk
+  exact sideMomentNoGlobal_plus_compressedReadout_eq_zero
+    (selected k) (signals k)
 
 namespace H24
 
