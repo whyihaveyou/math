@@ -81,7 +81,17 @@ theorem denseComplementLabel_unit {h : ℕ} (hh : 2 ≤ h)
   rw [hAA, hAU, hUA, hUU]
   obtain ⟨k, hk⟩ := heven
   rw [hk]
-  simp [CharP.cast_eq_zero (ZMod 2) 2]
+  have htwo : (2 : F) = 0 := CharP.cast_eq_zero (ZMod 2) 2
+  have hkk : (k : F) + k = 0 := by
+    calc
+      (k : F) + k = (2 : F) * k := by ring
+      _ = 0 := by rw [htwo, zero_mul]
+  have hone : (1 : F) + 1 = 0 := by
+    calc
+      (1 : F) + 1 = (2 : F) := by norm_num
+      _ = 0 := htwo
+  rw [hkk, hone]
+  simp
 
 theorem unit_denseComplementLabel_orthogonal {h : ℕ} (hh : 2 ≤ h) :
     dotForm (unitLabel (by omega : 1 ≤ h))
@@ -97,7 +107,9 @@ theorem unit_denseComplementLabel_orthogonal {h : ℕ} (hh : 2 ≤ h) :
   change dotProduct (unitLabel (by omega : 1 ≤ h))
       (unitLabel (by omega : 1 ≤ h)) = (1 : F) at hUU
   rw [hUA, hUU]
-  simp [CharP.cast_eq_zero (ZMod 2) 2]
+  have hone : (1 : F) + 1 = 0 := by
+    exact CharP.cast_eq_zero (ZMod 2) 2
+  rw [hone]
 
 theorem denseComplementLabel_unit_orthogonal {h : ℕ} (hh : 2 ≤ h) :
     dotForm (denseComplementLabel (h := h) (by omega))
@@ -112,7 +124,9 @@ theorem denseComplementLabel_unit_orthogonal {h : ℕ} (hh : 2 ≤ h) :
   change dotProduct (unitLabel (by omega : 1 ≤ h))
       (unitLabel (by omega : 1 ≤ h)) = (1 : F) at hUU
   rw [hAU, hUU]
-  simp [CharP.cast_eq_zero (ZMod 2) 2]
+  have hone : (1 : F) + 1 = 0 := by
+    exact CharP.cast_eq_zero (ZMod 2) 2
+  rw [hone]
 
 lemma target_dot_unit {h : ℕ} (hh : 1 ≤ h) (S : Triple h) :
     dotForm (indicator S.1) (unitLabel hh) =
