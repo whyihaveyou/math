@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this audit or its Lean certificates, please cite the versioned release."
 type: software
 title: "A Lean-checked parameter audit for exact discrete Fourier transforms"
-version: "0.2.39"
+version: "0.2.40"
 date-released: "2026-10-09"
 authors:
   - name: "QZP"
@@ -56,12 +56,17 @@ abstract: >-
   This version additionally formalizes unique target-to-frame routing and the
   exact one-switch serialized block order at h=24; the resulting >10^-9
   normalized margin remains conditional on the physical schedule premises.
+  It also formalizes the dense two-frame swap as a lifted binary address
+  permutation: matrix units are conjugated exactly and arbitrary complex
+  diagonal phase profiles are relabelled exactly.  These are free
+  address/monomial semantics; they do not provide the charged complex shear,
+  global schedule, or an unconditional all-length exponent theorem.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.39-dense-frame-switch-witness"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.40-dense-address-matrix-bridge"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.23244670"
-    description: "Zenodo DOI for v0.2.39-dense-frame-switch-witness"
+    value: "10.5281/zenodo.23244964"
+    description: "Zenodo DOI for v0.2.40-dense-address-matrix-bridge"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
