@@ -21,6 +21,17 @@ binary algebra.  Once a complex shear is supplied, `ComplexShearGateBridge`
 gives its exact scalar-gate realization (`Gate.add` for coefficient `1`, two
 scalar gates for an arbitrary coefficient).
 
+The new unit-shear checks make the boundary concrete.  The restricted update
+`binarySingleAdd i j` agrees with the coefficient-one complex shear on inputs
+where the destination and source bits are not both `1`; this is the exact
+local positive case behind a `Gate.add`.  The smallest nonzero isotropic
+transvection, with binary direction `(1,1)` on `Fin 2`, sends `e₀` to `e₁`.
+`no_fin2_shear_support_transport` proves that no single complex shear can
+match its support-map semantics: the binary map clears coordinate `0`, while
+every complex shear leaves that coordinate equal to its input when it is a
+source, or adds a zero source when it is the destination.  This is a local
+counterexample to charging an arbitrary binary transvection as one `Gate.add`.
+
 Consequently, the current parameter ledgers must not charge a binary
 transvection as a complex `Gate.add` until this premise is proved for the
 chosen encoding and schedule.  The certificate is local and does not claim a
