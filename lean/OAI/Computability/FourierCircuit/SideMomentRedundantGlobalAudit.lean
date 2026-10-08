@@ -81,8 +81,8 @@ certificate; a physical frame schedule for the direct row remains open.
 def eightRowsDirect
     {X A C : Type*} [AddCommGroup X] [AddCommGroup A] [AddCommGroup C]
     (R : C →+ X) (G : X → C) (J : A →+ X) (V : X → A) (D : X →+ X)
-    (s : CompressedInvocation.State X A C) :
-    CompressedInvocation.State X A C :=
+    (s : _root_.OAI.ExactFourier.CompressedInvocation.State X A C) :
+    _root_.OAI.ExactFourier.CompressedInvocation.State X A C :=
   let s0 := { s with y := s.y - J s.side }
   let s1 := { s0 with y := s0.y - R s0.center }
   let s2 := { s1 with side := s1.side + V s1.x }
@@ -97,7 +97,7 @@ theorem eightRowsDirect_restore
     {X A C : Type*} [AddCommGroup X] [AddCommGroup A] [AddCommGroup C]
     (R : C →+ X) (G : X → C) (J : A →+ X) (V : X → A) (D : X →+ X)
     (hidentity : ∀ x, R (G x) + J (V x) + D x = x)
-    (s : CompressedInvocation.State X A C) :
+    (s : _root_.OAI.ExactFourier.CompressedInvocation.State X A C) :
     eightRowsDirect R G J V D s = { s with y := s.y + s.x } := by
   cases s with
   | mk x y a c =>
