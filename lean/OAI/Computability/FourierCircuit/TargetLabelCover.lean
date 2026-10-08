@@ -44,7 +44,10 @@ def singletonLabel {h : ℕ} (hh : 4 ≤ h) (i : Fin 4) : Active h :=
 /-- A singleton label is a unit vector for the binary dot form. -/
 theorem singletonLabel_unit {h : ℕ} (hh : 4 ≤ h) (i : Fin 4) :
     dotForm (singletonLabel hh i) (singletonLabel hh i) = (1 : F) := by
-  simp [singletonLabel, TripleSpan.basisVec, dotForm, dotProduct]
+  change dotProduct (Pi.single (fourEmbedding hh i) 1)
+    (Pi.single (fourEmbedding hh i) 1) = 1
+  rw [Matrix.dotProduct_single_one]
+  simp
 
 /-- Distinct embedded singleton labels are orthogonal. -/
 theorem singletonLabel_orthogonal {h : ℕ} (hh : 4 ≤ h)
@@ -53,8 +56,10 @@ theorem singletonLabel_orthogonal {h : ℕ} (hh : 4 ≤ h)
   have hval : fourEmbedding hh i ≠ fourEmbedding hh j := by
     intro hval
     exact hij ((fourEmbedding hh).injective hval)
-  simp [singletonLabel, TripleSpan.basisVec, dotForm, dotProduct, hval,
-    Ne.symm hval]
+  change dotProduct (Pi.single (fourEmbedding hh i) 1)
+    (Pi.single (fourEmbedding hh j) 1) = 0
+  rw [Matrix.dotProduct_single_one]
+  simp [hval]
 
 /-- The four labels are pairwise distinct. -/
 theorem singletonLabel_injective {h : ℕ} (hh : 4 ≤ h) :
@@ -65,7 +70,7 @@ theorem singletonLabel_injective {h : ℕ} (hh : 4 ≤ h) :
     intro hval
     exact hne ((fourEmbedding hh).injective hval)
   have hcoord := congrFun hij (fourEmbedding hh i)
-  simp [singletonLabel, TripleSpan.basisVec, hval, Ne.symm hval] at hcoord
+  simp [singletonLabel, TripleSpan.basisVec, hval] at hcoord
 
 /-- At least one of the four embedded coordinates is outside a target triple. -/
 theorem exists_fin4_not_mem {h : ℕ} (hh : 4 ≤ h) (S : Triple h) :
