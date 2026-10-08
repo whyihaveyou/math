@@ -23,6 +23,7 @@ open CenterFramedInvocation
 open FusedFrameLocalCertificate
 open StagePrefixLabelAudit
 open StagePrefixAudit
+open BinaryTransvection
 
 abbrev F := ZMod 2
 abbrev Active (h : ℕ) := Fin h → F

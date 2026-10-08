@@ -48,6 +48,64 @@ theorem coordinateLine_z_le_coordinatePlane (w z : ι) :
   rcases Submodule.mem_span_singleton.mp hx with ⟨a, rfl⟩
   exact Submodule.smul_mem _ _ (Submodule.subset_span (by simp))
 
+theorem coordinateLine_z_le_orthogonal_line_w (w z : ι) (hzw : z ≠ w) :
+    coordinateLine z ≤ (coordinateLine w).orthogonalBilin
+      (BinaryTransvection.bilinearDot : _) := by
+  rw [coordinateLine_orthogonal]
+  intro x hx
+  rcases Submodule.mem_span_singleton.mp hx with ⟨a, rfl⟩
+  rw [LinearMap.mem_ker]
+  simp [coordinateEval, coordinate, hzw, Ne.symm hzw]
+
+theorem coordinateLine_disjoint_line_z (w z : ι) (hzw : z ≠ w) :
+    Disjoint (coordinateLine w) (coordinateLine z) := by
+  rw [Submodule.disjoint_def]
+  intro u huw huz
+  rcases Submodule.mem_span_singleton.mp huw with ⟨a, ha⟩
+  rcases Submodule.mem_span_singleton.mp huz with ⟨b, hb⟩
+  have haw : a = 0 := by
+    have ha_w := congrFun ha w
+    have hb_w := congrFun hb w
+    have ha_eq : a = u w := by
+      simpa [coordinate] using ha_w
+    have hzero : (0 : F2) = u w := by
+      simpa [coordinate, hzw, Ne.symm hzw] using hb_w
+    exact ha_eq.trans hzero.symm
+  calc
+    u = a • coordinate w := ha.symm
+    _ = 0 := by rw [haw, zero_smul]
+
+theorem coordinatePlane_eq_sup_lines (w z : ι) :
+    coordinatePlane w z = coordinateLine w ⊔ coordinateLine z := by
+  apply le_antisymm
+  · unfold coordinatePlane
+    rw [Submodule.span_le]
+    intro y hy
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hy
+    rcases hy with rfl | rfl
+    · exact Submodule.mem_sup_left (Submodule.subset_span (by simp))
+    · exact Submodule.mem_sup_right (Submodule.subset_span (by simp))
+  · exact sup_le (coordinateLine_le_coordinatePlane w z)
+      (coordinateLine_z_le_coordinatePlane w z)
+
+theorem coordinatePlane_nested_residual_certificate
+    (w z : ι) (hzw : z ≠ w) :
+    coordinateLine w ≤ coordinatePlane w z ∧
+      coordinatePlane w z = coordinateLine w ⊔ coordinateLine z ∧
+      Disjoint (coordinateLine w) (coordinateLine z) ∧
+      coordinateLine z ≤ (coordinateLine w).orthogonalBilin
+        (BinaryTransvection.bilinearDot : _) ∧
+      Module.finrank F2 (coordinateLine z) = 1 := by
+  have hne : coordinate z ≠ (0 : Address ι) := by
+    intro h
+    have hz := congrFun h z
+    simpa [coordinate] using hz
+  exact ⟨coordinateLine_le_coordinatePlane w z,
+    coordinatePlane_eq_sup_lines w z,
+    coordinateLine_disjoint_line_z w z hzw,
+    coordinateLine_z_le_orthogonal_line_w w z hzw,
+    finrank_span_singleton hne⟩
+
 theorem coordinateProjectionTwo_mem_plane (w z : ι) (x : Address ι) :
     coordinateProjectionTwo w z x ∈ coordinatePlane w z := by
   rw [coordinateProjectionTwo_apply]
