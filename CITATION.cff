@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this audit or its Lean certificates, please cite the versioned release."
 type: software
 title: "A Lean-checked parameter audit for exact discrete Fourier transforms"
-version: "0.2.34"
+version: "0.2.35"
 date-released: "2026-10-08"
 authors:
   - name: "QZP"
@@ -39,12 +39,15 @@ abstract: >-
   boundary change, or prior cancellation.
   The latest follow-up proves naturality of the fused rows under explicit
   bank intertwiners and records an exact dense two-frame block-rank audit.
+  It also formally converts the six-phase conditional normalized ledger into
+  a strict exponent-gap inequality greater than 10^-9 under the inherited
+  recurrence formula.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.34-naturality-block-audit"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.35-conditional-exponent-gap"
 identifiers:
   - type: doi
     value: "10.5281/zenodo.23242451"
-    description: "Zenodo DOI for v0.2.34-naturality-block-audit"
+    description: "Zenodo DOI for the preceding v0.2.34-naturality-block-audit archive"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"

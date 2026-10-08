@@ -51,6 +51,16 @@ conditional margin is `2,425,171,790`, with normalized value
 span/rank and conditional ledger result; it does not prove a complex gate,
 global schedule, or all-length exponent theorem.
 
+Finally, `FusedCentreExponentGapAudit.lean` converts the six-phase
+conditional normalized saving into the actual recurrence exponent quantity.
+Writing the multiplier as `m * (1 - ε)`, it defines the gap as
+`-log(1-ε)/log(m)`, proves `log(13824) < 11` from a finite exponential-series
+bound, and proves the strict conditional inequality
+`1/10^9 < -log(1-ε)/log(13824)`.  This is the first formal `10⁻⁹` exponent
+statement in the branch, but its hypotheses are still the six-phase event
+ledger and the inherited recurrence formula; it is not yet an all-length DFT
+theorem because the selective complex gate and global schedule remain open.
+
 ## Side-compression boundary audit
 
 One aggregate per target triple has an exact scalar update and would reduce the
