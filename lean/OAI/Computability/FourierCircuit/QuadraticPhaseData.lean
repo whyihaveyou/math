@@ -35,6 +35,9 @@ structure QuadraticPhaseData (ι : Type) [Fintype ι] [DecidableEq ι] where
   projection : Address ι →ₗ[F2] Address ι
   projection_mem : ∀ x, projection x ∈ U
   projection_fixed : ∀ ⦃u : Address ι⦄, u ∈ U → projection u = u
+  projection_kernel :
+    LinearMap.ker projection =
+      U.orthogonalBilin (BinaryTransvection.bilinearDot : _)
   weight : Address ι → ℕ
   q : Address ι → ℂ
   q_eq : ∀ x, q x = Complex.I ^ weight (projection x)
