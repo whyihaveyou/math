@@ -82,18 +82,12 @@ theorem coordinateProjection_kernel (w : ι) :
     rw [smul_eq_zero]
     exact Or.inl hx
 
-end ConcreteQuadraticPhase
-end ExactFourier
-end OAI
-
-namespace OAI
-namespace ExactFourier
-namespace ConcreteQuadraticPhase
 
 /-- Hamming weight of a binary address, represented by the cardinality of its
 one-coordinate subtype. -/
-noncomputable def binaryWeight (x : Address ι) : ℕ :=
-  Fintype.card {i : ι // x i = (1 : F2)}
+noncomputable def binaryWeight (x : Address ι) : ℕ := by
+  classical
+  exact Fintype.card {i : ι // x i = (1 : F2)}
 
 /-- A fully populated `QuadraticPhaseData` toy instance for the coordinate
 line.  It satisfies the interface's nondegenerate-kernel condition; it is not
@@ -103,7 +97,9 @@ noncomputable def coordinateQuadraticPhaseData (w : ι) :
   { U := coordinateLine w
     projection := coordinateProjection w
     projection_mem := coordinateProjection_mem_line w
-    projection_fixed := coordinateProjection_fixed_line w
+    projection_fixed := by
+      intro u hu
+      exact coordinateProjection_fixed_line w hu
     projection_kernel := coordinateProjection_kernel w
     weight := binaryWeight
     q := fun x => Complex.I ^ binaryWeight (coordinateProjection w x)
@@ -115,21 +111,30 @@ noncomputable def coordinateQuadraticPhaseData (w : ι) :
       Complex.I ^ binaryWeight (coordinateProjection w x) := by
   rfl
 
-end ConcreteQuadraticPhase
-end ExactFourier
-end OAI
-
-namespace OAI
-namespace ExactFourier
-namespace ConcreteQuadraticPhase
 
 @[simp] theorem binaryWeight_zero (w : ι) : binaryWeight (0 : Address ι) = 0 := by
   classical
   simp [binaryWeight]
 
+lemma card_coordinate_one (w : ι) :
+    Fintype.card {i : ι // coordinate w i = (1 : F2)} = 1 := by
+  classical
+  apply Fintype.card_eq_one_iff.mpr
+  refine ⟨⟨w, by simp [coordinate]⟩, ?_⟩
+  intro y
+  apply Subtype.ext
+  by_cases hy : y.1 = w
+  · exact hy
+  · exfalso
+    have hzero : coordinate w y.1 = (0 : F2) := by
+      simp [coordinate, hy, Ne.symm hy]
+    have hneq : (0 : F2) ≠ (1 : F2) := zero_ne_one
+    apply hneq
+    simpa [hzero] using y.2
+
 @[simp] theorem binaryWeight_coordinate (w : ι) : binaryWeight (coordinate w) = 1 := by
   classical
-  simp [binaryWeight, coordinate]
+  exact card_coordinate_one w
 
 theorem binaryWeight_coordinateProjection (w : ι) (x : Address ι) :
     binaryWeight (coordinateProjection w x) = if x w = 0 then 0 else 1 := by
@@ -149,15 +154,8 @@ theorem binaryWeight_coordinateProjection (w : ι) (x : Address ι) :
           exact hv
       exact hvals.resolve_left hx
     rw [hx1]
-    simp [binaryWeight, coordinate]
+    simpa using card_coordinate_one w
 
-end ConcreteQuadraticPhase
-end ExactFourier
-end OAI
-
-namespace OAI
-namespace ExactFourier
-namespace ConcreteQuadraticPhase
 
 @[simp] theorem coordinateQuadraticPhaseData_q_eq_one_or_I
     (w : ι) (x : Address ι) :
@@ -166,13 +164,6 @@ namespace ConcreteQuadraticPhase
   rw [coordinateQuadraticPhaseData_q, binaryWeight_coordinateProjection]
   split <;> simp_all
 
-end ConcreteQuadraticPhase
-end ExactFourier
-end OAI
-
-namespace OAI
-namespace ExactFourier
-namespace ConcreteQuadraticPhase
 
 /-- The coordinate line and its orthogonal complement split every binary
 address. -/
@@ -188,20 +179,22 @@ theorem coordinateLine_sup_orthogonal_eq_top (w : ι) :
   have hr : r ∈ LinearMap.ker (coordinateEval w) := by
     rw [LinearMap.mem_ker]
     dsimp [r, a]
-    simp [coordinateEval, coordinate]
+    simp [coordinateEval, coordinate, CharTwo.add_self_eq_zero]
   have ha : a • coordinate w ∈ coordinateLine w :=
     Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self _)
-  have hr' : r ∈ (coordinateLine w).orthogonalBilin
-      (BinaryTransvection.bilinearDot : _) := by
-    rw [coordinateLine_orthogonal]
-    exact hr
   have hdecomp : x = a • coordinate w + r := by
     dsimp [r]
     ext i
-    simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul, coordinate]
-    rw [add_assoc, CharTwo.add_self_eq_zero, zero_add]
+    simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul]
+    symm
+    have hcancel (b : F2) : b + (x i + b) = x i := by
+      calc
+        b + (x i + b) = (b + b) + x i := by ac_rfl
+        _ = x i := by
+          rw [CharTwo.add_self_eq_zero, zero_add]
+    exact hcancel (a * coordinate w i)
   rw [hdecomp]
-  exact Submodule.mem_sup.mpr ⟨a • coordinate w, ha, r, hr', rfl⟩
+  exact Submodule.mem_sup.mpr ⟨a • coordinate w, ha, r, hr, rfl⟩
 
 /-- The coordinate line meets its orthogonal complement trivially. -/
 theorem coordinateLine_inf_orthogonal_eq_bot (w : ι) :
@@ -214,35 +207,31 @@ theorem coordinateLine_inf_orthogonal_eq_bot (w : ι) :
     rcases Submodule.mem_inf.mp hz with ⟨hzline, hzker⟩
     rcases Submodule.mem_span_singleton.mp hzline with ⟨a, ha⟩
     rw [Submodule.mem_bot]
-    apply_fun fun v => v w at ha
     have hzero : (coordinateEval w) z = 0 := by
       exact LinearMap.mem_ker.mp hzker
     have hcoord : z w = 0 := by
       exact hzero
+    have ha_coord : a = z w := by
+      have h := congrFun ha w
+      simpa [coordinate] using h
+    have ha_zero : a = 0 := by
+      rw [ha_coord, hcoord]
     have hzzero : z = 0 := by
-      rw [ha]
+      rw [← ha]
       ext i
       simp only [Pi.smul_apply, coordinate]
       by_cases hi : i = w
       · subst i
-        simp [hcoord]
+        simp [ha_zero]
       · simp [hi]
     exact hzzero
   · exact bot_le
 
-end ConcreteQuadraticPhase
-end ExactFourier
-end OAI
-
-namespace OAI
-namespace ExactFourier
-namespace ConcreteQuadraticPhase
 
 @[simp] theorem coordinateProjection_idem (w : ι) (x : Address ι) :
     coordinateProjection w (coordinateProjection w x) =
-      coordinateProjection w x := by
-  rw [coordinateProjection_apply, coordinateProjection_apply]
-  simp [coordinate, smul_eq_mul]
+      coordinateProjection w x :=
+  coordinateProjection_fixed_line w (coordinateProjection_mem_line w x)
 
 end ConcreteQuadraticPhase
 end ExactFourier
