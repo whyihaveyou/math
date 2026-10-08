@@ -1,4 +1,5 @@
 import OAI.Computability.FourierCircuit.ParityTargetAggregateFrameCandidate
+import OAI.Computability.FourierCircuit.TripleSpan
 import Mathlib.Tactic
 
 /-!
