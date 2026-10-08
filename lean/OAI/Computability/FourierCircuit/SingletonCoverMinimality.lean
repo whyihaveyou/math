@@ -7,9 +7,6 @@ namespace TargetLabelCover
 open CenterCompression
 open FrameLabels
 open ParityTargetAggregateFrameCandidate
-abbrev F := ZMod 2
-abbrev Active (h : ℕ) := Fin h → F
-
 def singletonCover {h : ℕ} (C : Finset (Fin h)) : Prop :=
   ∀ S : Triple h, ∃ i ∈ C, i ∉ S.1
 
