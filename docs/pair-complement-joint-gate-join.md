@@ -27,3 +27,19 @@ aggregate-wise schedule in `PairComplementAggregateBoundary.lean`, where each
 pair bank keeps its own boundary.  The result therefore preserves the status
 of the (5.1057\times10^{-6}) pair/complement number as a research candidate,
 while eliminating the simpler shared-gate implementation.
+
+## Conditional price
+
+`PairComplementSharedJoinPrice.lean` turns this into an exact H24 ledger under
+the explicit unit-charge model.  The six pair roles (three A plus three
+selected B witnesses) incur
+
+```text
+2 × 12,289,728 invocations × 552 pair roles = 13,567,859,712
+```
+
+extra directional units when a rank-22 bank is replaced by a full rank-24
+shared frame.  This exceeds the centre saving `2,425,172,992`, with certified
+integer margin `−11,142,686,720`.  The conclusion is conditional on that
+charge model; it is a design warning for the shared-gate route, not a general
+complexity lower bound.
