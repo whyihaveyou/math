@@ -50,8 +50,12 @@ recovers every pair difference, so a vector orthogonal to every triple must
 be constant; its dot product with a weight-three indicator then forces that
 constant to be zero.
 
-The two-label route has assignment loads 1,771 and 253 targets. Reusing the
-same conditional charge conventions gives switch-only charge 1,202 and
+The Lean certificate
+[`ArbitraryTwoFrameCover.lean`](../lean/OAI/Computability/FourierCircuit/ArbitraryTwoFrameCover.lean)
+proves the unit, orthogonality, and exactly-one-boundary statements for this
+pair, and reuses the triple-span rank certificate to rule out one nonzero
+universal label. The two-label route has assignment loads 1,771 and 253 targets.
+Reusing the same conditional charge conventions gives switch-only charge 1,202 and
 block round-trip charge 55,292, with base-padding normalized margins
 approximately \(1.02114856\times10^{-5}\) and
 \(1.02112579\times10^{-5}\), respectively. This dense-complement option is a
