@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this audit or its Lean certificates, please cite the versioned release."
 type: software
 title: "A Lean-checked parameter audit for exact discrete Fourier transforms"
-version: "0.2.26"
+version: "0.2.27"
 date-released: "2026-10-08"
 authors:
   - name: "QZP"
@@ -18,15 +18,17 @@ abstract: >-
   q-free side-moment reuse identity, exact fixed-coordinate incidence-rank
   certificates, and an H18 local frame build audit.  This version additionally
   attaches the reuse identity to supplied finite-prefix frame schedules and
-  parameterizes the fused-centre normalized arithmetic; these remain local or
+  parameterizes the fused-centre normalized arithmetic.  This version also
+  records the conditional zero-auxiliary-charge ledger obtained when the
+  q-free side correction reuses the centre frame; all of these remain local or
   conditional certificates and do not by themselves provide a global gate
   schedule.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.26-general-fused-reuse"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.27-conditional-side-reuse-ledger"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.23235438"
-    description: "Zenodo DOI for the preceding v0.2.25-nested-reuse-rank-audit archive"
+    value: "10.5281/zenodo.23236045"
+    description: "Zenodo DOI for the preceding v0.2.26-general-fused-reuse archive"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
