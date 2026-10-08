@@ -90,7 +90,7 @@ theorem denseComplementLabel_unit {h : ℕ} (hh : 2 ≤ h)
     calc
       (1 : F) + 1 = (2 : F) := by norm_num
       _ = 0 := htwo
-  rw [hkk, hone]
+  rw [Nat.cast_add, hkk, hone]
   simp
 
 theorem unit_denseComplementLabel_orthogonal {h : ℕ} (hh : 2 ≤ h) :
