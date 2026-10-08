@@ -76,3 +76,19 @@ sharp zero-charge/positive-charge threshold.  A physical improvement toward a
 `10^-9` exponent still needs a construction with zero amortized residual charge
 (or a different shared routing argument), plus scalar/gate commutation and a
 verified all-length schedule.
+
+## Finite-schedule attachment
+
+The same Lean file now defines `FiniteScheduleAttachment`. It packages the
+three unresolved `PhysicalParitySplitPremise` fields together with an actual
+`FixedWidthGateSchedule` and the explicit upper bound
+
+```text
+schedule.dag.size ≤ 6 · (I · h).
+```
+
+From such a supplied witness, `finite_schedule_attachment_margin` derives the
+strict h=24 normalized margin above `10^-9`, and
+`finite_schedule_attachment_card` derives the exact six-phase event count.
+This is a bridge from a future physical schedule to the existing arithmetic;
+it does not construct the schedule or discharge any of the three premises.

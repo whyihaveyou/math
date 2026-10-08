@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this audit or its Lean certificates, please cite the versioned release."
 type: software
 title: "A Lean-checked parameter audit for exact discrete Fourier transforms"
-version: "0.2.28"
+version: "0.2.29"
 date-released: "2026-10-08"
 authors:
   - name: "QZP"
@@ -23,9 +23,11 @@ abstract: >-
   q-free side correction reuses the centre frame; all of these remain local or
   conditional certificates and do not by themselves provide a global gate
   schedule.  This version also adds an independent exact Python audit of the
-  reused H24 role count, padding bucket, and direct-diagonal margin.
+  reused H24 role count, padding bucket, and direct-diagonal margin, a
+  conditional parity-split finite-schedule bridge, and a scoped
+  finite-dimensional obstruction to lower-rank additive direct factorizations.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.28-side-reuse-ledger-audit"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.29-parity-attachment-rank-obstruction"
 identifiers:
   - type: doi
     value: "10.5281/zenodo.23236438"

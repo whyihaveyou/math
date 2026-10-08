@@ -17,6 +17,10 @@ forces `D(x)=x` for every source bank `x`. The Lean theorem
 `direct_forced_identity` proves this pointwise and `direct_forced_surjective`
 records the resulting full-rank direct map. A rank-complement estimate does
 not make this particular direct channel smaller.
+The companion theorem `direct_factorization_finrank_lower_bound` makes the
+same obstruction explicit for an additive factorization through an auxiliary
+space: if `U ∘ V` realizes this identity, the source-bank finite dimension is
+at most the auxiliary dimension, so this model has no lower-rank shortcut.
 
 Under the explicit accounting premise that one full direct coordinate costs at
 least one frame unit per invocation, the `3v^2` target invocations cost
