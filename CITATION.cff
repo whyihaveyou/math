@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this audit or its Lean certificates, please cite the versioned release."
 type: software
 title: "A Lean-checked parameter audit for exact discrete Fourier transforms"
-version: "0.2.30"
+version: "0.2.31"
 date-released: "2026-10-08"
 authors:
   - name: "QZP"
@@ -29,13 +29,16 @@ abstract: >-
   This version generalizes the target-boundary intersection no-go to every
   h greater than or equal to four and adds an exact h-parameter padding-bucket
   scan, including the conditional h=30 improvement and its negative direct
-  channel margin.
+  channel margin.  It also formalizes the minimal four-singleton target cover
+  and, for even h, an arbitrary dense two-label cover using e_0 and 1+e_0;
+  both are label-level certificates and leave gate realization, scheduling,
+  and the all-length recurrence open.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.30-global-parity-boundary-audit"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.31-target-labelled-cover-audit"
 identifiers:
   - type: doi
     value: "10.5281/zenodo.23237644"
-    description: "Zenodo DOI for the preceding v0.2.29-parity-attachment-rank-obstruction archive"
+    description: "Zenodo DOI for the preceding v0.2.30-global-parity-boundary-audit archive"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
