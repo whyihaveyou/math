@@ -46,7 +46,7 @@ theorem singletonLabel_unit {h : ℕ} (hh : 4 ≤ h) (i : Fin 4) :
     dotForm (singletonLabel hh i) (singletonLabel hh i) = (1 : F) := by
   change dotProduct (Pi.single (fourEmbedding hh i) 1)
     (Pi.single (fourEmbedding hh i) 1) = 1
-  rw [Matrix.dotProduct_single_one]
+  rw [dotProduct_single_one]
   simp
 
 /-- Distinct embedded singleton labels are orthogonal. -/
@@ -58,7 +58,7 @@ theorem singletonLabel_orthogonal {h : ℕ} (hh : 4 ≤ h)
     exact hij ((fourEmbedding hh).injective hval)
   change dotProduct (Pi.single (fourEmbedding hh i) 1)
     (Pi.single (fourEmbedding hh j) 1) = 0
-  rw [Matrix.dotProduct_single_one]
+  rw [dotProduct_single_one]
   simp [hval]
 
 /-- The four labels are pairwise distinct. -/
