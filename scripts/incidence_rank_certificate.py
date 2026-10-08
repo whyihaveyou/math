@@ -25,6 +25,20 @@ H = 24
 TRIPLES = tuple(combinations(range(H), 3))
 
 
+def gf2_rank(rows: Sequence[int]) -> int:
+    """Compute the rank of integer bit-vectors over ``F_2``."""
+    pivots: dict[int, int] = {}
+    for value in rows:
+        while value:
+            pivot = value.bit_length() - 1
+            old = pivots.get(pivot)
+            if old is None:
+                pivots[pivot] = value
+                break
+            value ^= old
+    return len(pivots)
+
+
 def determinant_fraction(matrix: Sequence[Sequence[Fraction]]) -> Fraction:
     """Compute a determinant over Q by exact pivot elimination."""
     a = [list(row) for row in matrix]
@@ -103,6 +117,21 @@ def audit() -> dict[str, object]:
     assert minor_determinant == Fraction(-3)
     assert full_rank == H
 
+    # A fixed-coordinate label family T containing i lies in the hyperplane
+    # orthogonal to the complement of i.  Its exact finite rank is 23 at h=24;
+    # the obstruction to sharing one fewer *global* channel is that the 24
+    # different hyperplanes together have full rank 24.
+    fixed_coordinate_label_ranks = {}
+    for coordinate in range(H):
+        labels = [sum(1 << i for i in triple)
+                  for triple in TRIPLES if coordinate in triple]
+        fixed_coordinate_label_ranks[str(coordinate)] = gf2_rank(labels)
+    assert set(fixed_coordinate_label_ranks.values()) == {H - 1}
+    joint_label_rank = gf2_rank(
+        [sum(1 << i for i in triple) for triple in TRIPLES]
+    )
+    assert joint_label_rank == H
+
     return {
         "h": H,
         "domain_triple_count": len(TRIPLES),
@@ -112,9 +141,13 @@ def audit() -> dict[str, object]:
         "incidence_rank_over_Q": full_rank,
         "shared_feature_dimension": H,
         "no_fewer_than_24_in_this_linear_model": full_rank == H,
+        "fixed_coordinate_label_rank_GF2": fixed_coordinate_label_ranks["0"],
+        "all_fixed_coordinate_label_ranks_GF2": fixed_coordinate_label_ranks,
+        "joint_triple_label_rank_GF2": joint_label_rank,
         "scope": (
-            "shared incidence factorisation only; no arbitrary-circuit lower "
-            "bound and no physical frame schedule claim"
+            "shared incidence factorisation and finite label-rank audit only; "
+            "no arbitrary-circuit lower bound and no physical frame schedule "
+            "claim"
         ),
     }
 
