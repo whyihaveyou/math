@@ -49,6 +49,41 @@ theorem matrix_conj_phaseDiagonal
       exact (induced e).symm.injective h
     simp [phaseDiagonal, hij, h']
 
+/-- A Walsh-style framed phase has the form `J * diag(q) * J`.  If the
+    address permutation commutes with the common frame `J` on both sides,
+    conjugation still only relabels the phase profile.  The two commutation
+    hypotheses are explicit because this file does not choose a particular
+    Walsh normalization or prove orthogonality of `J`. -/
+noncomputable def framedPhase
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (J : Matrix (Address ι) (Address ι) ℂ)
+    (q : Address ι → ℂ) : Matrix (Address ι) (Address ι) ℂ := by
+  classical
+  exact J * phaseDiagonal q * J
+
+theorem matrix_conj_framedPhase
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (e : Address ι ≃ₗ[F2] Address ι)
+    (J : Matrix (Address ι) (Address ι) ℂ)
+    (q : Address ι → ℂ)
+    (hJ : matrix e * J = J * matrix e)
+    (hJinv : J * (matrix e)⁻¹ = (matrix e)⁻¹ * J) :
+    matrix e * framedPhase J q * (matrix e)⁻¹ =
+      framedPhase J (q ∘ (fun x => (induced e).symm x)) := by
+  change matrix e * (J * phaseDiagonal q * J) * (matrix e)⁻¹ =
+    J * phaseDiagonal (q ∘ (fun x => (induced e).symm x)) * J
+  calc
+    matrix e * (J * phaseDiagonal q * J) * (matrix e)⁻¹ =
+        (matrix e * J) * phaseDiagonal q * J * (matrix e)⁻¹ := by
+          simp only [Matrix.mul_assoc]
+    _ = (J * matrix e) * phaseDiagonal q * J * (matrix e)⁻¹ := by
+          rw [hJ]
+    _ = J * (matrix e * phaseDiagonal q * (matrix e)⁻¹) * J := by
+          simp only [Matrix.mul_assoc]
+          rw [hJinv]
+    _ = J * phaseDiagonal (q ∘ (fun x => (induced e).symm x)) * J := by
+          rw [matrix_conj_phaseDiagonal]
+
 /-- A phase profile that is invariant under an address change commutes with
     the corresponding free monomial matrix. -/
 theorem matrix_commutes_phaseDiagonal
