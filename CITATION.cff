@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this audit or its Lean certificates, please cite the versioned release."
 type: software
 title: "A Lean-checked parameter audit for exact discrete Fourier transforms"
-version: "0.2.36"
+version: "0.2.37"
 date-released: "2026-10-09"
 authors:
   - name: "QZP"
@@ -45,12 +45,16 @@ abstract: >-
   for the six-phase event ledger and a direct-channel break-even audit for the
   pair/complement side-wire candidate; these remain event-level and route-
   specific certificates rather than an unconditional all-length theorem.
+  It additionally attaches the binary-to-complex support obstruction to an
+  actual one-gate LinearDAG witness, ruling out global transport by a concrete
+  unit Gate.add realization while retaining the multi-gate and all-length
+  obligations as open.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.36-event-schedule-audit"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.37-gate-level-frame-nogo"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.23243562"
-    description: "Zenodo DOI for v0.2.36-event-schedule-audit"
+    value: "10.5281/zenodo.23244052"
+    description: "Zenodo DOI for v0.2.37-gate-level-frame-nogo"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
