@@ -218,6 +218,27 @@ theorem scaledMatrix_conj_isOrthogonal
   simp only [scaledMatrix, Matrix.mul_smul, Matrix.smul_mul,
     matrix_conj_isOrthogonal e horth]
 
+/-- The exact Gram factor for an arbitrary scalar normalisation. -/
+theorem scaledMatrix_transpose_mul
+    {ι : Type} [Fintype ι] [DecidableEq ι] (c : ℂ) :
+    (scaledMatrix c).transpose * scaledMatrix c =
+      (c * c * (Fintype.card (Address ι) : ℂ)) •
+        (1 : Matrix (Address ι) (Address ι) ℂ) := by
+  simp only [scaledMatrix, Matrix.transpose_smul, Matrix.smul_mul,
+    Matrix.mul_smul, transpose_mul_matrix, smul_smul]
+  ring
+
+/-- If a chosen scalar satisfies the exact square-root equation, the scaled
+Walsh matrix has identity Gram matrix.  The scalar equation is left explicit
+so that no analytic square-root convention is hidden in this algebraic file.
+-/
+theorem scaledMatrix_transpose_mul_eq_one
+    {ι : Type} [Fintype ι] [DecidableEq ι] (c : ℂ)
+    (hc : c * c * (Fintype.card (Address ι) : ℂ) = 1) :
+    (scaledMatrix c).transpose * scaledMatrix c =
+      (1 : Matrix (Address ι) (Address ι) ℂ) := by
+  rw [scaledMatrix_transpose_mul, hc, one_smul]
+
 /-! The centre-edge coordinate equivalence is therefore a concrete Walsh
 invariance instance. -/
 theorem unitCoordinate_matrix_conj
