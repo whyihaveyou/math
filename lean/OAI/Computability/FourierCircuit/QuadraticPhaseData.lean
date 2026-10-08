@@ -78,6 +78,35 @@ theorem QuadraticPhaseData.conj_qU_framedPhase
   rw [← data.q_eq_qU]
   exact data.conj_framedPhase e J hJ
 
+/-- Weight invariance under the induced address relabelling makes the explicit
+`q_U` profile invariant.  This is the exact hypothesis a concrete projected
+quadratic phase must discharge before using the diagonal commutation theorem.
+-/
+theorem QuadraticPhaseData.qU_comp_induced_symm_eq
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (data : QuadraticPhaseData ι)
+    (e : Address ι ≃ₗ[F2] Address ι)
+    (hweight : ∀ x,
+      data.weight (data.projection ((induced e).symm x)) =
+        data.weight (data.projection x)) :
+    data.qU ∘ (fun x => (induced e).symm x) = data.qU := by
+  funext x
+  simp only [Function.comp_apply, QuadraticPhaseData.qU]
+  rw [hweight x]
+
+/-- The preceding profile invariance is sufficient for phase-diagonal
+commutation; no Walsh property is inferred from it. -/
+theorem QuadraticPhaseData.commutes_phaseDiagonal_qU
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (data : QuadraticPhaseData ι)
+    (e : Address ι ≃ₗ[F2] Address ι)
+    (hweight : ∀ x,
+      data.weight (data.projection ((induced e).symm x)) =
+        data.weight (data.projection x)) :
+    matrix e * phaseDiagonal data.qU = phaseDiagonal data.qU * matrix e := by
+  exact matrix_commutes_phaseDiagonal e data.qU
+    (data.qU_comp_induced_symm_eq e hweight)
+
 end AddressPhaseConjugation
 end ExactFourier
 end OAI
