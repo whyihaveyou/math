@@ -69,6 +69,7 @@ structure FixedWidthGateSchedule
     frame j.succ = gateFrameAction (Program.gateAt dag.program j) (frame j.castSucc)
 
 def toSchedule
+    {I h n a : ℕ} {Frame Step : Type*}
     [Fintype Step]
     (S : FixedWidthGateSchedule I h n a Frame Step) :
     ThreeStageReturnSchedule I h Step :=
@@ -76,12 +77,14 @@ def toSchedule
     complete := S.complete }
 
 theorem card_step_eq_dag_size
+    {I h n a : ℕ} {Frame Step : Type*}
     [Fintype Step]
     (S : FixedWidthGateSchedule I h n a Frame Step) :
     Fintype.card Step = S.dag.size := by
   simpa using Fintype.card_congr S.slot
 
 theorem gate_count_upper_to_step_upper
+    {I h n a : ℕ} {Frame Step : Type*}
     [Fintype Step]
     {S : FixedWidthGateSchedule I h n a Frame Step}
     (hupper : S.dag.size ≤ 6 * (I * h)) :
