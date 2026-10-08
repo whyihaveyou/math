@@ -143,11 +143,11 @@ theorem shared_witness_repairs_not_commuting
 
 namespace H24
 
-abbrev h := 24
+abbrev h24 : ℕ := 24
 abbrev Prefix := Fin 1 → F
-abbrev Address24 := Address (Fin 1) h
+abbrev Address24 := Address (Fin 1) h24
 abbrev p : Prefix := fun _ => 1
-abbrev w : Fin h := 23
+abbrev w24 : Fin h24 := 23
 
 lemma p_unit : dotProduct p p = (1 : F) := by
   norm_num [p, dotProduct]
@@ -159,29 +159,31 @@ lemma source_target_unit_orthogonal_zero :
         CenterFrameDirectionAudit.sourceVec = (1 : F) ∧
       dotProduct CenterFrameDirectionAudit.targetVec
         CenterFrameDirectionAudit.targetVec = (1 : F) ∧
-      CenterFrameDirectionAudit.sourceVec w = 0 ∧
-      CenterFrameDirectionAudit.targetVec w = 0 := by
-  exact ⟨CenterFrameDirectionAudit.source_target_vec_orthogonal,
+      CenterFrameDirectionAudit.sourceVec w24 = 0 ∧
+      CenterFrameDirectionAudit.targetVec w24 = 0 := by
+  refine ⟨CenterFrameDirectionAudit.source_target_vec_orthogonal,
     CenterFrameDirectionAudit.sourceVec_unit,
-    CenterFrameDirectionAudit.targetVec_unit,
-    CenterFrameDirectionAudit.sourceVec_zero_at_w,
-    CenterFrameDirectionAudit.targetVec_zero_at_w⟩
+    CenterFrameDirectionAudit.targetVec_unit, ?_, ?_⟩
+  · simpa [w24, CenterFrameDirectionAudit.w] using
+      CenterFrameDirectionAudit.sourceVec_zero_at_w
+  · simpa [w24, CenterFrameDirectionAudit.w] using
+      CenterFrameDirectionAudit.targetVec_zero_at_w
 
 /-- Concrete h=24 barrier: the two disjoint audited source/target active
     labels are orthogonal, but their repairs through the same coordinate 23
     do not commute on the shared prefix bank. -/
 theorem audited_shared_witness_repairs_not_commuting :
     ¬ ∀ z : Address24,
-      W p CenterFrameDirectionAudit.sourceVec w
-          (W p CenterFrameDirectionAudit.targetVec w z) =
-        W p CenterFrameDirectionAudit.targetVec w
-          (W p CenterFrameDirectionAudit.sourceVec w z) := by
+      W p CenterFrameDirectionAudit.sourceVec w24
+          (W p CenterFrameDirectionAudit.targetVec w24 z) =
+        W p CenterFrameDirectionAudit.targetVec w24
+          (W p CenterFrameDirectionAudit.sourceVec w24 z) := by
   intro hbad
   have hdata := source_target_unit_orthogonal_zero
   have hne := shared_witness_repairs_not_commuting
-    p CenterFrameDirectionAudit.sourceVec CenterFrameDirectionAudit.targetVec w
+    p CenterFrameDirectionAudit.sourceVec CenterFrameDirectionAudit.targetVec w24
     p_unit hdata.2.1 hdata.2.2.1 hdata.1 hdata.2.2.2.1 hdata.2.2.2.2
-  exact hne
+  exact hne hbad
 
 end H24
 
