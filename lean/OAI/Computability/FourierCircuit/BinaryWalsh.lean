@@ -218,6 +218,45 @@ theorem scaledMatrix_conj_isOrthogonal
   simp only [scaledMatrix, Matrix.mul_smul, Matrix.smul_mul,
     matrix_conj_isOrthogonal e horth]
 
+/-- The concrete Walsh frame commutes with every dot-product-preserving
+address permutation.  This is the explicit `hJ` premise needed by the framed
+phase theorem. -/
+theorem scaledMatrix_commutes_of_orthogonal
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (e : Address ι ≃ₗ[F2] Address ι) (horth : IsOrthogonal e) (c : ℂ) :
+    BinaryAddressPermutation.matrix e * scaledMatrix c =
+      scaledMatrix c * BinaryAddressPermutation.matrix e := by
+  have hunit : IsUnit (BinaryAddressPermutation.matrix e) :=
+    MonomialMatrix.unit _ (BinaryAddressPermutation.matrix_monomial e)
+  have hinvR : BinaryAddressPermutation.matrix e *
+      (BinaryAddressPermutation.matrix e)⁻¹ =
+      (1 : Matrix (Address ι) (Address ι) ℂ) :=
+    Matrix.mul_nonsing_inv _
+      (Matrix.isUnit_iff_isUnit_det _ |>.mp hunit)
+  have hinvL : (BinaryAddressPermutation.matrix e)⁻¹ *
+      BinaryAddressPermutation.matrix e =
+      (1 : Matrix (Address ι) (Address ι) ℂ) :=
+    Matrix.nonsing_inv_mul _
+      (Matrix.isUnit_iff_isUnit_det _ |>.mp hunit)
+  calc
+    BinaryAddressPermutation.matrix e * scaledMatrix c =
+        (BinaryAddressPermutation.matrix e * scaledMatrix c *
+        (BinaryAddressPermutation.matrix e)⁻¹) *
+          BinaryAddressPermutation.matrix e := by
+            symm
+            calc
+              (BinaryAddressPermutation.matrix e * scaledMatrix c *
+                  (BinaryAddressPermutation.matrix e)⁻¹) *
+                  BinaryAddressPermutation.matrix e =
+                  BinaryAddressPermutation.matrix e * scaledMatrix c *
+                    ((BinaryAddressPermutation.matrix e)⁻¹ *
+                      BinaryAddressPermutation.matrix e) := by
+                rw [Matrix.mul_assoc]
+              _ = BinaryAddressPermutation.matrix e * scaledMatrix c := by
+                rw [hinvL, Matrix.mul_one]
+    _ = scaledMatrix c * BinaryAddressPermutation.matrix e := by
+      rw [scaledMatrix_conj_isOrthogonal e horth c]
+
 /-- The exact Gram factor for an arbitrary scalar normalisation. -/
 theorem scaledMatrix_transpose_mul
     {ι : Type} [Fintype ι] [DecidableEq ι] (c : ℂ) :
