@@ -8,7 +8,7 @@ complex profile `q`.  This file packages the additional data needed for the
 paper's proposed profile
 
 ```text
-q_U x = Complex.I ^ (weight (P_U x)).
+q_U x = weight (P_U x) (mod 4),   phase_U x = Complex.I ^ q_U x.
 ```
 
 The structure is intentionally only a data interface.  It does not claim that
@@ -38,6 +38,13 @@ structure QuadraticPhaseData (ι : Type) [Fintype ι] [DecidableEq ι] where
   weight : Address ι → ℕ
   q : Address ι → ℂ
   q_eq : ∀ x, q x = Complex.I ^ weight (projection x)
+
+/-- The residue-valued profile appearing in the paper, represented by its
+natural representative in `{0,1,2,3}`. -/
+noncomputable def QuadraticPhaseData.qResidue
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (data : QuadraticPhaseData ι) : Address ι → ℕ :=
+  fun x => data.weight (data.projection x) % 4
 
 /-- The phase profile determined by the projection and weight fields. -/
 noncomputable def QuadraticPhaseData.qU
