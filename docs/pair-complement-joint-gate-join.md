@@ -31,8 +31,9 @@ while eliminating the simpler shared-gate implementation.
 ## Conditional price
 
 `PairComplementSharedJoinPrice.lean` turns this into an exact H24 ledger under
-the explicit unit-charge model.  The six pair roles (three A plus three
-selected B witnesses) incur
+the explicit unit-charge model.  The six witness banks (three A plus three
+selected B banks) certify the full-join requirement; the candidate still
+carries all 552 pair roles, so the shared-frame price is
 
 ```text
 2 × 12,289,728 invocations × 552 pair roles = 13,567,859,712
