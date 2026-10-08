@@ -87,6 +87,17 @@ theorem W_commute_of_orthogonal_prefix
   apply transvection_commute_of_orthogonal
   rw [axis_eq_insert, axis_eq_insert, insert_cross_dot, hpq, zero_mul]
 
+/-- A sharper criterion for a shared prefix: the two full-address axes, not
+    merely the prefixes, must be orthogonal. -/
+theorem W_commute_of_axis_orthogonal
+    (p : ι → F) (t s : Active h) (w v : Fin h)
+    (haxis : dotProduct (t + coordinate w) (s + coordinate v) = 0)
+    (z : Address ι h) :
+    W p t w (W p s v z) = W p s v (W p t w z) := by
+  apply transvection_commute_of_orthogonal
+  rw [axis_eq_insert, axis_eq_insert, insert_cross_dot]
+  simp [haxis]
+
 /-- For an arbitrary pair of prefixes, the exact obstruction term factors
     into a prefix dot product and an active-axis dot product. -/
 theorem axis_cross_dot
