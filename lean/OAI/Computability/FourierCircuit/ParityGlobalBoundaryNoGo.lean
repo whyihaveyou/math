@@ -41,8 +41,9 @@ theorem all_target_boundaries_eq_zero_of_four {h : ℕ} (hh : 4 ≤ h)
     rw [targetBoundary, Submodule.orthogonalBilin_span_singleton] at hmem
     have hmem' : dotForm (indicator T) v = 0 := by
       exact hmem
-    change dotForm v (indicator T) = 0
-    simpa [f, dotForm, dotProduct_comm] using hmem'
+    change dotProduct (indicator T) v = 0 at hmem'
+    change dotProduct v (indicator T) = 0
+    simpa [dotProduct_comm] using hmem'
   have hspan : TripleSpan h ≤ LinearMap.ker f := by
     apply Submodule.span_le.2
     intro x hx
