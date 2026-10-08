@@ -23,10 +23,36 @@ At (h=24), (v=\binom{24}{3}=2{,}024) and the target classes are:
 | 3 | 760 |
 | 4 | 1,140 |
 
-Each singleton is eligible for (inom{23}{3}=1{,}771) targets. A
+Each singleton is eligible for \(\binom{23}{3}=1{,}771\) targets. A
 deterministic least-loaded assignment uses four equal blocks of 506 targets.
 This is a cover and assignment statement only; it does not construct the
 gates that form or route a target aggregate.
+
+## A two-label cover if dense unit labels are allowed
+
+The four-label minimum applies to singleton labels. If the frame API permits
+arbitrary binary unit labels, there is an explicit two-label cover at even
+\(h\). Take
+
+\[
+u=e_0,\qquad w=\mathbf 1+e_0.
+\]
+
+At \(h=24\), \(u\) has weight 1 and \(w\) has weight 23; they are both unit
+and orthogonal. If \(0\notin S\), then \(u\in t_S^\perp\). If \(0\in S\),
+then \(w\in t_S^\perp\), because \(S\) has two remaining coordinates and
+\(w\) is supported on all coordinates except 0. Thus exactly one of the two
+labels is eligible for every target. A single nonzero label cannot cover all
+targets because the weight-three indicator vectors span the full
+\(\mathbb F_2^{24}\) active space (the script checks rank 24).
+
+The two-label route has assignment loads 1,771 and 253 targets. Reusing the
+same conditional charge conventions gives switch-only charge 1,202 and
+block round-trip charge 55,292, with base-padding normalized margins
+approximately \(1.02114856\times10^{-5}\) and
+\(1.02112579\times10^{-5}\), respectively. This dense-complement option is a
+research candidate: it changes the allowed frame-label family and still needs
+a compatible gate and schedule proof.
 
 ## Conditional direction ledgers
 

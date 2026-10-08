@@ -59,6 +59,68 @@ def cover_size_minimal(h: int) -> int:
     return 4
 
 
+def gf2_rank(rows: list[int]) -> int:
+    """Exact rank of bit vectors over ``F_2``."""
+
+    pivots: dict[int, int] = {}
+    for value in rows:
+        while value:
+            pivot = value.bit_length() - 1
+            old = pivots.get(pivot)
+            if old is None:
+                pivots[pivot] = value
+                break
+            value ^= old
+    return len(pivots)
+
+
+def complementary_two_frame_cover(h: int) -> dict[str, object]:
+    """An explicit two-label cover when arbitrary unit labels are allowed.
+
+    Let ``u=e_0`` and ``w=1+e_0`` (the complement of ``e_0``).  For every
+    weight-three target exactly one of ``u`` and ``w`` has even dot product
+    with the target.  At even ``h`` both labels are unit and orthogonal, so
+    this is a legal two-frame label pair in the binary frame model.  The
+    singleton-only cover still needs four labels; this is a separate route
+    candidate using one dense complement label.
+    """
+
+    if h < 4 or h % 2:
+        raise ValueError("the complementary unit-label cover below assumes even h >= 4")
+    triples = tuple(combinations(range(h), 3))
+    full = (1 << h) - 1
+    labels = (1, full ^ 1)
+    target_masks = [sum(1 << i for i in target) for target in triples]
+    eligible = {
+        mask: tuple(
+            j for j, label in enumerate(labels) if bin(label & mask).count("1") % 2 == 0
+        )
+        for mask in target_masks
+    }
+    assert all(len(frames) == 1 for frames in eligible.values())
+    weights = tuple(bin(label).count("1") for label in labels)
+    assert weights == (1, h - 1)
+    assert bin(labels[0] & labels[1]).count("1") % 2 == 0
+    # No one nonzero label can hit all target boundaries: triple indicators
+    # span the full active space, so a vector orthogonal to all of them is 0.
+    assert gf2_rank(target_masks) == h
+    loads = [0, 0]
+    for frames in eligible.values():
+        loads[frames[0]] += 1
+    assert loads == [choose(h - 1, 3), choose(h - 1, 2)]
+    return {
+        "label_masks": labels,
+        "label_weights": weights,
+        "pairwise_dot_GF2": 0,
+        "target_count": len(triples),
+        "eligible_frames_per_target": {1: len(triples)},
+        "assignment_loads": loads,
+        "triple_indicator_rank_GF2": h,
+        "minimum_nonzero_arbitrary_cover_size": 2,
+        "scope": "arbitrary binary unit labels; not singleton-only",
+    }
+
+
 def route_rows(h: int = 24, cover_size: int = 4) -> dict[str, object]:
     if h < 4:
         raise ValueError("h must be at least 4")
@@ -161,6 +223,31 @@ def route_rows(h: int = 24, cover_size: int = 4) -> dict[str, object]:
         for name, charge in route_charges.items()
     }
 
+    # If arbitrary binary unit labels are admitted, the dense complement of a
+    # singleton gives an explicit two-frame cover at even h.  Reuse the same
+    # charge conventions with k=2 so the singleton-only and arbitrary-label
+    # cases are directly comparable.
+    complementary = complementary_two_frame_cover(h) if h % 2 == 0 else None
+    two_frame_charges = {
+        "free_cover": 0,
+        "switch_only": 2 * (2 - 1) * prefix_sum,
+        "block_roundtrip": 2 * (h - 1) * 2 * prefix_sum,
+        "target_roundtrip": target_roundtrip,
+    }
+    two_frame_ledgers = {
+        name: {
+            "route_charge": charge,
+            "margin": centre_saving - charge,
+            "normalised_margin": str(
+                Fraction(centre_saving - charge, m * base_padding)
+            ),
+            "normalised_margin_float": float(
+                Fraction(centre_saving - charge, m * base_padding)
+            ),
+        }
+        for name, charge in two_frame_charges.items()
+    }
+
     assert cover_size_minimal(h) == 4
     if h == 24 and cover_size == 4:
         assert v == 2024
@@ -178,6 +265,15 @@ def route_rows(h: int = 24, cover_size: int = 4) -> dict[str, object]:
             "free_cover": 0,
             "switch_only": 3_606,
             "block_roundtrip": 110_584,
+            "target_roundtrip": 55_955_504,
+        }
+        assert complementary is not None
+        assert complementary["label_weights"] == (1, 23)
+        assert complementary["assignment_loads"] == [1771, 253]
+        assert two_frame_charges == {
+            "free_cover": 0,
+            "switch_only": 1_202,
+            "block_roundtrip": 55_292,
             "target_roundtrip": 55_955_504,
         }
 
@@ -200,6 +296,8 @@ def route_rows(h: int = 24, cover_size: int = 4) -> dict[str, object]:
         "explicit_frame_slot_width": explicit_slot_width,
         "explicit_frame_slot_padding": explicit_slot_padding,
         "explicit_frame_slot_ledgers": explicit_slot_ledgers,
+        "arbitrary_two_frame_cover": complementary,
+        "arbitrary_two_frame_route_ledgers": two_frame_ledgers,
         "scope": (
             "finite singleton cover and conditional direction accounting; no "
             "complex gate, global schedule, or all-length DFT theorem"
