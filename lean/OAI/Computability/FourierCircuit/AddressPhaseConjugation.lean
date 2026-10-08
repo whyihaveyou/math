@@ -61,6 +61,35 @@ noncomputable def framedPhase
   classical
   exact J * phaseDiagonal q * J
 
+theorem matrix_commutes_inverse_of
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (e : Address ι ≃ₗ[F2] Address ι)
+    (J : Matrix (Address ι) (Address ι) ℂ)
+    (hJ : matrix e * J = J * matrix e) :
+    J * (matrix e)⁻¹ = (matrix e)⁻¹ * J := by
+  have hunit : IsUnit (matrix e) :=
+    MonomialMatrix.unit _ (matrix_monomial e)
+  have hinvL : (matrix e)⁻¹ * matrix e =
+      (1 : Matrix (Address ι) (Address ι) ℂ) :=
+    Matrix.nonsing_inv_mul _ (Matrix.isUnit_iff_isUnit_det _ |>.mp hunit)
+  have hinvR : matrix e * (matrix e)⁻¹ =
+      (1 : Matrix (Address ι) (Address ι) ℂ) :=
+    Matrix.mul_nonsing_inv _ (Matrix.isUnit_iff_isUnit_det _ |>.mp hunit)
+  calc
+    J * (matrix e)⁻¹ =
+        (1 : Matrix (Address ι) (Address ι) ℂ) * (J * (matrix e)⁻¹) := by
+          rw [Matrix.one_mul]
+    _ = ((matrix e)⁻¹ * matrix e) * (J * (matrix e)⁻¹) := by
+          rw [hinvL]
+    _ = (matrix e)⁻¹ * (matrix e * J) * (matrix e)⁻¹ := by
+          simp only [Matrix.mul_assoc]
+    _ = (matrix e)⁻¹ * (J * matrix e) * (matrix e)⁻¹ := by
+          rw [hJ]
+    _ = ((matrix e)⁻¹ * J) * (matrix e * (matrix e)⁻¹) := by
+          simp only [Matrix.mul_assoc]
+    _ = (matrix e)⁻¹ * J := by
+          rw [hinvR, Matrix.mul_one]
+
 theorem matrix_conj_framedPhase
     {ι : Type} [Fintype ι] [DecidableEq ι]
     (e : Address ι ≃ₗ[F2] Address ι)
@@ -83,6 +112,17 @@ theorem matrix_conj_framedPhase
           rw [hJinv]
     _ = J * phaseDiagonal (q ∘ (fun x => (induced e).symm x)) * J := by
           rw [matrix_conj_phaseDiagonal]
+
+theorem matrix_conj_framedPhase_of_commutes
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (e : Address ι ≃ₗ[F2] Address ι)
+    (J : Matrix (Address ι) (Address ι) ℂ)
+    (q : Address ι → ℂ)
+    (hJ : matrix e * J = J * matrix e) :
+    matrix e * framedPhase J q * (matrix e)⁻¹ =
+      framedPhase J (q ∘ (fun x => (induced e).symm x)) := by
+  exact matrix_conj_framedPhase e J q hJ
+    (matrix_commutes_inverse_of e J hJ)
 
 /-- A phase profile that is invariant under an address change commutes with
     the corresponding free monomial matrix. -/
