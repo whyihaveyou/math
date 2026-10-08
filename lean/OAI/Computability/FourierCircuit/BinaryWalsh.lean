@@ -20,6 +20,7 @@ namespace ExactFourier
 namespace BinaryWalsh
 
 open BinaryAddressPermutation
+open BinaryTransvection
 
 abbrev F2 := BinaryAddressPermutation.F2
 abbrev Address (ι : Type) := BinaryAddressPermutation.Address ι
@@ -35,7 +36,7 @@ theorem signCharacter_add (a b : F2) :
     signCharacter (a + b) = signCharacter a * signCharacter b := by
   exact AddChar.map_add_eq_mul _ _ _
 
-def entry {ι : Type} [Fintype ι] (x y : Address ι) : ℂ :=
+noncomputable def entry {ι : Type} [Fintype ι] (x y : Address ι) : ℂ :=
   signCharacter (dotProduct x y)
 
 /-! The unnormalised Walsh matrix indexed by binary addresses. -/
@@ -53,7 +54,7 @@ theorem dot_symm_preserved {ι : Type} [Fintype ι]
     (x y : Address ι) :
     dotProduct (e.symm x) (e.symm y) = dotProduct x y := by
   have h := horth (e.symm x) (e.symm y)
-  simpa using h
+  simpa using h.symm
 
 /-! Conjugating the Walsh matrix by an orthogonal address permutation leaves it
 unchanged.  The proof uses the generic monomial reindexing theorem and the
