@@ -6,6 +6,12 @@ are different algebraic interfaces.
 
 `BinaryComplexFrameMap.lean` records two exact local facts:
 
+The support-map model in this file is a deliberately strong proposed
+encoding, not the semantic model used by the paper.  In the paper, binary
+labels index complex array addresses and define the operators `Φ_U`; they are
+not embedded as complex data vectors.  The corresponding free address-change
+bridge is formalized in `BinaryAddressPermutation.lean`.
+
 * every additive map `ZMod 2 →+ K` into a characteristic-zero field is zero;
   in particular, there is no nonzero additive or linear embedding of a binary
   frame label into a complex coordinate;

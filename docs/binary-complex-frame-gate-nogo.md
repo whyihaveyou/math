@@ -36,6 +36,13 @@ encoding and prove its `FrameToComplexShearPremise`, or replace the binary
 transvection by a complex operation whose action is actually realized by the
 chosen `Gate.add` and whose frame transport is scheduled globally.
 
+The no-go should not be read as a statement about the paper's actual `Φ_U`
+construction.  That construction keeps `F₂` labels and complex arrays in
+separate spaces; binary changes act as address permutations.  The exact free
+permutation part is recorded in `BinaryAddressPermutation.lean`.  What remains
+open is the charged nested-label `Φ_V Φ_U⁻¹` factorization for the selective
+centre chain.
+
 Build with:
 
 ```bash
