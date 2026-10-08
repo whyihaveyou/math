@@ -1,6 +1,7 @@
 import OAI.Computability.FourierCircuit.ParitySplitTargetAggregate
 import OAI.Computability.FourierCircuit.ParityTargetAggregateArithmetic
 import OAI.Computability.FourierCircuit.FrameLabels
+import OAI.Computability.FourierCircuit.FixedWidthScheduleInterface
 import Mathlib.Tactic
 
 /-!
@@ -174,6 +175,57 @@ theorem zero_cost_positive_one_e_minus_nine_and_one_unit_negative :
 
 end H24
 
+/-- A finite schedule attachment keeps the three unresolved implementation
+premises explicit while linking them to an actual fixed-width DAG trace.
+The gate-count hypothesis is intentionally supplied by the future physical
+construction; no schedule is inferred from label containment alone. -/
+structure FiniteScheduleAttachment
+    {S : Triple 24}
+    {sourceFormation scalarGateCommutation globalSchedule : Prop}
+    (Frame Step : Type*) [Fintype Step]
+    (n a : ℕ) where
+  physical : PhysicalParitySplitPremise 24 S sourceFormation
+      scalarGateCommutation globalSchedule
+  schedule : CenterBoundaryShearScheduleAudit.FixedWidthGateSchedule
+      CenterBoundaryShearScheduleAudit.H24.I
+      CenterBoundaryShearScheduleAudit.H24.h n a Frame Step
+  gate_upper : schedule.dag.size ≤
+      6 * (CenterBoundaryShearScheduleAudit.H24.I *
+        CenterBoundaryShearScheduleAudit.H24.h)
+
+/-- Conditional attachment theorem for the parity candidate.  Once source
+formation, scalar/gate commutation, and one global finite schedule are
+provided, the existing fixed-width bridge yields the strict h=24 margin. -/
+theorem finite_schedule_attachment_margin
+    {S : Triple 24}
+    {sourceFormation scalarGateCommutation globalSchedule : Prop}
+    {Frame Step : Type*} [Fintype Step]
+    {n a : ℕ}
+    (A : FiniteScheduleAttachment (S := S) Frame Step n a) :
+    sourceFormation ∧ scalarGateCommutation ∧ globalSchedule ∧
+      ((1 : ℚ) / 10 ^ 9 <
+        CenterBoundaryShearScheduleAudit.H24.scheduleNormalizedMargin
+          (Step := Step)) := by
+  refine ⟨A.physical.source_formation,
+    A.physical.scalar_gate_commutation,
+    A.physical.global_schedule, ?_⟩
+  exact CenterBoundaryShearScheduleAudit.H24.fixed_width_margin_gt_one_e_minus_nine
+    A.schedule A.gate_upper
+
+/-- The same attachment exposes the exact six-phase event ledger. -/
+theorem finite_schedule_attachment_card
+    {S : Triple 24}
+    {sourceFormation scalarGateCommutation globalSchedule : Prop}
+    {Frame Step : Type*} [Fintype Step]
+    {n a : ℕ}
+    (A : FiniteScheduleAttachment (S := S) Frame Step n a) :
+    Fintype.card Step =
+      6 * (CenterBoundaryShearScheduleAudit.H24.I *
+        CenterBoundaryShearScheduleAudit.H24.h) := by
+  exact CenterBoundaryShearScheduleAudit.H24.schedule_card_eq_six_phase
+    (CenterBoundaryShearScheduleAudit.toSchedule A.schedule) A.gate_upper
+
 end ParityTargetAggregateFrameCandidate
 end ExactFourier
 end OAI
+
