@@ -47,6 +47,10 @@ abstract: >-
   specific certificates rather than an unconditional all-length theorem.
 repository-code: "https://github.com/whyihaveyou/math"
 url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.36-event-schedule-audit"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23243562"
+    description: "Zenodo DOI for v0.2.36-event-schedule-audit"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
