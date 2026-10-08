@@ -23,9 +23,6 @@ namespace AddressPhaseConjugation
 
 open BinaryAddressPermutation
 
-abbrev F2 := BinaryAddressPermutation.F2
-abbrev Address (ι : Type) := BinaryAddressPermutation.Address ι
-
 /-!
 `U` is the selected address subspace.  `projection_mem` and `projection_fixed`
 are the minimum explicit facts that make `projection` a retraction onto `U`;
@@ -33,7 +30,7 @@ surjectivity onto all of `U` can be added by a future concrete instance when
 needed.  `q` is retained as a field so that a construction may use a different
 normalization while proving `q_eq` separately.
 -/
-structure QuadraticPhaseData (ι : Type*) [Fintype ι] [DecidableEq ι] where
+structure QuadraticPhaseData (ι : Type) [Fintype ι] [DecidableEq ι] where
   U : Submodule F2 (Address ι)
   projection : Address ι →ₗ[F2] Address ι
   projection_mem : ∀ x, projection x ∈ U
@@ -44,12 +41,12 @@ structure QuadraticPhaseData (ι : Type*) [Fintype ι] [DecidableEq ι] where
 
 /-- The phase profile determined by the projection and weight fields. -/
 noncomputable def QuadraticPhaseData.qU
-    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {ι : Type} [Fintype ι] [DecidableEq ι]
     (data : QuadraticPhaseData ι) : Address ι → ℂ :=
   fun x => Complex.I ^ data.weight (data.projection x)
 
 theorem QuadraticPhaseData.q_eq_qU
-    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {ι : Type} [Fintype ι] [DecidableEq ι]
     (data : QuadraticPhaseData ι) : data.q = data.qU := by
   funext x
   exact data.q_eq x
@@ -60,7 +57,7 @@ The only frame hypothesis is the same explicit commutation relation required
 by `matrix_conj_framedPhase_of_commutes`; no Walsh property is inferred.
 -/
 theorem QuadraticPhaseData.conj_framedPhase
-    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {ι : Type} [Fintype ι] [DecidableEq ι]
     (data : QuadraticPhaseData ι)
     (e : Address ι ≃ₗ[F2] Address ι)
     (J : Matrix (Address ι) (Address ι) ℂ)
@@ -71,7 +68,7 @@ theorem QuadraticPhaseData.conj_framedPhase
 
 /-- The same conjugation statement with the explicit `q_U` expression. -/
 theorem QuadraticPhaseData.conj_qU_framedPhase
-    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {ι : Type} [Fintype ι] [DecidableEq ι]
     (data : QuadraticPhaseData ι)
     (e : Address ι ≃ₗ[F2] Address ι)
     (J : Matrix (Address ι) (Address ι) ℂ)
