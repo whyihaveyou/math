@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this audit or its Lean certificates, please cite the versioned release."
 type: software
 title: "A Lean-checked parameter audit for exact discrete Fourier transforms"
-version: "0.2.15"
+version: "0.2.16"
 date-released: "2026-10-08"
 authors:
   - name: "QZP"
@@ -12,11 +12,11 @@ abstract: >-
   The release records finite-network and conditional research candidates and
   explicitly leaves the complete all-length frame-labelled recursion open.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.15-frame-phase-side-audit"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.16-quadratic-phase-data"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.23226675"
-    description: "Zenodo DOI for the preceding v0.2.14-address-permutation-semantics archive"
+    value: "10.5281/zenodo.23227429"
+    description: "Zenodo DOI for the preceding v0.2.15-frame-phase-side-audit archive"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
