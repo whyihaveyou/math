@@ -1,6 +1,7 @@
 import OAI.Computability.FourierCircuit.ArbitraryTwoFrameCover
 import OAI.Computability.FourierCircuit.BinaryComplexFrameMap
 import OAI.Computability.FourierCircuit.BinaryAddressPermutation
+import OAI.Computability.FourierCircuit.AddressPhaseConjugation
 import OAI.Computability.FourierCircuit.CenterBoundaryTensorLift
 import Mathlib.Tactic
 
@@ -33,6 +34,7 @@ open FrameLabels
 open BinaryTransvection
 open BinaryComplexFrameMap
 open BinaryAddressPermutation
+open AddressPhaseConjugation
 open CenterBoundaryTensorLift
 
 abbrev F2 := ZMod 2
@@ -102,6 +104,47 @@ theorem denseSwap_address_monomial {ι : Type 0} [Fintype ι] [DecidableEq ι]
         (lift (denseSwap h hh heven))) := by
   exact BinaryAddressPermutation.matrix_monomial
     (lift (denseSwap h hh heven))
+
+/-- The dense swap has an exact complex matrix-unit semantics after lifting
+the binary map to addresses.  This is the concrete free-address bridge: no
+support-map embedding of `ZMod 2` into `ℂ` is used. -/
+theorem denseSwap_matrix_conj_single
+    {ι : Type 0} [Fintype ι] [DecidableEq ι]
+    {h : ℕ} (hh : 2 ≤ h) (heven : Even h)
+    (a b : Address ι h) :
+    BinaryAddressPermutation.matrix
+        (ι := ι × Fin h)
+        (lift (ι := ι) (denseSwap h hh heven)) * Matrix.single a b (1 : ℂ) *
+        (BinaryAddressPermutation.matrix
+          (ι := ι × Fin h)
+          (lift (ι := ι) (denseSwap h hh heven)))⁻¹ =
+      Matrix.single
+        (BinaryAddressPermutation.induced
+          (lift (ι := ι) (denseSwap h hh heven)) a)
+        (BinaryAddressPermutation.induced
+          (lift (ι := ι) (denseSwap h hh heven)) b) 1 := by
+  exact BinaryAddressPermutation.matrix_conj_single
+    (lift (ι := ι) (denseSwap h hh heven)) a b
+
+/-- The same free address change only relabels an arbitrary complex diagonal
+phase profile.  A future concrete Walsh `Phi` construction can use this
+identity as its address-change premise; it does not provide the charged
+directional factorization. -/
+theorem denseSwap_phaseDiagonal_conj
+    {ι : Type 0} [Fintype ι] [DecidableEq ι]
+    {h : ℕ} (hh : 2 ≤ h) (heven : Even h)
+    (q : Address ι h → ℂ) :
+    BinaryAddressPermutation.matrix
+        (ι := ι × Fin h) (lift (ι := ι) (denseSwap h hh heven)) *
+        AddressPhaseConjugation.phaseDiagonal q *
+        (BinaryAddressPermutation.matrix
+          (ι := ι × Fin h) (lift (ι := ι) (denseSwap h hh heven)))⁻¹ =
+      AddressPhaseConjugation.phaseDiagonal
+        (q ∘ (fun x =>
+          (BinaryAddressPermutation.induced
+            (lift (ι := ι) (denseSwap h hh heven))).symm x)) := by
+  exact AddressPhaseConjugation.matrix_conj_phaseDiagonal
+    (lift (ι := ι) (denseSwap h hh heven)) q
 
 /-- Binary transvection of the anchored coordinate gives the dense label. -/
 theorem dense_transvection_coordinate {h : ℕ}
