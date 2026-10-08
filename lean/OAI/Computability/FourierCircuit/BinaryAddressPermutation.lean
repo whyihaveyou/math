@@ -1,5 +1,4 @@
 import OAI.Computability.FourierCircuit.BinaryTransvection
-import OAI.Computability.FourierCircuit.CenterBoundaryCommonFrameEdge
 import OAI.Computability.FourierCircuit.MonomialTools
 import Mathlib.Tactic
 
@@ -68,18 +67,6 @@ theorem matrix_conj_single [Fintype ι] [DecidableEq ι]
       Matrix.single (induced e a) (induced e b) 1 := by
   exact permM_conj_single (induced e) a b
 
-
-/-- The selective centre transvection therefore has a genuine free complex
-    address-permutation action.  This does not claim that its frame ratio is
-    one charged shear. -/
-theorem W_matrix_monomial
-    {ι : Type*} [Fintype ι] [DecidableEq ι] {h : ℕ}
-    (p : ι → F2) (t : Fin h → F2) (w : Fin h)
-    (hp : dotProduct p p = (1 : F2))
-    (ht : dotProduct t t = (1 : F2)) (hw : t w = 0) :
-    MonomialMatrix (matrix
-      (CenterBoundaryCommonFrameEdge.WEquiv p t w hp ht hw)) := by
-  exact matrix_monomial _
 
 end BinaryAddressPermutation
 end ExactFourier
