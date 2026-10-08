@@ -70,23 +70,23 @@ theorem direct_forced_surjective
    q-free cancellation, the factorized map is forced to be the identity.
    It makes no claim about arbitrary circuits or a different frame schedule. -/
 theorem direct_factorization_finrank_lower_bound
-    {R X : Type*} [Field K] [AddCommGroup X] [Module K X]
-    [AddCommGroup R] [Module K R] [FiniteDimensional K X]
+    {R : Type*} [AddCommGroup R] [Module K R]
     [FiniteDimensional K R]
-    (U : R →ₗ[K] X) (V : X →ₗ[K] R)
+    (U : R →ₗ[K] (Triple h → K))
+    (V : (Triple h → K) →ₗ[K] R)
     (hidentity : ∀ (S : Triple h) (x : Triple h → K),
       compressedR S (compressedG (K := K) x) + sideMomentNoGlobal S x +
         (U (V x)) S = x S) :
-    Module.finrank K X ≤ Module.finrank K R := by
+    Module.finrank K (Triple h → K) ≤ Module.finrank K R := by
   have hUV : U.comp V = LinearMap.id :=
     direct_forced_identity (D := U.comp V) hidentity
-  apply LinearMap.finrank_le_finrank_of_injective
+  apply LinearMap.finrank_le_finrank_of_injective (f := V)
   intro x y hxy
   have hx : U (V x) = x := by
-    have h := congrArg (fun f : X →ₗ[K] X => f x) hUV
+    have h := congrArg (fun f : (Triple h → K) →ₗ[K] (Triple h → K) => f x) hUV
     simpa using h
   have hy : U (V y) = y := by
-    have h := congrArg (fun f : X →ₗ[K] X => f y) hUV
+    have h := congrArg (fun f : (Triple h → K) →ₗ[K] (Triple h → K) => f y) hUV
     simpa using h
   calc
     x = U (V x) := hx.symm
