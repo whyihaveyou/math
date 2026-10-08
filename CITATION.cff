@@ -37,8 +37,8 @@ repository-code: "https://github.com/whyihaveyou/math"
 url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.31-target-labelled-cover-audit"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.23237644"
-    description: "Zenodo DOI for the preceding v0.2.30-global-parity-boundary-audit archive"
+    value: "10.5281/zenodo.23240019"
+    description: "Zenodo DOI for the v0.2.31-target-labelled-cover-audit archive"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
