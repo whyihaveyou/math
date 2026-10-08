@@ -22,14 +22,20 @@ with normalized finite saving
 2368333 / 474989023199232 ≈ 4.986079434106445 × 10⁻⁹.
 ```
 
+The Lean file defines the inherited gap
+`−log(1 − ε)/log(13824)` and proves
+`zeroSwitchExponentGap_lt_one_e_minus_nine`.  This is an upper bound on the
+conditional exponent gap, so the route is formally below (10^{-9}) even
+after removing all three serialized switches.
+
 The previous switch ledger is
 
 ```text
 1212585895 / 243194379878006784 ≈ 4.986076962832231 × 10⁻⁹.
 ```
 
-If the inherited recurrence multiplier is `13824 · (1 − ε)`, these values
-correspond numerically to exponent gaps approximately
+If the inherited recurrence multiplier is `13824 · (1 − ε)`, numerical
+evaluation gives exponent gaps approximately
 
 ```text
 5.229698963270910 × 10⁻¹⁰  (zero-switch route)

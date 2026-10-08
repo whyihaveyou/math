@@ -1,5 +1,7 @@
 import OAI.Computability.FourierCircuit.DenseTwoFrameComplexBridge
 import OAI.Computability.FourierCircuit.DenseBlockFrameSwitch
+import Mathlib.Analysis.Complex.ExponentialBounds
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Tactic
 
 /-!
@@ -99,6 +101,72 @@ theorem zeroSwitchNormalized_gt_dense_block_switch :
   rw [zeroSwitchNormalized_eq,
     DenseBlockFrameSwitch.conditionalNormalized_eq]
   norm_num
+
+/-! The finite `ε` and the inherited recurrence exponent are different
+quantities.  The following interface makes the distinction explicit and
+checks that this route cannot reach a `10⁻⁹` exponent gap. -/
+
+noncomputable def zeroSwitchEpsilon : ℝ :=
+  (zeroSwitchNormalized : ℚ)
+
+noncomputable def zeroSwitchExponentGap : ℝ :=
+  -Real.log (1 - zeroSwitchEpsilon) / Real.log (13824 : ℝ)
+
+theorem zeroSwitchEpsilon_pos : 0 < zeroSwitchEpsilon := by
+  rw [zeroSwitchEpsilon, zeroSwitchNormalized_eq]
+  norm_num
+
+theorem zeroSwitchEpsilon_lt_five_nano :
+    zeroSwitchEpsilon < (5 : ℝ) / 10 ^ 9 := by
+  rw [zeroSwitchEpsilon, zeroSwitchNormalized_eq]
+  norm_num
+
+private lemma neg_log_one_sub_le_div {e : ℝ} (hepos : 0 < e)
+    (helt : e < 1) :
+    -Real.log (1 - e) ≤ e / (1 - e) := by
+  have hpos : 0 < 1 - e := by linarith
+  have hlog := Real.log_le_sub_one_of_pos (inv_pos.mpr hpos)
+  calc
+    -Real.log (1 - e) = Real.log ((1 - e)⁻¹) := by
+      rw [Real.log_inv]
+    _ ≤ (1 - e)⁻¹ - 1 := hlog
+    _ = e / (1 - e) := by field_simp; ring
+
+private lemma log_h24_gt_nine :
+    (9 : ℝ) < Real.log (13824 : ℝ) := by
+  have hexp : Real.exp (9 : ℝ) < (13824 : ℝ) := by
+    rw [show (9 : ℝ) = (9 : ℕ) * 1 by norm_num, Real.exp_nat_mul]
+    have hp : (Real.exp 1) ^ (9 : ℕ) <
+        (2.7182818286 : ℝ) ^ (9 : ℕ) := by
+      exact pow_lt_pow_left₀ Real.exp_one_lt_d9 (by positivity) (by norm_num)
+    have hnum : (2.7182818286 : ℝ) ^ (9 : ℕ) < (13824 : ℝ) := by
+      norm_num
+    exact hp.trans hnum
+  exact (Real.lt_log_iff_exp_lt (by norm_num)).2 hexp
+
+theorem zeroSwitchExponentGap_lt_one_e_minus_nine :
+    zeroSwitchExponentGap < (1 : ℝ) / 10 ^ 9 := by
+  have hepos := zeroSwitchEpsilon_pos
+  have he5 := zeroSwitchEpsilon_lt_five_nano
+  have helt : zeroSwitchEpsilon < 1 := by nlinarith [he5]
+  have hone : 0 < 1 - zeroSwitchEpsilon := by linarith
+  have hnum_le := neg_log_one_sub_le_div hepos helt
+  have hnum_lt :
+      -Real.log (1 - zeroSwitchEpsilon) < (6 : ℝ) / 10 ^ 9 := by
+    have hfrac : zeroSwitchEpsilon / (1 - zeroSwitchEpsilon) <
+        (6 : ℝ) / 10 ^ 9 := by
+      apply (div_lt_iff₀ hone).2
+      nlinarith [he5]
+    exact hnum_le.trans_lt hfrac
+  have hlogpos : 0 < Real.log (13824 : ℝ) :=
+    Real.log_pos (by norm_num)
+  have hlog9 := log_h24_gt_nine
+  rw [zeroSwitchExponentGap]
+  apply (div_lt_iff₀ hlogpos).2
+  have htarget : (6 : ℝ) / 10 ^ 9 <
+      (1 : ℝ) / 10 ^ 9 * Real.log (13824 : ℝ) := by
+    nlinarith [hlog9]
+  exact hnum_lt.trans htarget
 
 end H24
 
