@@ -30,6 +30,27 @@ transvection transport, the direct-sum decomposition
 inclusions, and a small `StageResidual.Certificate` interface. These files do
 not assert a complete eight-row network or a new all-length theorem.
 
+The centre-fusion interface is now sharpened in
+`FusedCentreTransportNaturality.lean`.  It proves row-by-row naturality of
+the fused six-row map under four explicit intertwining equations for `R`,
+`G`, `J`, and `V`, and proves restoration of arbitrary side and centre banks
+after a common address permutation.  The same local tensor-lift transport is
+bound to the sheared `L5` membership certificate.  This closes a local
+commutation lemma, while leaving selective-only complex gate realization and
+the global schedule as explicit open premises.
+
+The dense two-frame cover has a separate exact block audit in
+`scripts/dense_block_boundary_audit.py` and
+`DenseBlockBoundaryArithmetic.lean`.  At h=24, the 253 targets containing
+coordinate zero and the 1771 targets avoiding it each have constraint rank 23
+and a one-dimensional common boundary, respectively `span(1+e₀)` and
+`span(e₀)`.  The target-indexed parity ranks are `(252,253,23)` and
+`(1770,1771,23)`.  Under the explicit one-switch-per-prefix premise the
+conditional margin is `2,425,171,790`, with normalized value
+`1212585895/243194379878006784 ≈ 4.9861×10⁻⁹ > 10⁻⁹`.  This is a binary
+span/rank and conditional ledger result; it does not prove a complex gate,
+global schedule, or all-length exponent theorem.
+
 ## Side-compression boundary audit
 
 One aggregate per target triple has an exact scalar update and would reduce the

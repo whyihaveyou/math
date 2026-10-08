@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this audit or its Lean certificates, please cite the versioned release."
 type: software
 title: "A Lean-checked parameter audit for exact discrete Fourier transforms"
-version: "0.2.33"
+version: "0.2.34"
 date-released: "2026-10-08"
 authors:
   - name: "QZP"
@@ -37,12 +37,14 @@ abstract: >-
   The follow-up local fusion audit also formalizes that the scalar fused
   identity cannot enter the old row-5 boundary without an explicit shear,
   boundary change, or prior cancellation.
+  The latest follow-up proves naturality of the fused rows under explicit
+  bank intertwiners and records an exact dense two-frame block-rank audit.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.33-fusion-boundary-audit"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.34-naturality-block-audit"
 identifiers:
   - type: doi
     value: "10.5281/zenodo.23241991"
-    description: "Zenodo DOI for v0.2.33-fusion-boundary-audit"
+    description: "Zenodo DOI for the preceding v0.2.33-fusion-boundary-audit archive"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
