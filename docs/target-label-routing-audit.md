@@ -45,6 +45,10 @@ then \(w\in t_S^\perp\), because \(S\) has two remaining coordinates and
 labels is eligible for every target. A single nonzero label cannot cover all
 targets because the weight-three indicator vectors span the full
 \(\mathbb F_2^{24}\) active space (the script checks rank 24).
+Equivalently, subtracting two triple indicators that share two coordinates
+recovers every pair difference, so a vector orthogonal to every triple must
+be constant; its dot product with a weight-three indicator then forces that
+constant to be zero.
 
 The two-label route has assignment loads 1,771 and 253 targets. Reusing the
 same conditional charge conventions gives switch-only charge 1,202 and
