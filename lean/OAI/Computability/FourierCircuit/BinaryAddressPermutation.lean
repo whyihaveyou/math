@@ -24,6 +24,8 @@ namespace BinaryAddressPermutation
 abbrev F2 := ZMod 2
 abbrev Address (ι : Type*) := ι → F2
 
+variable {ι : Type}
+
 /-- The address permutation induced by a binary linear equivalence. -/
 noncomputable def induced (e : Address ι ≃ₗ[F2] Address ι) : Equiv.Perm (Address ι) :=
   e.toEquiv
