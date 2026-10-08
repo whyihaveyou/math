@@ -29,4 +29,8 @@ The checked theorem is:
 ```
 
 for every `hh : 4 ≤ h` and `S : Triple h`; the companion structure exposes the
-same statement together with the four explicit frame labels.
+same statement together with the four explicit frame labels.  The companion
+[`SingletonCoverMinimality.lean`](../lean/OAI/Computability/FourierCircuit/SingletonCoverMinimality.lean)
+formalizes that four is minimal when the allowed labels are singleton
+coordinates: any cover of all triples has cardinality at least four, and the
+canonical `Fin 4` image has exactly four.
