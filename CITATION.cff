@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this audit or its Lean certificates, please cite the versioned release."
 type: software
 title: "A Lean-checked parameter audit for exact discrete Fourier transforms"
-version: "0.2.29"
+version: "0.2.30"
 date-released: "2026-10-08"
 authors:
   - name: "QZP"
@@ -26,12 +26,16 @@ abstract: >-
   reused H24 role count, padding bucket, and direct-diagonal margin, a
   conditional parity-split finite-schedule bridge, and a scoped
   finite-dimensional obstruction to lower-rank additive direct factorizations.
+  This version generalizes the target-boundary intersection no-go to every
+  h greater than or equal to four and adds an exact h-parameter padding-bucket
+  scan, including the conditional h=30 improvement and its negative direct
+  channel margin.
 repository-code: "https://github.com/whyihaveyou/math"
-url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.29-parity-attachment-rank-obstruction"
+url: "https://github.com/whyihaveyou/math/releases/tag/v0.2.30-global-parity-boundary-audit"
 identifiers:
   - type: doi
     value: "10.5281/zenodo.23237644"
-    description: "Zenodo DOI for the v0.2.29-parity-attachment-rank-obstruction archive"
+    description: "Zenodo DOI for the preceding v0.2.29-parity-attachment-rank-obstruction archive"
 license: "Apache-2.0"
 keywords:
   - "exact discrete Fourier transform"
